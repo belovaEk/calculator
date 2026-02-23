@@ -1,0 +1,80 @@
+export const PensionPayment = () => {
+    return (
+        <>
+            {/* Шаблон для пенсии */}
+            <div id="pensionTemplate">
+                <div className="payment-entry">
+                    <div className="payment-header">
+                        <div className="payment-title">Пенсия <span className="payment-number">1</span></div>
+                        <button className="remove-payment" type="button">Удалить выплату</button>
+                    </div>
+
+                    <div className="payment-dates">
+                        <div className="form-group">
+                            <label>Дата начала выплаты *</label>
+                            <input type="date" className="payment-start" required />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Дата окончания выплаты *</label>
+                            <input type="date" className="payment-end" required />
+                        </div>
+                    </div>
+
+                    <div className="date-options">
+                        <div className="date-option-group">
+                            <input type="checkbox" className="current-date" />
+                            <label className="date-option-label">По настоящее время</label>
+                        </div>
+                        <div className="date-option-group">
+                            <input type="checkbox" className="indefinite" />
+                            <label className="date-option-label">Бессрочно</label>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Вид пенсии *</label>
+                        <select className="payment-type" required>
+                            <option value="">Выберите вид пенсии</option>
+                            <option value="insurance_old_age">Страховая пенсия по старости</option>
+                            <option value="insurance_disability">Страховая пенсия по инвалидности</option>
+                            <option value="insurance_loss">Страховая пенсия по случаю потери кормильца</option>
+                            <option value="social_disability">Социальная пенсия по инвалидности</option>
+                            <option value="social_loss">Социальная пенсия по случаю потери кормильца</option>
+                            <option value="social_old_age">Социальная пенсия по старости</option>
+                            <option value="custom">Другая (указать вручную)</option>
+                        </select>
+                    </div>
+
+                    <div className="amount-period">
+                        <div className="form-group">
+                            <label>Размер на декабрь (руб.) *</label>
+                            <input type="number" className="payment-amount-dec" min="0" step="0.01" required />
+                            <div className="period-label">Используется для расчета января</div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Размер на январь (руб.)</label>
+                            <input type="number" className="payment-amount-jan" min="0" step="0.01" />
+                            <div className="period-label">Если не заполнено, используется значение на декабрь</div>
+                        </div>
+                    </div>
+
+                    <div className="grid-4">
+                        <div className="checkbox-group">
+                            <input type="checkbox" className="is-working" />
+                            <label>Работает в период выплаты</label>
+                        </div>
+                        <div className="checkbox-group">
+                            <input type="checkbox" className="full-state-support-period" />
+                            <label>Полное государственное обеспечение</label>
+                        </div>
+                        <div className="form-group">
+                            <button type="button" className="btn btn-secondary btn-sm auto-fill-btn" style={{ padding: '8px 12px', fontSize: '14px' }}>Автозаполнение</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+}

@@ -1,0 +1,1 @@
+export { Params as default } from "./components/Params";

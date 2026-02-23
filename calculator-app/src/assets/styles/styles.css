@@ -1,0 +1,180 @@
+
+
+
+.total-row {
+  font-weight: bold;
+  background-color: #ecf0f1;
+}
+
+.highlight {
+  background-color: #fffacd;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+
+.hidden {
+  display: none;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.tab.active {
+  border-bottom-color: #3498db;
+  font-weight: bold;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+
+
+.incomplete-month {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.days-info {
+  font-size: 0.9em;
+  color: #666;
+  font-style: italic;
+}
+
+
+
+
+.timeline-visual {
+  height: 20px;
+  background-color: #ecf0f1;
+  border-radius: 10px;
+  margin: 10px 0;
+  position: relative;
+}
+
+.timeline-period {
+  position: absolute;
+  height: 100%;
+  background-color: #3498db;
+  border-radius: 10px;
+}
+
+.month-calculation {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.month-header {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.payment-breakdown {
+  font-size: 0.9em;
+  color: #666;
+}
+
+
+
+.consolidated-period {
+  background-color: #e8f4fc;
+  border-left: 4px solid #2ecc71;
+}
+
+.gss-period {
+  border-left: 4px solid #2ecc71 !important;
+  background-color: #d4edda !important;
+}
+
+.pmp-period {
+  border-left: 4px solid #3498db !important;
+  background-color: #d1ecf1 !important;
+}
+
+
+
+
+
+
+
+.period-label {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 5px;
+}
+
+.registration-periods-container {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.registration-period {
+  background-color: white;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  border-left: 4px solid #3498db;
+}
+
+.full-state-support {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+@media (max-width: 768px) {
+  .grid,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tabs {
+    flex-direction: column;
+  }
+
+  .tab {
+    padding: 10px;
+  }
+
+  .payment-dates {
+    flex-direction: column;
+  }
+
+  .date-options {
+    flex-direction: column;
+  }
+
+  .radio-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .amount-period {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,1 @@
+export { Basic as default} from "./components/Basic";

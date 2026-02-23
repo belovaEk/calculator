@@ -1,0 +1,71 @@
+.payment-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.payment-row {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.payment-row:last-child {
+  border-bottom: none;
+}
+
+.payment-dates {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.payment-dates .form-group {
+  margin-bottom: 10px;
+}
+
+
+
+
+.payment-entry {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border-left: 4px solid #3498db;
+}
+
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.payment-title {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+.remove-payment {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+
+
+.amount-period {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 15px;
+}
