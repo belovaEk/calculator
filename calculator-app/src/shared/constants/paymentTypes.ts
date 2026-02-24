@@ -1,7 +1,7 @@
 import {
     PensionTypeKey,
-    EDVGroupKey,
-    EGDVCategoryKey
+    EdvTypeKey,
+    EgdvTypeKey
 } from '../types';
 
 export const PENSION_TYPES: Record<PensionTypeKey, string> = {
@@ -14,17 +14,17 @@ export const PENSION_TYPES: Record<PensionTypeKey, string> = {
     custom: 'Другая (указать вручную)'
 } as const;
 
-export const EDV_GROUPS: Record<EDVGroupKey, string> = {
-    '1 группа': '1 группа',
-    '2 группа Дети-инвалиды': '2 группа / Дети-инвалиды',
-    '3 группа': '3 группа',
+export const EDV_CATEGORIES: Record<EdvTypeKey, string> = {
+    first_group: '1 группа',
+    second_group: '2 группа / Дети-инвалиды',
+    third_group: '3 группа',
     custom: 'Другая (указать вручную)'
 } as const;
 
-export const EGDV_CATEGORIES: Record<EGDVCategoryKey, string> = {
-    'инвалиды 1 группы дети-инвалиды уход': 'Инвалиды 1 группы, дети-инвалиды, уход',
-    'инвалиды с детства 2 группы сироты': 'Инвалиды с детства 2 группы, сироты',
-    'пенсионеры по старости инвалиды 2 группы СПК': 'Пенсионеры по старости, инвалиды 2 группы, СПК',
-    'инвалиды 3 группы': 'Инвалиды 3 группы',
+export const EGDV_CATEGORIES: Record<EgdvTypeKey, string> = {
+    children_first_group: 'Инвалиды 1 группы, дети-инвалиды, уход',
+    orphans_second_group: 'Инвалиды с детства 2 группы, сироты',
+    pens_second_group_SPK: 'Пенсионеры по старости, инвалиды 2 группы, СПК',
+    third_group: 'Инвалиды 3 группы',
     custom: 'Другая (указать вручную)'
 } as const;

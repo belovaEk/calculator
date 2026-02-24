@@ -9,11 +9,9 @@ export type SocialPensionCategory =
   | 'пенсионеры по старости инвалиды 2 группы СПК'
   | 'инвалиды 3 группы';
 
-export type EDVGroup =
+export type EDVCategory =
   | '1 группа'
   | '2 группа Дети-инвалиды'
-  | '3 группа';
+  | '3 группа'
+  ;
 
-
-export type EDVGroupKey = EDVGroup | 'custom';
-export type EGDVCategoryKey = SocialPensionCategory | 'custom';

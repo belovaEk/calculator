@@ -1,6 +1,6 @@
-import { EDVGroup, TimeSeriesData } from '../types';
+import { EDVCategory, TimeSeriesData } from '../types';
 
-export const EDV_DATA: Record<EDVGroup, TimeSeriesData> = {
+export const EDV_DATA: Record<EDVCategory, TimeSeriesData> = {
     '1 группа': {
         '2020-02-01': 3896.43,
         '2021-02-01': 4087.36,

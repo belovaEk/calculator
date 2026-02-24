@@ -1,3 +1,3 @@
 export * from './dateType';
-export * from './CategoryType';
+export * from './categoryType';
 export * from './paymentType';

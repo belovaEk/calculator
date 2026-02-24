@@ -36,17 +36,17 @@ export const Basic = () => {
                             </div>
 
                             <div className="form-group" id="applicationDateGroup">
-                                <label htmlFor="applicationDate" style={{ color: 'red' }}>Дата заявления *</label>
+                                <label htmlFor="applicationDate">Дата заявления *</label>
                                 <input type="date" id="applicationDate" required />
                             </div>
 
                             <div className="form-group" id="autoAssignmentDateGroup" style={{ display: 'none' }}>
-                                <label htmlFor="autoAssignmentDate" style={{ color: 'red' }}>Дата автоматического назначения *</label>
+                                <label htmlFor="autoAssignmentDate">Дата автоматического назначения *</label>
                                 <input type="date" id="autoAssignmentDate" />
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="gssApplicationDate" style={{ color: 'red' }}>Дата заявления на ГСС (если отличается)</label>
+                                <label htmlFor="gssApplicationDate">Дата заявления на ГСС (если отличается)</label>
                                 <input type="date" id="gssApplicationDate" />
                                 <div className="days-info">Оставьте пустым, если заявление на ГСС не подавалось</div>
                             </div>
@@ -54,7 +54,7 @@ export const Basic = () => {
 
                         <div className="checkbox-group">
                             <input type="checkbox" id="childFromBirth" />
-                            <label htmlFor="childFromBirth" style={{ color: 'red' }}>Ребенок, зарегистрированный в Москве с рождения (до 6 месяцев)</label>
+                            <label htmlFor="childFromBirth">Ребенок, зарегистрированный в Москве с рождения (до 6 месяцев)</label>
                         </div>
 
                         <div id="registrationSection">

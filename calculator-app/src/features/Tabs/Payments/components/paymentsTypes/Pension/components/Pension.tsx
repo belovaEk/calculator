@@ -1,4 +1,9 @@
+import { PENSION_TYPES } from "../../../../../../../shared/constants"
+
 export const PensionPayment = () => {
+
+    const pensionTypes = Object.entries(PENSION_TYPES);
+
     return (
         <>
             {/* Шаблон для пенсии */}
@@ -34,15 +39,11 @@ export const PensionPayment = () => {
 
                     <div className="form-group">
                         <label>Вид пенсии *</label>
-                        <select className="payment-type" required>
+                        <select className="pensionType" required>
                             <option value="">Выберите вид пенсии</option>
-                            <option value="insurance_old_age">Страховая пенсия по старости</option>
-                            <option value="insurance_disability">Страховая пенсия по инвалидности</option>
-                            <option value="insurance_loss">Страховая пенсия по случаю потери кормильца</option>
-                            <option value="social_disability">Социальная пенсия по инвалидности</option>
-                            <option value="social_loss">Социальная пенсия по случаю потери кормильца</option>
-                            <option value="social_old_age">Социальная пенсия по старости</option>
-                            <option value="custom">Другая (указать вручную)</option>
+                            ({pensionTypes.map(([key, value]) => (
+                                <option key={key} value={value}>{value}</option>
+                            ))})
                         </select>
                     </div>
 

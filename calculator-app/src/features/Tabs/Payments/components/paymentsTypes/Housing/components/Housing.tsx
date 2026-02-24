@@ -32,7 +32,7 @@ export const HousingPayment = () =>{
                     </div>
 
                     <div className="form-group">
-                        <label style={{ color: 'red' }}>Тип выплаты</label>
+                        <label>Тип выплаты</label>
                         <input type="text" className="payment-type" value="Денежный эквивалент ЖКУ" readOnly />
                     </div>
 
