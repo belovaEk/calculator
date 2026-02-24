@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ROUTES } from '../../../../constants/routes';
+import { ROUTES } from '../../../../shared/constants';
 
 export const useTabs = () => {
     const navigate = useNavigate();

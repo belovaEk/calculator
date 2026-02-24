@@ -1,0 +1,19 @@
+export type PensionCategory =
+  | 'ПО СТАРОСТИ 2 ГРУППА'
+  | '80 ЛЕТ 1 ГРУППА'
+  | 'СПК 3 ГРУППА';
+
+export type SocialPensionCategory =
+  | 'инвалиды 1 группы дети-инвалиды уход'
+  | 'инвалиды с детства 2 группы сироты'
+  | 'пенсионеры по старости инвалиды 2 группы СПК'
+  | 'инвалиды 3 группы';
+
+export type EDVGroup =
+  | '1 группа'
+  | '2 группа Дети-инвалиды'
+  | '3 группа';
+
+
+export type EDVGroupKey = EDVGroup | 'custom';
+export type EGDVCategoryKey = SocialPensionCategory | 'custom';
