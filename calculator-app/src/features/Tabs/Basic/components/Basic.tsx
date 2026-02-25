@@ -1,4 +1,12 @@
+import { useBasic } from "../hooks/useBasic";
+import { ROUTES } from "../../../../shared/constants";
+
 export const Basic = () => {
+
+    const {
+        navigate,
+    } = useBasic();
+
     return (
         <>
             {/* Вкладка основных данных */}
@@ -87,8 +95,8 @@ export const Basic = () => {
                 </div>
 
                 <div className="form-group">
-                    <button className="btn btn-secondary" id="backToParams">Назад: Параметры</button>
-                    <button className="btn btn-success" id="nextToPayments">Далее: Выплаты и периоды</button>
+                    <button className="btn btn-secondary" id="backToParams" onClick={()=> navigate(ROUTES.params)}>Назад: Параметры</button>
+                    <button className="btn btn-success" id="nextToPayments" onClick={()=> navigate(ROUTES.payments)}>Далее: Выплаты и периоды</button>
                 </div>
             </div>
 

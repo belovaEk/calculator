@@ -4,7 +4,15 @@ import EgdPayment from "./paymentsTypes/Egd";
 import HousingPayment from "./paymentsTypes/Housing";
 import PensionPayment from "./paymentsTypes/Pension"
 
+import { usePayments } from "../hooks/usePayments";
+import { ROUTES } from "../../../../shared/constants";
+
 export const Payments = () => {
+
+    const {
+        navigate,
+    } = usePayments();
+
     return (
         <>
             {/* Вкладка выплат и периодов */}
@@ -50,8 +58,8 @@ export const Payments = () => {
 
 
                 <div className="form-group">
-                    <button className="btn btn-secondary" id="backToBasic">Назад: Основные данные</button>
-                    <button className="btn btn-success" id="nextToResults">Далее: Расчет</button>
+                    <button className="btn btn-secondary" id="backToBasic" onClick={()=> navigate(ROUTES.basic)}>Назад: Основные данные</button>
+                    <button className="btn btn-success" id="nextToResults" onClick={()=> navigate(ROUTES.results)}>Далее: Расчет</button>
                 </div>
             </div>
 

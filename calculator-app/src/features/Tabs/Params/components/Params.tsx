@@ -1,5 +1,12 @@
+import { useParams } from "../hooks/useParams";
+import { ROUTES } from "../../../../shared/constants";
 
 export const Params = () => {
+
+    const {
+        navigate,
+    } = useParams();
+
     return (
         <>
             {/* Вкладка параметров ГСС и ПМП */}
@@ -26,13 +33,13 @@ export const Params = () => {
                     </table>
 
                     <div className="form-group" style={{ marginTop: '20px' }}>
-                        <button className="btn" id="resetParams">Сбросить к значениям по умолчанию</button>
-                        <button className="btn btn-success" id="saveParams">Сохранить параметры</button>
+                        <button className="btn" id="resetParams" disabled>Сбросить к значениям по умолчанию</button>
+                        <button className="btn btn-success" id="saveParams" disabled>Сохранить параметры</button>
                     </div>
                 </div>
 
                 <div className="form-group">
-                    <button className="btn btn-success" id="nextFromParams">Далее: Основные данные</button>
+                    <button className="btn btn-success" id="nextFromParams" onClick={()=> navigate(ROUTES.basic)}>Далее: Основные данные</button>
                 </div>
             </div>
         </>
