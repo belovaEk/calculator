@@ -1,13 +1,13 @@
 
 import { useTabs } from "../hooks/useNavigate";
 
-export const Navigate = ()=> {
+export const Navigate = () => {
 
-    const {
-        navigate,
-        activeTab,
-        tabs
-    } = useTabs();
+  const {
+    navigate,
+    activeTab,
+    tabs
+  } = useTabs();
 
   return (
     <div className="tabs">

@@ -39,7 +39,7 @@ export const Params = () => {
                 </div>
 
                 <div className="form-group">
-                    <button className="btn btn-success" id="nextFromParams" onClick={()=> navigate(ROUTES.basic)}>Далее: Основные данные</button>
+                    <button className="btn btn-success" id="nextFromParams" onClick={() => navigate(ROUTES.basic)}>Далее: Основные данные</button>
                 </div>
             </div>
         </>

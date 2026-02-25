@@ -44,6 +44,6 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-transform-classes": "^7.28.6"
+    "@babel/plugin-transform-classNamees": "^7.28.6"
   }
 }

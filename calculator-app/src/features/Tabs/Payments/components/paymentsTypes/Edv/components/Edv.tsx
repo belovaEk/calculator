@@ -3,7 +3,7 @@ import { EDV_CATEGORIES } from "../../../../../../../shared/constants"
 export const EdvPayment = () => {
 
     const categoryEntries = Object.entries(EDV_CATEGORIES);
-    
+
     return (
         // {/* Шаблон для ЕДВ */}
         <div id="edvTemplate">

@@ -9,7 +9,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             <main>
                 <div className='container'>
                     <Navigate />
-                   {children}
+                    {children}
                 </div>
             </main>
         </div>

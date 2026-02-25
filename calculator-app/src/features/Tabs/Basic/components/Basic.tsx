@@ -1,11 +1,16 @@
 import { useBasic } from "../hooks/useBasic";
-import { ROUTES } from "../../../../shared/constants";
+import { FormPeriodRegistration } from "./FromPeriodRegistration";
+import { PeriodRegistrationSection } from "./PeriodRegistrationSection";
 
 export const Basic = () => {
 
     const {
         navigate,
+        store,
+        updateStore,
+        ROUTES,
     } = useBasic();
+
 
     return (
         <>
@@ -23,7 +28,8 @@ export const Basic = () => {
                                     id="children"
                                     type="radio"
                                     name="ageGroupCheck"
-                                    value="false"
+                                    checked={store.is_adult === false}
+                                    onChange={() => updateStore('is_adult', false)}
                                     defaultChecked
                                 />
                                 <label htmlFor="children">Ребенок</label>
@@ -33,7 +39,8 @@ export const Basic = () => {
                                     id="adult"
                                     type="radio"
                                     name="ageGroupCheck"
-                                    value="true"
+                                    checked={store.is_adult === true}
+                                    onChange={() => updateStore('is_adult', true)}
                                 />
                                 <label htmlFor="adult">Взрослый</label>
                             </div>
@@ -44,7 +51,11 @@ export const Basic = () => {
                             {/* дата рождения */}
                             <div className="form-group">
                                 <label htmlFor="birthDate">Дата рождения *</label>
-                                <input type="date" id="birthDate" required />
+                                <input
+                                    type="date"
+                                    id="birthDate"
+                                    onChange={(e) => updateStore('date_of_birth', e.target.value)}
+                                    required />
                             </div>
 
                             {/* <div className="form-group" id="applicationDateGroup">
@@ -64,39 +75,99 @@ export const Basic = () => {
                             </div> */}
                         </div>
 
-                        <div className="checkbox-group">
-                            <input type="checkbox" id="registrationPeriodsCheck" />
-                            <label htmlFor="registrationPeriodsCheck">Есть периоды регистрации в Москве</label>
-                        </div>
-
-                        <div id="registrationSection">
-                            <div className="form-group">
-                                <h3>Периоды регистрации в Москве</h3>
-                                <div className="info-box warning">
-                                    <p><strong>Важно:</strong> Укажите все периоды регистрации в Москве. Общая
-                                        продолжительность регистрации должна быть не менее 10 лет для получения ГСС.</p>
+                        {!store.is_adult && (
+                            <>
+                                <div className="checkbox-group">
+                                    <input
+                                        type="checkbox"
+                                        id="registrationPerioChildrenCheck"
+                                        checked={store.is_there_a_registration_in_moscow_of_the_child}
+                                        onChange={(e) => updateStore('is_there_a_registration_in_moscow_of_the_child', e.target.checked)}
+                                    />
+                                    <label htmlFor="registrationPerioChildrenCheck">Есть периоды регистрации в Москве ребенка</label>
                                 </div>
 
-                                <div id="registrationPeriodsContainer" className="registration-periods-container">
-                                    {/* Периоды регистрации будут добавляться динамически */}
+                                {store.is_there_a_registration_in_moscow_of_the_child && (
+                                    <PeriodRegistrationSection persona="ребенка" />
+                                )}
+
+
+                                <h3>Законный представитель / кормилец</h3>
+
+                                <div className="radio-group">
+                                    <div className="radio-item">
+                                        <input
+                                            id="legal_representative"
+                                            type="radio"
+                                            name="representativeCheck"
+                                            checked={store.is_legal_representative === true}
+                                            onChange={() => updateStore('is_legal_representative', true)}
+                                            defaultChecked
+                                        />
+                                        <label htmlFor="legal_representative">Законный представитель</label>
+                                    </div>
+                                    <div className="radio-item">
+                                        <input
+                                            id="breadwinner"
+                                            type="radio"
+                                            name="representativeCheck"
+                                            checked={store.is_legal_representative === false}
+                                            onChange={() => updateStore('is_legal_representative', false)}
+                                        />
+                                        <label htmlFor="breadwinner">Кормилец</label>
+                                    </div>
                                 </div>
 
-                                <button className="btn" id="addRegistrationPeriod">+ Добавить период регистрации</button>
+                                {!store.is_legal_representative && (
+                                    <div className="grid">
+                                        <div className="form-group">
+                                            <label htmlFor="date_of_death_of_the_breadwinner">Дата смерти *</label>
+                                            <input
+                                                type="date"
+                                                id="date_of_death_of_the_breadwinner"
+                                                onChange={(e) => updateStore('date_of_death_of_the_breadwinner', e.target.value)}
+                                                required />
+                                        </div>
+                                    </div>
+                                )}
 
-                                <div id="registrationSummary" style={{ marginTop: '15px', padding: '10px', backgroundColor: '#e8f4fc', borderRadius: '5px' }}>
-                                    <strong>Итоговая продолжительность регистрации:</strong> <span id="totalRegistrationDuration">0 лет 0 месяцев 0 дней</span>
-                                    <br />
-                                    <strong>Дата достижения 10 лет регистрации:</strong> <span id="tenYearRegistrationDate">Не достигнуто</span>
+                                <div className="checkbox-group">
+                                    <input
+                                        type="checkbox"
+                                        id="registrationPeriodLegalCheck"
+                                        checked={store.is_there_a_registration_in_moscow_of_the_breadwinner_or_legal_representative}
+                                        onChange={(e) => updateStore('is_there_a_registration_in_moscow_of_the_breadwinner_or_legal_representative', e.target.checked)}
+                                    />
+                                    <label htmlFor="registrationPeriodLegalCheck">Есть периоды регистрации в Москве законного представителя или кормильца</label>
                                 </div>
-                            </div>
-                        </div>
+
+                                {store.is_there_a_registration_in_moscow_of_the_breadwinner_or_legal_representative && (
+                                    <PeriodRegistrationSection persona="законного представителя или кормильца" />
+                                )}
+                            </>
+                        )}
+
+
+
+
+
+
+
+
                     </div>
 
-                    <div className="info-box">
+                    {/* <div id="registrationSummary" style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#e8f4fc', borderRadius: '5px' }}>
+                        <strong>Итоговая продолжительность регистрации:</strong> <span id="totalRegistrationDuration">0 лет 0 месяцев 0 дней</span>
+                        <br />
+                        <strong>Дата достижения 10 лет регистрации:</strong> <span id="tenYearRegistrationDate">Не достигнуто</span>
+                    </div> */}
+
+                    {/* <div className="info-box">
                         <p><strong>Текущие параметры ГСС и ПМП:</strong></p>
                         <div id="currentParamsInfo"></div>
-                    </div>
+                    </div> */}
                 </div>
+
 
                 <div className="form-group">
                     <button className="btn btn-secondary" id="backToParams" onClick={() => navigate(ROUTES.params)}>Назад: Параметры</button>
@@ -104,37 +175,7 @@ export const Basic = () => {
                 </div>
             </div>
 
-            <template id="registrationPeriodTemplate">
-                <div className="registration-period">
-                    <div className="payment-header">
-                        <div className="payment-title">Период регистрации <span className="period-number">1</span></div>
-                        <button className="remove-period" type="button">Удалить период</button>
-                    </div>
 
-                    <div className="payment-dates">
-                        <div className="form-group">
-                            <label>Дата начала регистрации *</label>
-                            <input type="date" className="period-start" required />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Дата окончания регистрации *</label>
-                            <input type="date" className="period-end" required />
-                        </div>
-                    </div>
-
-                    <div className="date-options">
-                        <div className="date-option-group">
-                            <input type="checkbox" className="current-date" />
-                            <label className="date-option-label">По настоящее время</label>
-                        </div>
-                        <div className="date-option-group">
-                            <input type="checkbox" className="indefinite" />
-                            <label className="date-option-label">Непрерывно (до прекращения)</label>
-                        </div>
-                    </div>
-                </div>
-            </template>
         </>
     )
 }
