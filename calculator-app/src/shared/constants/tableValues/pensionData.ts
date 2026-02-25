@@ -1,4 +1,4 @@
-import { PensionCategory, TimeSeriesData } from '../types';
+import { PensionCategory, TimeSeriesData } from '../../types';
 
 export const PENSION_DATA: Record<PensionCategory, TimeSeriesData> = {
     'ПО СТАРОСТИ 2 ГРУППА': {

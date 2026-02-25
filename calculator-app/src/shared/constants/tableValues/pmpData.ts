@@ -1,4 +1,4 @@
-import { YearlyData } from "../types/dateType";
+import { YearlyData } from "../../types/dateType";
 
 
 export const PMP_DATA: YearlyData = {

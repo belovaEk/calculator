@@ -1,7 +1,7 @@
 import {
     PensionTypeKey,
     EdvTypeKey,
-    EgdvTypeKey
+    EgdvTypeKey,
 } from '../types';
 
 export const PENSION_TYPES: Record<PensionTypeKey, string> = {

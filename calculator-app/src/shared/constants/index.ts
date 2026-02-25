@@ -1,9 +1,10 @@
-export * from './housingData';
-export * from './pmpData';
-export * from './gssData';
-export * from './edvData';
-export * from './pensionData';
-export * from './socialPensionData';
-export * from './paymentTypes';
+export * from './tableValues/housingData';
+export * from './tableValues/pmpData';
+export * from './tableValues/gssData';
+export * from './tableValues/edvData';
+export * from './tableValues/pensionData';
+
+export * from './tableValues/socialPensionData';
+export * from './peopleCategories';
 
 export * from './routes';

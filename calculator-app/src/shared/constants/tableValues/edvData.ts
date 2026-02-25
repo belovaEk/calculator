@@ -1,4 +1,4 @@
-import { EDVCategory, TimeSeriesData } from '../types';
+import { EDVCategory, TimeSeriesData } from '../../types';
 
 export const EDV_DATA: Record<EDVCategory, TimeSeriesData> = {
     '1 группа': {

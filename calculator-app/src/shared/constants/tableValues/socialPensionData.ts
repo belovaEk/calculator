@@ -1,4 +1,4 @@
-import { SocialPensionCategory, TimeSeriesData } from '../types';
+import { SocialPensionCategory, TimeSeriesData } from '../../types';
 
 export const INSURANCE_PENSION_DATA: Record<SocialPensionCategory, TimeSeriesData> = {
     'инвалиды 1 группы дети-инвалиды уход': {
@@ -33,4 +33,4 @@ export const INSURANCE_PENSION_DATA: Record<SocialPensionCategory, TimeSeriesDat
         '2024-04-01': 6536.41,
         '2025-04-01': 7500.53
     }
-} as const ;
+} as const;

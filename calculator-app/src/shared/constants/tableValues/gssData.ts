@@ -1,4 +1,4 @@
-import { YearlyData } from "../types/dateType";
+import { YearlyData } from "../../types";
 
 export const GSS_DATA: YearlyData = {
     2019: 19500,

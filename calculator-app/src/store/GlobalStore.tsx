@@ -1,11 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
+import { GlobalStoreContextInterface, GlobalStoreParameterInterface } from './type';
 
-interface GlobalStoreContextType {
-    store: Record<string, any>;
-    updateStore: (parameter: string, value: any) => void;
-}
-
-const GlobalStoreContext = createContext<GlobalStoreContextType>({
+const GlobalStoreContext = createContext<GlobalStoreContextInterface>({
     store: {},
     updateStore: () => { }
 });
@@ -13,11 +9,15 @@ const GlobalStoreContext = createContext<GlobalStoreContextType>({
 export const useGlobalStore = () => useContext(GlobalStoreContext);
 
 export const GlobalStoreProvider = ({ children }: { children: React.ReactNode }) => {
-    const [store, setStore] = useState({});
+    const [store, setStore] = useState<GlobalStoreParameterInterface>({});
 
-    const updateStore = (parameter: string, value: any) => {
+    const updateStore = <K extends keyof GlobalStoreParameterInterface>(parameter: K, value: GlobalStoreParameterInterface[K]) => {
         setStore(prev => ({ ...prev, [parameter]: value }));
     };
+
+    const resetStore = () => {
+        setStore({})
+    }
 
     return (
         <GlobalStoreContext.Provider value={{ store, updateStore }}>

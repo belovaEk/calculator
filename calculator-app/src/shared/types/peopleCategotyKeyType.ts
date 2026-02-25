@@ -7,7 +7,6 @@ export type PensionTypeKey =
     | 'social_old_age'
     | 'custom';
 
-
 export type EdvTypeKey =
     | 'first_group'
     | 'second_group'

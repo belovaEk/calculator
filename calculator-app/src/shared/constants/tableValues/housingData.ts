@@ -1,4 +1,4 @@
-import { TimeSeriesData } from "../types/dateType";
+import { TimeSeriesData } from "../../types/dateType";
 
 export const HOUSING_DATA: TimeSeriesData = {
     "2019-01-01": 1530.53,
