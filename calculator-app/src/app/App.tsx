@@ -1,23 +1,20 @@
-import React from 'react';
-import Header from '../features/loyout/Header';
-import Navigate from '../features/loyout/Navigate';
 import { BrowserRouter as Router } from 'react-router-dom';
 import ScrollToTop from '../utils/scrollToTop';
-
+import { GlobalStoreProvider } from '../store';
 import Layout from '../features/loyout/Layout';
 import { AppRoutes } from './appRoutes';
 
 
 function App() {
   return (
-    <>
     <Router>
-      <Layout>
-        <ScrollToTop/>
-        <AppRoutes/>
-      </Layout>
+      <GlobalStoreProvider>
+        <Layout>
+          <ScrollToTop />
+          <AppRoutes />
+        </Layout>
+      </GlobalStoreProvider>
     </Router>
-    </>
   );
 }
 

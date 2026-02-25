@@ -15,54 +15,58 @@ export const Basic = () => {
                     <h2>Основные данные получателя</h2>
 
                     <div className="simplified-section">
+
+                        {/* ребенок / взрослый */}
                         <div className="radio-group">
                             <div className="radio-item">
                                 <input
+                                    id="children"
                                     type="radio"
-                                    id="orderWithApplication"
-                                    name="appointmentOrder"
-                                    value="withApplication"
+                                    name="ageGroupCheck"
+                                    value="false"
                                     defaultChecked
                                 />
-                                <label htmlFor="orderWithApplication">Назначение с заявлением</label>
+                                <label htmlFor="children">Ребенок</label>
                             </div>
                             <div className="radio-item">
                                 <input
+                                    id="adult"
                                     type="radio"
-                                    id="orderWithoutApplication"
-                                    name="appointmentOrder"
-                                    value="withoutApplication"
+                                    name="ageGroupCheck"
+                                    value="true"
                                 />
-                                <label htmlFor="orderWithoutApplication">Беззаявительный порядок</label>
+                                <label htmlFor="adult">Взрослый</label>
                             </div>
                         </div>
 
                         <div className="grid">
+
+                            {/* дата рождения */}
                             <div className="form-group">
                                 <label htmlFor="birthDate">Дата рождения *</label>
                                 <input type="date" id="birthDate" required />
                             </div>
 
-                            <div className="form-group" id="applicationDateGroup">
+                            {/* <div className="form-group" id="applicationDateGroup">
                                 <label htmlFor="applicationDate">Дата заявления *</label>
                                 <input type="date" id="applicationDate" required />
-                            </div>
+                            </div> */}
 
-                            <div className="form-group" id="autoAssignmentDateGroup" style={{ display: 'none' }}>
+                            {/* <div className="form-group" id="autoAssignmentDateGroup" style={{ display: 'none' }}>
                                 <label htmlFor="autoAssignmentDate">Дата автоматического назначения *</label>
                                 <input type="date" id="autoAssignmentDate" />
-                            </div>
+                            </div> */}
 
-                            <div className="form-group">
+                            {/* <div className="form-group">
                                 <label htmlFor="gssApplicationDate">Дата заявления на ГСС (если отличается)</label>
                                 <input type="date" id="gssApplicationDate" />
                                 <div className="days-info">Оставьте пустым, если заявление на ГСС не подавалось</div>
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className="checkbox-group">
-                            <input type="checkbox" id="childFromBirth" />
-                            <label htmlFor="childFromBirth">Ребенок, зарегистрированный в Москве с рождения (до 6 месяцев)</label>
+                            <input type="checkbox" id="registrationPeriodsCheck" />
+                            <label htmlFor="registrationPeriodsCheck">Есть периоды регистрации в Москве</label>
                         </div>
 
                         <div id="registrationSection">
@@ -95,8 +99,8 @@ export const Basic = () => {
                 </div>
 
                 <div className="form-group">
-                    <button className="btn btn-secondary" id="backToParams" onClick={()=> navigate(ROUTES.params)}>Назад: Параметры</button>
-                    <button className="btn btn-success" id="nextToPayments" onClick={()=> navigate(ROUTES.payments)}>Далее: Выплаты и периоды</button>
+                    <button className="btn btn-secondary" id="backToParams" onClick={() => navigate(ROUTES.params)}>Назад: Параметры</button>
+                    <button className="btn btn-success" id="nextToPayments" onClick={() => navigate(ROUTES.payments)}>Далее: Выплаты и периоды</button>
                 </div>
             </div>
 
