@@ -1,0 +1,1 @@
+export { Inpatient as default} from "./components/Inpatient";

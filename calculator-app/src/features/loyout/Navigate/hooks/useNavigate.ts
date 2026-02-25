@@ -11,6 +11,7 @@ export const useTabs = () => {
         if (location.pathname.includes('basic')) return 'basic';
         if (location.pathname.includes('payments')) return 'payments';
         if (location.pathname.includes('results')) return 'results';
+        if (location.pathname.includes('inpatient')) return 'inpatient';
         return 'params'; // по умолчанию
     };
 
@@ -19,8 +20,9 @@ export const useTabs = () => {
     const tabs = [
         { id: 'params', label: 'Параметры ГСС и ПМП', route: ROUTES.params },
         { id: 'basic', label: 'Основные данные', route: ROUTES.basic },
+        { id: 'inpatient', label: 'Размещение в стационары', route: ROUTES.inpatient },
         { id: 'payments', label: 'Выплаты и периоды', route: ROUTES.payments },
-        { id: 'results', label: 'Результаты расчета', route: ROUTES.results }
+        { id: 'results', label: 'Результаты расчета', route: ROUTES.results },
     ];
 
 

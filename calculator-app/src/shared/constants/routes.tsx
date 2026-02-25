@@ -3,4 +3,5 @@ export const ROUTES = {
     basic: '/basic',
     payments: '/payments',
     results: '/results',
+    inpatient: '/inpatient'
 }

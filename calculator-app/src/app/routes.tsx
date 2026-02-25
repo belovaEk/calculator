@@ -9,6 +9,7 @@ const Params = lazy(() => import('../features/Tabs/Params'));
 const Basic = lazy(() => import('../features/Tabs/Basic'));
 const Payments = lazy(() => import("../features/Tabs/Payments"));
 const Results = lazy(() => import("../features/Tabs/Results"));
+const Inpatient = lazy(() => import("../features/Tabs/Inpatient"));
 
 export const routes: RouteObject[] = [
     {
@@ -29,5 +30,10 @@ export const routes: RouteObject[] = [
     {
         path: ROUTES.results,
         element: React.createElement(Results),
-    }
+    },
+
+    {
+        path: ROUTES.inpatient,
+        element: React.createElement(Inpatient),
+    },
 ]
