@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '../features/loyout/Header';
 import Navigate from '../features/loyout/Navigate';
 import { BrowserRouter as Router } from 'react-router-dom';
+import ScrollToTop from '../utils/scrollToTop';
 
 import Layout from '../features/loyout/Layout';
 import { AppRoutes } from './appRoutes';
@@ -12,6 +13,7 @@ function App() {
     <>
     <Router>
       <Layout>
+        <ScrollToTop/>
         <AppRoutes/>
       </Layout>
     </Router>
