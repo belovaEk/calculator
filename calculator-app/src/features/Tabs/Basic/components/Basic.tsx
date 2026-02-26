@@ -77,35 +77,42 @@ export const Basic = () => {
                                 <input type="date" id="gssApplicationDate" />
                                 <div className="days-info">Оставьте пустым, если заявление на ГСС не подавалось</div>
                             </div> */}
-                        </div>
 
+
+                        </div>
                         {!store.is_adult && (
                             <>
                                 <div className="checkbox-group">
                                     <input
                                         type="checkbox"
-                                        id="registrationPerioChildrenCheck"
+                                        id="registrationPeriodChildrenCheck"
                                         checked={store.is_there_a_registration_in_moscow_of_the_child}
                                         onChange={(e) => updateStore('is_there_a_registration_in_moscow_of_the_child', e.target.checked)}
                                     />
-                                    <label htmlFor="registrationPerioChildrenCheck">Есть периоды регистрации в Москве ребенка</label>
+                                    <label htmlFor="registrationPeriodChildrenCheck">Есть периоды регистрации в Москве</label>
                                 </div>
 
                                 {store.is_there_a_registration_in_moscow_of_the_child && (
                                     <PeriodsSection persona={PERSONA.children} typePeriod={PERIOD_TYPE.registration} />
                                 )}
+                            </>
+                        )}
+                    </div>
 
-
+                    <div>
+                        {!store.is_adult && (
+                            <>
                                 <h3>Законный представитель / кормилец</h3>
+                                <div className="simplified-section">
 
-                                {/* <h4
+                                    {/* <h4
                                 className={`section-basic ${isVisibleSection ? 'active-section' : 'anctive-section'}`}
                                 onClick={updateIsVisibleSection}
                                 >Законный представитель</h4>
                                 {isVisibleSection && (<div>text</div>)} */}
 
 
-                                {/* <div className="radio-group">
+                                    {/* <div className="radio-group">
                                     <div className="radio-item">
                                         <input
                                             id="legal_representative"
@@ -130,65 +137,66 @@ export const Basic = () => {
                                 </div> */}
 
 
-                                <div className="checkbox-group">
-                                    <input
-                                        type="checkbox"
-                                        id="registrationPeriodLegalCheck"
-                                        checked={store.is_there_a_registration_in_moscow_of_the_legal_representative}
-                                        onChange={(e) => updateStore('is_there_a_registration_in_moscow_of_the_legal_representative', e.target.checked)}
-                                    />
-                                    <label htmlFor="registrationPeriodLegalCheck">Есть периоды регистрации в Москве законного представителя</label>
-                                </div>
-
-                                {store.is_there_a_registration_in_moscow_of_the_legal_representative && (
-                                    <PeriodsSection persona={PERSONA.legal_representative} typePeriod={PERIOD_TYPE.registration} />
-                                )}
-                            </>
-                        )}
-
-
-                        <div className="checkbox-group">
-                            <input
-                                type="checkbox"
-                                id="breadwinnerCheck"
-                                checked={store.there_is_a_breadwinner}
-                                onChange={(e) => updateStore('there_is_a_breadwinner', e.target.checked)}
-                            />
-                            <label htmlFor="breadwinnerCheck">Потеря кормильца</label>
-                        </div>
-
-
-                        {store.there_is_a_breadwinner && (
-                            <>
-                                <div className="grid">
-                                    <div className="form-group">
-                                        <label htmlFor="date_of_death_of_the_breadwinner">Дата смерти *</label>
+                                    <div className="checkbox-group">
                                         <input
-                                            type="date"
-                                            id="date_of_death_of_the_breadwinner"
-                                            onChange={(e) => updateStore('date_of_death_of_the_breadwinner', e.target.value)}
-                                            required />
+                                            type="checkbox"
+                                            id="registrationPeriodLegalCheck"
+                                            checked={store.is_there_a_registration_in_moscow_of_the_legal_representative}
+                                            onChange={(e) => updateStore('is_there_a_registration_in_moscow_of_the_legal_representative', e.target.checked)}
+                                        />
+                                        <label htmlFor="registrationPeriodLegalCheck">Есть периоды регистрации в Москве законного представителя</label>
                                     </div>
-                                </div>
 
-                                <div className="checkbox-group">
-                                    <input
-                                        type="checkbox"
-                                        id="registrationPeriodBreadwinnerCheck"
-                                        checked={store.is_there_a_registration_in_moscow_of_the_breadwinner}
-                                        onChange={(e) => updateStore('is_there_a_registration_in_moscow_of_the_breadwinner', e.target.checked)}
-                                    />
-                                    <label htmlFor="registrationPeriodBreadwinnerCheck">Есть периоды регистрации в Москве кормильца</label>
-                                </div>
+                                    {store.is_there_a_registration_in_moscow_of_the_legal_representative && (
+                                        <PeriodsSection persona={PERSONA.legal_representative} typePeriod={PERIOD_TYPE.registration} />
+                                    )}
 
-                                {store.is_there_a_registration_in_moscow_of_the_breadwinner && (
-                                    <PeriodsSection persona={PERSONA.breadwinner} typePeriod={PERIOD_TYPE.registration} />
-                                )}
+                                    <div className="checkbox-group">
+                                        <input
+                                            type="checkbox"
+                                            id="breadwinnerCheck"
+                                            checked={store.there_is_a_breadwinner}
+                                            onChange={(e) => updateStore('there_is_a_breadwinner', e.target.checked)}
+                                        />
+                                        <label htmlFor="breadwinnerCheck">Потеря кормильца</label>
+                                    </div>
+
+                                    {store.there_is_a_breadwinner && (
+                                        <>
+                                            <div className="grid">
+                                                <div className="form-group">
+                                                    <label htmlFor="date_of_death_of_the_breadwinner">Дата смерти *</label>
+                                                    <input
+                                                        type="date"
+                                                        id="date_of_death_of_the_breadwinner"
+                                                        onChange={(e) => updateStore('date_of_death_of_the_breadwinner', e.target.value)}
+                                                        required />
+                                                </div>
+                                            </div>
+
+                                            <div className="checkbox-group">
+                                                <input
+                                                    type="checkbox"
+                                                    id="registrationPeriodBreadwinnerCheck"
+                                                    checked={store.is_there_a_registration_in_moscow_of_the_breadwinner}
+                                                    onChange={(e) => updateStore('is_there_a_registration_in_moscow_of_the_breadwinner', e.target.checked)}
+                                                />
+                                                <label htmlFor="registrationPeriodBreadwinnerCheck">Есть периоды регистрации в Москве кормильца</label>
+                                            </div>
+
+                                            {store.is_there_a_registration_in_moscow_of_the_breadwinner && (
+                                                <PeriodsSection persona={PERSONA.breadwinner} typePeriod={PERIOD_TYPE.registration} />
+                                            )}
+
+                                        </>
+                                    )}
+                                </div>
 
                             </>
-
-
                         )}
+
+
+
 
 
 
