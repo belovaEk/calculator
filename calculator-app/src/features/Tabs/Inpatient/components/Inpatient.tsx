@@ -15,19 +15,23 @@ export const Inpatient = () => {
         <div id="inpatient" className="tab-content">
             <h2>Периоды пребывания в стационарх учреждениях</h2>
 
-            <div className="checkbox-group">
-                <input
-                    type="checkbox"
-                    id="inpatientPeriodCheck"
-                    checked={store.is_inpatient}
-                    onChange={(e) => updateStore('is_inpatient', e.target.checked)}
-                />
-                <label htmlFor="inpatientPeriodCheck">Есть периоды размещения в стационарных учреждениях</label>
+            <div className="simplified-section">
+                <div className="checkbox-group">
+                    <input
+                        type="checkbox"
+                        id="inpatientPeriodCheck"
+                        checked={store.is_inpatient}
+                        onChange={(e) => updateStore('is_inpatient', e.target.checked)}
+                    />
+                    <label htmlFor="inpatientPeriodCheck">Есть периоды размещения в стационарных учреждениях</label>
+                </div>
+
+                {store.is_inpatient && (
+                    <PeriodsSection persona={PERSONA.adult} typePeriod={PERIOD_TYPE.inpatient} />
+                )}
             </div>
 
-            {store.is_inpatient && (
-                <PeriodsSection persona={PERSONA.adult} typePeriod={PERIOD_TYPE.inpatient} />
-            )}
+
 
             <div className="form-group">
                 <button className="btn btn-secondary" id="backToParams" onClick={() => navigate(ROUTES.basic)}>Назад: Основные данные</button>

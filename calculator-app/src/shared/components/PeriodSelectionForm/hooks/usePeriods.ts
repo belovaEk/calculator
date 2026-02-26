@@ -35,8 +35,12 @@ export const usePeriods = (persona: personaType, typePeriod: periodType) => {
             updateStore('periods_of_registration_in_moscow', periods);
             return;
         }
-        if (persona === PERSONA.representative) {
-            updateStore('periods_of_registration_in_moscow_of_the_breadwinner_or_legal_representative', periods);
+        if (persona === PERSONA.legal_representative) {
+            updateStore('periods_of_registration_in_moscow_of_the_legal_representative', periods);
+            return;
+        }
+        if (persona === PERSONA.breadwinner) {
+            updateStore('periods_of_registration_in_moscow_of_the_breadwinner', periods);
             return;
         }
     }

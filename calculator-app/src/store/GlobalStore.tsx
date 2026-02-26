@@ -10,7 +10,9 @@ export const useGlobalStore = () => useContext(GlobalStoreContext);
 
 const initStore: GlobalStoreParameterInterface = {
     is_adult: false,
-    is_there_a_registration_in_moscow_of_the_breadwinner_or_legal_representative: false,
+    is_there_a_registration_in_moscow_of_the_breadwinner: false,
+    is_there_a_registration_in_moscow_of_the_legal_representative: false,
+    there_is_a_breadwinner: false,
     is_there_a_registration_in_moscow_of_the_child: false,
     is_there_a_registration_in_moscow: false,
     is_legal_representative: true,

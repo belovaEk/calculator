@@ -12,10 +12,12 @@ export interface GlobalStoreParameterInterface {
     date_of_the_initial_appointment_of_the_SPV_is_137_or_143?: DateString,
     type_of_social_payment?: string,
     is_there_a_registration_in_moscow_of_the_child?: boolean,
-    is_there_a_registration_in_moscow_of_the_breadwinner_or_legal_representative?: boolean,
+    is_there_a_registration_in_moscow_of_the_breadwinner?: boolean,
+    is_there_a_registration_in_moscow_of_the_legal_representative?: boolean,
     is_there_a_registration_in_moscow?: boolean,
     periods_of_registration_in_moscow?: Array<DatePeriod>,
-    periods_of_registration_in_moscow_of_the_breadwinner_or_legal_representative?: Array<DatePeriod>,
+    periods_of_registration_in_moscow_of_the_breadwinner?: Array<DatePeriod>,
+    periods_of_registration_in_moscow_of_the_legal_representative?: Array<DatePeriod>,
     date_of_appointment_of_the_spv?: DateString,
     is_legal_representative?: boolean,
     date_of_death_of_the_breadwinner?: DateString,
@@ -23,6 +25,8 @@ export interface GlobalStoreParameterInterface {
 
     is_inpatient?: boolean,
     periods_of_inpatient?: Array<DatePeriod>,
+
+    there_is_a_breadwinner?: boolean,
 }
 
     
