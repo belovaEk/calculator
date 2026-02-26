@@ -58,7 +58,7 @@ export const Payments = () => {
 
 
                 <div className="form-group">
-                    <button className="btn btn-secondary" id="backToBasic" onClick={() => navigate(ROUTES.basic)}>Назад: Основные данные</button>
+                    <button className="btn btn-secondary" id="backToBasic" onClick={() => navigate(ROUTES.inpatient)}>Назад: Размещение в стационарах</button>
                     <button className="btn btn-success" id="nextToResults" onClick={() => navigate(ROUTES.results)}>Далее: Расчет</button>
                 </div>
             </div>

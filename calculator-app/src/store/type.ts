@@ -1,4 +1,4 @@
-import { DateRange, DateString } from "../shared";
+import { DateString, DatePeriod } from "../shared";
 
 export interface GlobalStoreContextInterface {
     store: GlobalStoreParameterInterface;
@@ -14,11 +14,15 @@ export interface GlobalStoreParameterInterface {
     is_there_a_registration_in_moscow_of_the_child?: boolean,
     is_there_a_registration_in_moscow_of_the_breadwinner_or_legal_representative?: boolean,
     is_there_a_registration_in_moscow?: boolean,
-    periods_of_registration_in_moscow_of_the_child?: Array<DateRange>,
-    periods_of_registration_in_moscow_of_the_breadwinner_or_legal_representative?: Array<DateRange>,
+    periods_of_registration_in_moscow?: Array<DatePeriod>,
+    periods_of_registration_in_moscow_of_the_breadwinner_or_legal_representative?: Array<DatePeriod>,
     date_of_appointment_of_the_spv?: DateString,
     is_legal_representative?: boolean,
     date_of_death_of_the_breadwinner?: DateString,
     date_of_the_initial_appointment_of_the_spv_01_067?: DateString,
+
+    is_inpatient?: boolean,
+    periods_of_inpatient?: Array<DatePeriod>,
 }
 
+    

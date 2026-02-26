@@ -1,21 +1,22 @@
-import { usePeriodRegistration } from "../hooks/usePeriodRegistration"
-import { FormPeriodRegistrationProps } from "../types/periodRegistration";
-import { RegistrationPeriod } from "../../../../shared";
+import { usePeriodFrom } from "./hooks/usePeriodFrom";
+import { PeriodFromProps } from "./types/periodType";
+import { DatePeriod } from "../..";
 
-export const FormPeriodRegistration = ({
+export const PeriodForm = ({
+    typePeriod,
     id,
     index,
     periodData,
     onUpdate,
     onRemove
-}: FormPeriodRegistrationProps) => {
+}: PeriodFromProps) => {
 
-    const updatePeriodRegistration = (field: keyof RegistrationPeriod, value: string) => {
-        const updatedPeriod = {
+    const updatePeriod = (field: keyof DatePeriod, value: string) => {
+        const updated = {
             ...periodData,
             [field]: value
         };
-        onUpdate(id, updatedPeriod);
+        onUpdate(id, updated);
     };
 
     const handleRemove = () => {
@@ -24,57 +25,57 @@ export const FormPeriodRegistration = ({
 
     const handleCurrentDate = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) {
-            updatePeriodRegistration('DKreg', new Date().toISOString().split('T')[0]);
+            updatePeriod('DK', new Date().toISOString().split('T')[0]);
         } else {
-            updatePeriodRegistration('DKreg', '');
+            updatePeriod('DK', '');
         }
     };
 
     return (
-        <div className="registration-period">
+        <div className="date-period">
             <div className="payment-header">
                 <div className="payment-title">Период регистрации <span className="period-number">{index}</span></div>
                 <button
-                className="remove-period"
-                type="button"
-                onClick={handleRemove}
+                    className="remove-period"
+                    type="button"
+                    onClick={handleRemove}
                 >Удалить период</button>
             </div>
 
             <div className="payment-dates">
                 <div className="form-group">
-                    <label htmlFor={`DNreg-${id}`}>Дата начала регистрации *</label>
+                    <label htmlFor={`DN-${id}`}>Дата начала регистрации *</label>
                     <input
-                        id={`DNreg-${id}`}
+                        id={`DN-${id}`}
                         type="date"
                         className="period-start"
-                        value={periodData.DNreg}
+                        value={periodData.DN}
                         required
-                        onChange={(e) => updatePeriodRegistration('DNreg', e.target.value)}
+                        onChange={(e) => updatePeriod('DN', e.target.value)}
                     ></input>
                 </div>
 
-                 <div className="form-group">
-                    <label htmlFor={`DKreg-${id}`}>Дата окончания регистрации *</label>
+                <div className="form-group">
+                    <label htmlFor={`DK-${id}`}>Дата окончания регистрации *</label>
                     <input
-                        id={`DKreg-${id}`}
+                        id={`DK-${id}`}
                         type="date"
                         className="period-end"
-                        value={periodData.DKreg}
+                        value={periodData.DK}
                         required
-                        onChange={(e) => updatePeriodRegistration('DKreg', e.target.value)}
+                        onChange={(e) => updatePeriod('DK', e.target.value)}
                     />
                 </div>
             </div>
 
             <div className="date-options">
                 <div className="date-option-group">
-                    <input 
+                    <input
                         id={`current-${id}`}
                         type="checkbox"
                         className="current-date"
                         onChange={handleCurrentDate}
-                        checked={periodData.DKreg === new Date().toISOString().split('T')[0]}
+                        checked={periodData.DK === new Date().toISOString().split('T')[0]}
                     />
                     <label className="date-option-label" htmlFor={`current-${id}`}>
                         По настоящее время

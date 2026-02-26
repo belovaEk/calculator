@@ -5,7 +5,7 @@ import { PERSONA } from "../../../../shared/constants/people";
 import { PERIOD_TYPE } from "../../../../shared/constants/periodsName";
 
 
-export const useBasic = ()=> {
+export const useInpatient = ()=> {
     const navigate = useNavigate();
     const { store, updateStore } = useGlobalStore();
 

@@ -1,19 +1,19 @@
 
-import { useState, useEffect,  } from "react";
+import { useState, useEffect, } from "react";
 import { useGlobalStore } from "../../../../store";
-import { DateRange, DateString } from "../../../../shared";
+import { DateRange, DateString } from "../../..";
 
-export const usePeriodRegistration = () => {
+export const usePeriodFrom = () => {
 
     const [periodRegistration, setPeriodRegistration] = useState<DateRange>();
 
-    const updatePeriodRegistration = <K extends keyof DateRange>(dateType: K, date: DateString) => {
+    const updatePeriod = <K extends keyof DateRange>(dateType: K, date: DateString) => {
 
         setPeriodRegistration(prev => {
             if (!prev) {
                 return {
-                    DNreg: dateType === 'DNreg' ? date : '',
-                    DKreg: dateType === 'DKreg' ? date : ''
+                    DN: dateType === 'DN' ? date : '',
+                    DK: dateType === 'DK' ? date : ''
                 } as DateRange;
             }
 
@@ -21,12 +21,12 @@ export const usePeriodRegistration = () => {
                 ...prev,
                 [dateType]: date
             };
-        })    
+        })
     }
 
 
     return {
-        updatePeriodRegistration,
+        updatePeriod,
         periodRegistration
     }
 

@@ -14,6 +14,7 @@ const initStore: GlobalStoreParameterInterface = {
     is_there_a_registration_in_moscow_of_the_child: false,
     is_there_a_registration_in_moscow: false,
     is_legal_representative: true,
+    is_inpatient: false,
 }
 
 export const GlobalStoreProvider = ({ children }: { children: React.ReactNode }) => {

@@ -11,10 +11,10 @@ export interface TimeSeriesData {
 }
 
 export interface DateRange {
-    DNreg: DateString;
-    DKreg: DateString;
+    DN: DateString;
+    DK: DateString;
 }
 
-export interface RegistrationPeriod extends DateRange {
+export interface DatePeriod extends DateRange {
     id: number;
 }

@@ -1,6 +1,5 @@
 import { useBasic } from "../hooks/useBasic";
-import { FormPeriodRegistration } from "./FromPeriodRegistration";
-import { PeriodRegistrationSection } from "./PeriodRegistrationSection";
+import { PeriodsSection } from "../../../../shared/components/PeriodSelectionForm/PeriodsSection";
 
 export const Basic = () => {
 
@@ -9,6 +8,8 @@ export const Basic = () => {
         store,
         updateStore,
         ROUTES,
+        PERIOD_TYPE,
+        PERSONA,
     } = useBasic();
 
 
@@ -88,7 +89,7 @@ export const Basic = () => {
                                 </div>
 
                                 {store.is_there_a_registration_in_moscow_of_the_child && (
-                                    <PeriodRegistrationSection persona="ребенка" />
+                                    <PeriodsSection persona={PERSONA.children} typePeriod={PERIOD_TYPE.registration} />
                                 )}
 
 
@@ -142,7 +143,7 @@ export const Basic = () => {
                                 </div>
 
                                 {store.is_there_a_registration_in_moscow_of_the_breadwinner_or_legal_representative && (
-                                    <PeriodRegistrationSection persona="законного представителя или кормильца" />
+                                    <PeriodsSection persona={PERSONA.representative} typePeriod={PERIOD_TYPE.registration} />
                                 )}
                             </>
                         )}
@@ -171,7 +172,7 @@ export const Basic = () => {
 
                 <div className="form-group">
                     <button className="btn btn-secondary" id="backToParams" onClick={() => navigate(ROUTES.params)}>Назад: Параметры</button>
-                    <button className="btn btn-success" id="nextToPayments" onClick={() => navigate(ROUTES.payments)}>Далее: Выплаты и периоды</button>
+                    <button className="btn btn-success" id="nextToPayments" onClick={() => navigate(ROUTES.inpatient)}>Далее: Размещение в стационарах</button>
                 </div>
             </div>
 

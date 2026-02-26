@@ -20,7 +20,7 @@ export const useTabs = () => {
     const tabs = [
         { id: 'params', label: 'Параметры ГСС и ПМП', route: ROUTES.params },
         { id: 'basic', label: 'Основные данные', route: ROUTES.basic },
-        { id: 'inpatient', label: 'Размещение в стационары', route: ROUTES.inpatient },
+        { id: 'inpatient', label: 'Размещение в стационарах', route: ROUTES.inpatient },
         { id: 'payments', label: 'Выплаты и периоды', route: ROUTES.payments },
         { id: 'results', label: 'Результаты расчета', route: ROUTES.results },
     ];
