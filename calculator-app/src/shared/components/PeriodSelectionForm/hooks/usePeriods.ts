@@ -9,7 +9,7 @@ export const usePeriods = (persona: personaType, typePeriod: periodType) => {
     const { store, updateStore } = useGlobalStore();
 
     const [periods, setPeriods] = useState<Array<DatePeriod>>([]);
-    const [nextId, setNextId] = useState<number>(1);
+    const [nextId, setNextId] = useState<number>(0);
 
     const addPeriod = () => {
         const newPeriod: DatePeriod = {

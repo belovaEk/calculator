@@ -13,10 +13,11 @@ const initStore: GlobalStoreParameterInterface = {
     is_there_a_registration_in_moscow_of_the_breadwinner: false,
     is_there_a_registration_in_moscow_of_the_legal_representative: false,
     there_is_a_breadwinner: false,
-    is_there_a_registration_in_moscow_of_the_child: false,
     is_there_a_registration_in_moscow: false,
-    is_legal_representative: true,
     is_inpatient: false,
+    is_payment_transferred: false,
+    is_get_PSD_FSD_last_mounth_payment_trasferred: false,
+    is_Not_get_PSD_FSD_now_payment_trasferred: false,
 }
 
 export const GlobalStoreProvider = ({ children }: { children: React.ReactNode }) => {

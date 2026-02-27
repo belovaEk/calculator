@@ -480,30 +480,3 @@ tr:nth-child(even) {
 #addPeriod {
   margin-top: 10px;
 }
-
-.section-basic {
-  max-width: 300px;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  font-weight: normal;
-}
-
-.section-basic:hover{
-  color: #603db3;
-  cursor: pointer;
-}
-
-.anctive-section::before {
-  content: "▶";
-  font-size: 13px;
-  color: #603db3;
-  float: left;
-  margin-right: 5px;
-}
-
-.active-section::before {
-  content: "▼";
-  margin-right: 5px;
-  font-size: 12px;
-}

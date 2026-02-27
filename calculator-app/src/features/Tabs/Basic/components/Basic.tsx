@@ -78,21 +78,54 @@ export const Basic = () => {
                                 <div className="days-info">Оставьте пустым, если заявление на ГСС не подавалось</div>
                             </div> */}
 
-
                         </div>
+
+                        <div className="checkbox-group">
+                            <input
+                                type="checkbox"
+                                id="transferredCheck"
+                                checked={store.is_payment_transferred}
+                                onChange={(e) => updateStore('is_payment_transferred', e.target.checked)}
+                            />
+                            <label htmlFor="transferredCheck">Пенсия была переведена из другого региона</label>
+                        </div>
+
+                        {store.is_payment_transferred && (
+                            <div className="info-box">
+                                <div className="checkbox-group">
+                                    <input
+                                        type="checkbox"
+                                        id="transferredCheckGetPSDFSDLM"
+                                        checked={store.is_get_PSD_FSD_last_mounth_payment_trasferred}
+                                        onChange={(e) => updateStore('is_get_PSD_FSD_last_mounth_payment_trasferred', e.target.checked)}
+                                    />
+                                    <label htmlFor="transferredCheckGetPSDFSDLM">Получал РСД или ФСД в предыдщуем месяце</label>
+                                </div>
+                                <div className="checkbox-group">
+                                    <input
+                                        type="checkbox"
+                                        id="transferredCheckGetPSDFSDNow"
+                                        checked={store.is_Not_get_PSD_FSD_now_payment_trasferred}
+                                        onChange={(e) => updateStore('is_Not_get_PSD_FSD_now_payment_trasferred', e.target.checked)}
+                                    />
+                                    <label htmlFor="transferredCheckGetPSDFSDNow">В текущее время не получает РСД или ФСД в другом регионе</label>
+                                </div>
+                            </div>
+                        )}
+
                         {!store.is_adult && (
                             <>
                                 <div className="checkbox-group">
                                     <input
                                         type="checkbox"
                                         id="registrationPeriodChildrenCheck"
-                                        checked={store.is_there_a_registration_in_moscow_of_the_child}
-                                        onChange={(e) => updateStore('is_there_a_registration_in_moscow_of_the_child', e.target.checked)}
+                                        checked={store.is_there_a_registration_in_moscow}
+                                        onChange={(e) => updateStore('is_there_a_registration_in_moscow', e.target.checked)}
                                     />
                                     <label htmlFor="registrationPeriodChildrenCheck">Есть периоды регистрации в Москве</label>
                                 </div>
 
-                                {store.is_there_a_registration_in_moscow_of_the_child && (
+                                {store.is_there_a_registration_in_moscow && (
                                     <PeriodsSection persona={PERSONA.children} typePeriod={PERIOD_TYPE.registration} />
                                 )}
                             </>
@@ -104,37 +137,6 @@ export const Basic = () => {
                             <>
                                 <h3>Законный представитель / кормилец</h3>
                                 <div className="simplified-section">
-
-                                    {/* <h4
-                                className={`section-basic ${isVisibleSection ? 'active-section' : 'anctive-section'}`}
-                                onClick={updateIsVisibleSection}
-                                >Законный представитель</h4>
-                                {isVisibleSection && (<div>text</div>)} */}
-
-
-                                    {/* <div className="radio-group">
-                                    <div className="radio-item">
-                                        <input
-                                            id="legal_representative"
-                                            type="radio"
-                                            name="representativeCheck"
-                                            checked={store.is_legal_representative === true}
-                                            onChange={() => updateStore('is_legal_representative', true)}
-                                            defaultChecked
-                                        />
-                                        <label htmlFor="legal_representative">Законный представитель</label>
-                                    </div>
-                                    <div className="radio-item">
-                                        <input
-                                            id="breadwinner"
-                                            type="radio"
-                                            name="representativeCheck"
-                                            checked={store.is_legal_representative === false}
-                                            onChange={() => updateStore('is_legal_representative', false)}
-                                        />
-                                        <label htmlFor="breadwinner">Кормилец</label>
-                                    </div>
-                                </div> */}
 
 
                                     <div className="checkbox-group">
@@ -163,14 +165,16 @@ export const Basic = () => {
 
                                     {store.there_is_a_breadwinner && (
                                         <>
-                                            <div className="grid">
-                                                <div className="form-group">
-                                                    <label htmlFor="date_of_death_of_the_breadwinner">Дата смерти *</label>
-                                                    <input
-                                                        type="date"
-                                                        id="date_of_death_of_the_breadwinner"
-                                                        onChange={(e) => updateStore('date_of_death_of_the_breadwinner', e.target.value)}
-                                                        required />
+                                            <div className="info-box warning">
+                                                <div className="grid">
+                                                    <div className="form-group">
+                                                        <label htmlFor="date_of_death_of_the_breadwinner">Дата смерти *</label>
+                                                        <input
+                                                            type="date"
+                                                            id="date_of_death_of_the_breadwinner"
+                                                            onChange={(e) => updateStore('date_of_death_of_the_breadwinner', e.target.value)}
+                                                            required />
+                                                    </div>
                                                 </div>
                                             </div>
 
