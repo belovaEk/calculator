@@ -1,16 +1,18 @@
-import CustomPayment from "./paymentsTypes/Custom";
-import EdvPayment from "./paymentsTypes/Edv";
-import EgdPayment from "./paymentsTypes/Egd";
-import HousingPayment from "./paymentsTypes/Housing";
-import PensionPayment from "./paymentsTypes/Pension"
 
 import { usePayments } from "../hooks/usePayments";
-import { ROUTES } from "../../../../shared/constants";
+import { ROUTES } from "../../../../shared";
+import { Payment } from "./Payment";
 
 export const Payments = () => {
 
     const {
         navigate,
+        store,
+        payments,
+        addPaymet,
+        updatePayment,
+        removePayment,
+        PAYMENT_TYPE
     } = usePayments();
 
     return (
@@ -20,36 +22,58 @@ export const Payments = () => {
                 <div className="section">
                     <h2>Выплаты и периоды их получения</h2>
 
-                    <div className="info-box warning">
+                    {/* <div className="info-box warning">
                         <p><strong>Важно:</strong> При расчете РСД на январь используются значения пенсий и ЕДВ на декабрь
                             предыдущего года. Для правильного расчета необходимо заполнить раздельные значения.</p>
                         <p><strong>Примечание:</strong> Поле "Размер на январь" не является обязательным. Если не заполнено,
                             будет использоваться значение на декабрь.</p>
-                    </div>
+                    </div> */}
 
                     <div className="form-group">
-                        <button className="btn btn-success" id="autoFillAll">🔄 Автозаполнить все выплаты</button>
-                        <button className="btn" id="addPension">+ Добавить пенсию</button>
-                        <button className="btn" id="addEdv">+ Добавить ЕДВ</button>
+                        {/* <button className="btn btn-success" id="autoFillAll">🔄 Автозаполнить все выплаты</button> */}
+                        <button
+                        className="btn"
+                        id="addPension"
+                        onClick={()=> addPaymet(PAYMENT_TYPE.pension.raw)}
+                        >+ Добавить пенсию</button>
+                        {/* <button className="btn" id="addEdv">+ Добавить ЕДВ</button>
                         <button className="btn" id="addEgdv">+ Добавить ЕГДВ</button>
                         <button className="btn" id="addHousing">+ Добавить ЖКУ</button>
-                        <button className="btn btn-secondary" id="addCustom">+ Добавить другую выплату</button>
+                        <button className="btn btn-secondary" id="addCustom">+ Добавить другую выплату</button> */}
                     </div>
 
                     <div id="paymentsContainer">
-                        {/* Выплаты будут добавляться динамически */}
+                        {payments.map((payment, index) => (
+                            <Payment
+                            id={payment.id}
+                            index={index + 1}
+                            paymentData={payment}
+                            onUpdate={updatePayment}
+                            onRemove={removePayment}
+                            />
+                        ))}
+                        {/* <Payment
+                        id={1} 
+                        index={1}
+                            type="pension"
+                            paymentData={{
+                                id: 1,
+                                type: 'pension',
+                                categoria:  '',
+                                DN: '',
+                                DK: '',
+                                paymentAmount: 0,
+                                is_Moscow: false,
+                                is_suspension: false,}
+                                }
+                                onUpdate={()=> console.log()}
+                                onRemove={()=> console.log()}
+                        /> */}
                     </div>
 
-                    <PensionPayment />
-                    <EdvPayment />
-                    <EgdPayment />
-                    <HousingPayment />
-                    <CustomPayment />
-
-                    <h3>Список всех выплат</h3>
+                    {/* <h3>Список всех выплат</h3>
                     <div id="paymentsList" className="payment-list">
-                        {/* Список выплат будет отображаться здесь */}
-                    </div>
+                    </div> */}
 
 
                 </div>

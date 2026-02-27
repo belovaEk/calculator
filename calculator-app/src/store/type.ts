@@ -1,4 +1,5 @@
 import { DateString, DatePeriod } from "../shared";
+import { PaymentInterface } from "../features/Tabs/Payments/components/types/paymentType";
 
 export interface GlobalStoreContextInterface {
     store: GlobalStoreParameterInterface;
@@ -29,6 +30,8 @@ export interface GlobalStoreParameterInterface {
     is_payment_transferred?: boolean,
     is_get_PSD_FSD_last_mounth_payment_trasferred?: boolean,
     is_Not_get_PSD_FSD_now_payment_trasferred?: boolean,
+
+    payments?: Array<PaymentInterface>,
 }
 
     

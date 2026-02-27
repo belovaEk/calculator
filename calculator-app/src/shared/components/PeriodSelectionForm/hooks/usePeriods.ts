@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { DatePeriod } from "../../..";
 import { useGlobalStore } from "../../../../store";
 import { PERSONA, personaType } from "../../../constants/people";
-import { periodType, PERIOD_TYPE } from "../../../constants/periodsName";
+import { PeriodType, PERIOD_TYPE } from "../../../constants/periodsName";
 
-export const usePeriods = (persona: personaType, typePeriod: periodType) => {
+export const usePeriods = (persona: personaType, typePeriod: PeriodType, paymentId?: number) => {
 
     const { store, updateStore } = useGlobalStore();
+
+    const currentPayments = store.payments || [];
 
     const [periods, setPeriods] = useState<Array<DatePeriod>>([]);
     const [nextId, setNextId] = useState<number>(0);
@@ -49,6 +51,21 @@ export const usePeriods = (persona: personaType, typePeriod: periodType) => {
         updateStore('periods_of_inpatient', periods);
     }
 
+    const updatedPayments = currentPayments.map(payment => {
+        if (payment.id === paymentId) {
+            return {
+                ...payment,
+                suspension: periods,
+                is_suspension: periods.length > 0
+            };
+        }
+        return payment;
+    });
+
+    const updateGlobalPeriodStopPayment = () => {
+        updateStore('payments', updatedPayments)
+    }
+
     useEffect(() => {
         if (typePeriod === PERIOD_TYPE.registration) {
             updatePeriodRegistration();
@@ -58,11 +75,15 @@ export const usePeriods = (persona: personaType, typePeriod: periodType) => {
             updatePeriodInpatient();
             return;
         }
+        if (typePeriod === PERIOD_TYPE.stop_payment) {
+            updateGlobalPeriodStopPayment();
+            return;
+        }
 
     }, periods);
 
     const removePeriod = (id: number) => {
-        setPeriods(prev => prev.filter(period => period.id !== id));
+        setPeriods(prev => prev.filter(periods => periods.id !== id));
     };
 
     return {

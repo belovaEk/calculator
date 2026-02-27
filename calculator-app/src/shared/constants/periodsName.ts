@@ -1,6 +1,7 @@
-export type periodType = 'регистрация' | 'пребывание в стационаре';
+export type PeriodType = 'регистрация' | 'пребывание в стационаре' | 'приостановление выплаты';
 
-export const PERIOD_TYPE: Record<string, periodType> = {
+export const PERIOD_TYPE: Record<string, PeriodType> = {
     registration: 'регистрация',
-    inpatient: 'пребывание в стационаре'
+    inpatient: 'пребывание в стационаре',
+    stop_payment: 'приостановление выплаты',
 }

@@ -1,4 +1,3 @@
-import { usePeriodFrom } from "./hooks/usePeriodFrom";
 import { PeriodFromProps } from "./types/periodType";
 import { DatePeriod } from "../..";
 
@@ -34,7 +33,7 @@ export const PeriodForm = ({
     return (
         <div className="date-period">
             <div className="payment-header">
-                <div className="payment-title">Период регистрации <span className="period-number">{index}</span></div>
+                <div className="payment-title">Период ({typePeriod}) <span className="period-number">{index}</span></div>
                 <button
                     className="remove-period"
                     type="button"
@@ -44,7 +43,7 @@ export const PeriodForm = ({
 
             <div className="payment-dates">
                 <div className="form-group">
-                    <label htmlFor={`DN-${id}`}>Дата начала регистрации *</label>
+                    <label htmlFor={`DN-${id}`}>Дата начала *</label>
                     <input
                         id={`DN-${id}`}
                         type="date"
@@ -56,7 +55,7 @@ export const PeriodForm = ({
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor={`DK-${id}`}>Дата окончания регистрации *</label>
+                    <label htmlFor={`DK-${id}`}>Дата окончания *</label>
                     <input
                         id={`DK-${id}`}
                         type="date"

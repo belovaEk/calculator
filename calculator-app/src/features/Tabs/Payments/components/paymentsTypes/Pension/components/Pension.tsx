@@ -1,4 +1,4 @@
-import { PENSION_TYPES } from "../../../../../../../shared/constants"
+import { PENSION_TYPES } from "../../../../../../../shared";
 
 export const PensionPayment = () => {
 
@@ -6,7 +6,6 @@ export const PensionPayment = () => {
 
     return (
         <>
-            {/* Шаблон для пенсии */}
             <div id="pensionTemplate">
                 <div className="payment-entry">
                     <div className="payment-header">
@@ -31,10 +30,10 @@ export const PensionPayment = () => {
                             <input type="checkbox" className="current-date" />
                             <label className="date-option-label">По настоящее время</label>
                         </div>
-                        <div className="date-option-group">
+                        {/* <div className="date-option-group">
                             <input type="checkbox" className="indefinite" />
                             <label className="date-option-label">Бессрочно</label>
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className="form-group">
@@ -47,7 +46,12 @@ export const PensionPayment = () => {
                         </select>
                     </div>
 
-                    <div className="amount-period">
+                    <div className="form-group">
+                        <label>Размер назначенной пенсии*</label>
+                        <input type="number" className="payment-amount" min="0" step="0.01" required />
+                    </div>
+
+                    {/* <div className="amount-period">
                         <div className="form-group">
                             <label>Размер на декабрь (руб.) *</label>
                             <input type="number" className="payment-amount-dec" min="0" step="0.01" required />
@@ -59,9 +63,9 @@ export const PensionPayment = () => {
                             <input type="number" className="payment-amount-jan" min="0" step="0.01" />
                             <div className="period-label">Если не заполнено, используется значение на декабрь</div>
                         </div>
-                    </div>
+                    </div> */}
 
-                    <div className="grid-4">
+                    {/* <div className="grid-4">
                         <div className="checkbox-group">
                             <input type="checkbox" className="is-working" />
                             <label>Работает в период выплаты</label>
@@ -73,7 +77,7 @@ export const PensionPayment = () => {
                         <div className="form-group">
                             <button type="button" className="btn btn-secondary btn-sm auto-fill-btn" style={{ padding: '8px 12px', fontSize: '14px' }}>Автозаполнение</button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </>

@@ -1,9 +1,9 @@
 import { DatePeriod } from "../../..";
 import { personaType } from "../../../constants/people";
-import { periodType } from "../../../constants/periodsName";
+import { PeriodType } from "../../../constants/periodsName";
 
 export interface PeriodFromProps {
-    typePeriod: periodType;
+    typePeriod: PeriodType;
     id: number;
     index: number;
     periodData: DatePeriod;
@@ -13,7 +13,8 @@ export interface PeriodFromProps {
 
 
 
-export interface PeriodsSectionProps{
+export interface PeriodsSectionProps {
     persona: personaType;
-    typePeriod: periodType;
+    typePeriod: PeriodType;
+    paymentId?: number,
 }

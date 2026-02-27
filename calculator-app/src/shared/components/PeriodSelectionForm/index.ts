@@ -1,0 +1,1 @@
+export { PeriodsSection as default} from "./PeriodsSection";
