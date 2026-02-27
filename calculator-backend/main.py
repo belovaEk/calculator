@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.base import api_router
+import uvicorn
 
 LOCAL_ORIGIN_REGEX = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 
@@ -17,7 +18,7 @@ origins = [
 
 def start_application():
 
-    app = FastAPI(title="Airport_project", version="beta")
+    app = FastAPI(title="Calculator", version="beta")
 
     app.add_middleware(
         CORSMiddleware,
@@ -37,6 +38,6 @@ app = start_application()
 
 
 if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    # Используем строку "main:app", чтобы uvicorn
+    # мог корректно перезапускать процесс с reload.
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
