@@ -1,10 +1,7 @@
-from src.schemas.json_query_schema import JsonQuerySchema, RegistrationPeriod
+from src.schemas.json_query_schema import JsonQuerySchema, RegistrationPeriod, PaymentInterface
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from typing import List
-
-
-today = date.today()
 
 
 async def is_adult(today, date_of_birth):
@@ -14,55 +11,47 @@ async def is_adult(today, date_of_birth):
     return False
 
 
-async def is_sum_of_periods_of_registration_more_than_10_years(list_of_periods: List[RegistrationPeriod]):
+async def calculate_registration_summary(list_of_periods: List[RegistrationPeriod]):
+    '''
+    Возвращает суммарый срок регистрации в Москве и дату начала первого периода регистрации 
+    (дату начала периода регистрации после разрыва в более, чем 1 месяц)
+    '''
+    if not list_of_periods:
+        return {
+            "total_period": relativedelta(),
+            "last_break_date": None
+        }
 
     sum_of_periods = relativedelta()
-
-    for period in list_of_periods:
-
-        delta = relativedelta(period.DK, period.DN)
-        sum_of_periods += delta
-
-    if delta.years > 10:
-        return True
-    else:
-        return False
-
-
-async def is_sum_of_periods_of_registration_more_than_10_years_and_no_defference_more_than_1_month(list_of_periods: List[RegistrationPeriod]):
+    break_dates = []
+    current_sum = relativedelta()
     
-    sum_of_periods = relativedelta()
-
     for i in range(len(list_of_periods)):
         if i > 0:
-            prev_end = list_of_periods[i-1].DKreg
-            curr_start = list_of_periods[i].DNreg
+            prev_end = list_of_periods[i-1].DK
+            curr_start = list_of_periods[i].DN
             if relativedelta(curr_start, prev_end).months > 1 or relativedelta(curr_start, prev_end).years > 0:
-                sum_of_periods = relativedelta()
+                break_dates.append(list_of_periods[i].DN)
+                current_sum = relativedelta()
         
-        delta = relativedelta(list_of_periods[i].DKreg, list_of_periods[i].DNreg)
+        delta = relativedelta(list_of_periods[i].DK, list_of_periods[i].DN)
+        current_sum += delta
         sum_of_periods += delta
+    
+    return {
+        "total_period": sum_of_periods,
+        "last_break_date": break_dates[-1] if break_dates else list_of_periods[0].DN
+    }
 
-    if delta.years > 10:
-        return True
-    else:
-        return False
 
-
-# Проверяет: текущая дата - дата первичного назначения СПВ у> 1 месяца?
-async def is_the_difference_between_the_current_date_and_the_date_of_the_initial_appointment_of_the_SPV_more_than_1_month(today, data: JsonQuerySchema):
-
-    today = date.today()
-    appointment_date = data.date_of_the_initial_appointment_of_the_SPV_is_137_or_143
-
-    delta = relativedelta(today, appointment_date)
-
-    # Проверяем, прошло ли больше месяца
-    if delta.months > 0 or delta.years > 0:
-        return True
-    else:
-        return False
-
+async def get_date_init_pension_Moscow(payments: List[PaymentInterface]):
+    '''
+    Возвращает дату назначения первой пенсии в Москве
+    '''
+    for payment in payments:
+        if payment.is_Moscow and payment.type == 'pension':
+            return payment.DN
+    return None
 
 
 
@@ -73,33 +62,40 @@ async def is_the_difference_between_the_current_date_and_the_date_of_the_initial
 async def calculate_util(data: JsonQuerySchema) -> dict:
 
     today = date.today()
+    spv_init_date = await get_date_init_pension_Moscow(data.payments)
+    print(spv_init_date)
+    DR10 = None  # Дата наступления 10 лет регистрации в Москве
 
     # Проверка возраста
     if await is_adult(today=today, date_of_birth=data.date_of_birth) == True:
         return {"Взрослые не обрабатываются"}
 
     # Проверка, что с даты первичного назначения СПВ прошло больше 1 месяца
-    if await is_the_difference_between_the_current_date_and_the_date_of_the_initial_appointment_of_the_SPV_more_than_1_month(today=today, data=data) == False:
+    spv_delta = relativedelta(today, spv_init_date)
+    # Проверяем, прошло ли меньше 1 месяца
+    if spv_delta.years == 0 and spv_delta.months == 0:
         return {"С даты первичного назначения СПВ прошло меньше 1 месяца"}
 
-    # Вид социальной выплаты = страховая пенсия по СПК?
-    if data.type_of_social_payment.lower() == "страховая пенсия по спк":
-        if data.is_there_a_registration_in_moscow == True:
-            list_of_periods_child=data.the_periods_of_registration_in_moscow_of_the_child
+    # Есть ли регистрация в Москве?
+    if data.is_there_a_registration_in_moscow == True:
+        list_of_periods_child=data.periods_of_registration_in_moscow
 
-            if await is_sum_of_periods_of_registration_more_than_10_years_and_no_defference_more_than_1_month(list_of_periods=list_of_periods_child) == True:
-                return {"Суммарная дата регистрации больше 10 лет"}
+        summary_registration = await calculate_registration_summary(list_of_periods=list_of_periods_child)
+        if summary_registration["total_period"].years > 10:
+            return {"Суммарная дата регистрации больше 10 лет. Идем по алгоритму далее"}
+        else:
+            DNregM = summary_registration["last_break_date"]
+            if DNregM < data.date_of_birth + relativedelta(months=6) and DNregM and DNregM < spv_init_date:
+                DR10 = DNregM
+                return {
+                    f"10 лет регистрации: {DR10}"
+                }
             else:
-                if data.periods_of_registration_in_moscow[0].DN + relativedelta(months=6) <= today:
-                    pass
-
-                return {"Суммарная дата регистрации меньше 10 лет"}
-        else: 
-            return {"Вы не зарегистрированы в Москве"}
-
-    # # Вид социальной выплаты = социальная пенсия по инвалидности?
-    elif data.type_of_social_payment.lower() == "социальная пенсия по инвалидности":
-        return {"социальная пенсия по инвалидности в разработке"}
+                return {
+                    "Требуются периоды регистрации в Москве кормильца/ законного представителя"
+                }
+    else: 
+        return {"Вывод: положено РСД до ПМП с даты назначения пенсии до окончания срока выплаты"}
 
     return {"end": True}
 
