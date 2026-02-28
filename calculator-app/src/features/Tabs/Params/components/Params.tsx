@@ -21,8 +21,9 @@ export const Params = () => {
 
                     <table className="params-table">
                         <thead>
-                            <tr>
-                                <th className="year-header">Год</th>
+                            <tr className="grid-header">
+                                <th className="highlighting-header">Год</th>
+                                <th className="space-limitation-header">Коэффициент индексации</th>
                                 <th>ГСС (руб.)</th>
                                 <th>ПМП (руб.)</th>
                             </tr>
@@ -32,10 +33,10 @@ export const Params = () => {
                         </tbody>
                     </table>
 
-                    <div className="form-group" style={{ marginTop: '20px' }}>
+                    {/* <div className="form-group" style={{ marginTop: '20px' }}>
                         <button className="btn" id="resetParams" disabled>Сбросить к значениям по умолчанию</button>
                         <button className="btn btn-success" id="saveParams" disabled>Сохранить параметры</button>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="form-group">

@@ -14,7 +14,7 @@ export const Results = () => {
                 <div className="section">
                     <h2>Результаты расчета</h2>
 
-                    <div className="info-box">
+                    {/* <div className="info-box">
                         <p><strong>Информация о получателе:</strong> <span id="resultPersonInfo"></span></p>
                         <p><strong>Порядок назначения:</strong> <span id="resultAppointmentOrder"></span></p>
                         <p><strong>Общая продолжительность регистрации в Москве:</strong> <span id="resultRegDuration"></span></p>
@@ -23,7 +23,7 @@ export const Results = () => {
                         <p id="resultAutoAssignmentDateInfo" style={{ display: 'none' }}><strong>Дата автоматического назначения:</strong> <span id="resultAutoAssignmentDate"></span></p>
                         <p><strong>Дата заявления на ГСС:</strong> <span id="resultGssApplicationDate"></span></p>
                         <p id="resultGssStartDateInfo"><strong>Дата начала ГСС (1 число месяца, следующего за заявлением на ГСС):</strong> <span id="resultGssStartDate"></span></p>
-                    </div>
+                    </div> */}
 
                     <div id="calculationErrors" className="info-box error hidden">
                         <h3>Ошибки в данных</h3>
@@ -35,11 +35,44 @@ export const Results = () => {
                         <div id="warningsList"></div>
                     </div>
 
-                    <h3>Сводная таблица периодов с одинаковой суммой РСД</h3>
-                    <div id="consolidatedResults"></div>
+                    <h3>Сводная таблица периодов ПМП и РСД</h3>
+                    <div id="consolidatedResults">
+                        <table className="params-table">
+                            <thead>
+                                <tr className="grid-header">
+                                    <th className="highlighting-header">Вид выплаты</th>
+                                    <th>Вид пенсии</th>
+                                    <th>Дата начала</th>
+                                    <th>Дата конца</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paramsTableBody">
+                                {/* Данные будут заполнены через JavaScript */}
+                            </tbody>
+                        </table>
+                    </div>
 
-                    <h3>Детализированный расчет по дням</h3>
-                    <div id="detailedResults"></div>
+                    <h3>Детализированный расчет</h3>
+                    <div id="consolidatedResults">
+                        <table className="params-table">
+                            <thead>
+                                <tr className="grid-header">
+                                    <th className="highlighting-header">Вид выплаты</th>
+                                    <th>Дата начала</th>
+                                    <th>Дата конца</th>
+                                    <th>Сумма рсд ежемесячно руб/мес</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paramsTableBody">
+                                {/* Данные будут заполнены через JavaScript */}
+                            </tbody>
+                        </table>
+                    </div>
+
+
+
+                    {/* <h3>Детализированный расчет по дням</h3>
+                    <div id="detailedResults"></div> */}
 
                     <div className="result-section">
                         <h3>Итоги расчета</h3>

@@ -269,7 +269,7 @@ tr:nth-child(even) {
   text-align: center;
 }
 
-.year-header {
+.highlighting-header {
   background-color: #2c3e50;
 }
 
@@ -479,4 +479,10 @@ tr:nth-child(even) {
 
 #addPeriod {
   margin-top: 10px;
+}
+
+
+.grid-header {
+  display: grid;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr;
 }
