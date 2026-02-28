@@ -4,13 +4,13 @@ import { PaymentInterface } from "../features/Tabs/Payments/components/types/pay
 export interface GlobalStoreContextInterface {
     store: GlobalStoreParameterInterface;
     updateStore: <K extends keyof GlobalStoreParameterInterface>(parametr: K, value: GlobalStoreParameterInterface[K]) => void;
+    resetStore: () => void;
 }
 
 export interface GlobalStoreParameterInterface {
     is_adult?: boolean,
     date_of_birth?: DateString,
     // document_on_full_time_OOP_education?: boolean,
-    date_of_the_initial_appointment_of_the_SPV?: DateString,
     type_of_social_payment?: string,
     is_there_a_registration_in_moscow_of_the_breadwinner?: boolean,
     is_there_a_registration_in_moscow_of_the_legal_representative?: boolean,
@@ -20,7 +20,6 @@ export interface GlobalStoreParameterInterface {
     periods_of_registration_in_moscow_of_the_legal_representative?: Array<DatePeriod>,
     date_of_appointment_of_the_spv?: DateString,
     date_of_death_of_the_breadwinner?: DateString,
-    date_of_the_initial_appointment_of_the_spv?: DateString,
 
     is_inpatient?: boolean,
     periods_of_inpatient?: Array<DatePeriod>,

@@ -3,7 +3,8 @@ import { GlobalStoreContextInterface, GlobalStoreParameterInterface } from './ty
 
 const GlobalStoreContext = createContext<GlobalStoreContextInterface>({
     store: {},
-    updateStore: () => { }
+    updateStore: () => { },
+    resetStore: () => { }
 });
 
 export const useGlobalStore = () => useContext(GlobalStoreContext);
@@ -34,7 +35,7 @@ export const GlobalStoreProvider = ({ children }: { children: React.ReactNode })
     }
 
     return (
-        <GlobalStoreContext.Provider value={{ store, updateStore }}>
+        <GlobalStoreContext.Provider value={{ store, updateStore, resetStore }}>
             {children}
         </GlobalStoreContext.Provider>
     );

@@ -5,6 +5,10 @@ export const Results = () => {
 
     const {
         navigate,
+        calculate,
+        resultData,
+        resetStore,
+        handlePrint
     } = useResults();
 
     return (
@@ -84,9 +88,21 @@ export const Results = () => {
 
                 <div className="form-group">
                     <button className="btn btn-secondary" id="backToPayments" onClick={() => navigate(ROUTES.payments)}>Назад: Выплаты и периоды</button>
-                    <button className="btn" id="recalculate">Пересчитать</button>
-                    <button className="btn btn-success" id="printResults">Распечатать результаты</button>
-                    <button className="btn btn-danger" id="resetAll">Сбросить все данные</button>
+                    <button
+                        className="btn"
+                        id="recalculate"
+                        onClick={() => calculate()}
+                    >Пересчитать</button>
+                    <button
+                        className="btn btn-success"
+                        id="printResults"
+                        onClick={() => handlePrint()}
+                    >Распечатать результаты</button>
+                    <button
+                        className="btn btn-danger"
+                        id="resetAll"
+                        onClick={() => resetStore()}
+                    >Сбросить все данные</button>
                 </div>
             </div>
         </>

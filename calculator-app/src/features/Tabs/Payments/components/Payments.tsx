@@ -7,8 +7,6 @@ export const Payments = () => {
 
     const {
         navigate,
-        store,
-        updateStore,
         payments,
         addPaymet,
         updatePayment,
@@ -23,7 +21,7 @@ export const Payments = () => {
                 <div className="section">
                     <h2>Выплаты и периоды их получения</h2>
 
-                    <div className="grid">
+                    {/* <div className="grid">
                         <div className="form-group">
                             <label>Дата первичного назначения пенсии в Москве*</label>
                             <input
@@ -34,7 +32,7 @@ export const Payments = () => {
                                 required
                             />
                         </div>
-                    </div>
+                    </div> */}
 
 
                     {/* <div className="info-box warning">

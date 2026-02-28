@@ -8,7 +8,7 @@ import { PAYMENT_TYPE } from "../constants/payment";
 export const usePayments = () => {
     const navigate = useNavigate();
 
-    const { store, updateStore } = useGlobalStore();
+    const { updateStore } = useGlobalStore();
 
     const [payments, setPayments] = useState<Array<PaymentInterface>>([]);
     const [nextId, setNextId] = useState<number>(0);
@@ -55,8 +55,6 @@ export const usePayments = () => {
 
     return {
         navigate,
-        store,
-        updateStore,
         payments,
         addPaymet,
         updatePayment,
