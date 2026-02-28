@@ -8,6 +8,7 @@ export const Payments = () => {
     const {
         navigate,
         store,
+        updateStore,
         payments,
         addPaymet,
         updatePayment,
@@ -22,6 +23,20 @@ export const Payments = () => {
                 <div className="section">
                     <h2>Выплаты и периоды их получения</h2>
 
+                    <div className="grid">
+                        <div className="form-group">
+                            <label>Дата первичного назначения пенсии в Москве*</label>
+                            <input
+                                type="date"
+                                className="payment-end"
+                                value={store.date_of_the_initial_appointment_of_the_spv}
+                                onChange={(e) => updateStore('date_of_the_initial_appointment_of_the_spv', e.target.value)}
+                                required
+                            />
+                        </div>
+                    </div>
+
+
                     {/* <div className="info-box warning">
                         <p><strong>Важно:</strong> При расчете РСД на январь используются значения пенсий и ЕДВ на декабрь
                             предыдущего года. Для правильного расчета необходимо заполнить раздельные значения.</p>
@@ -32,9 +47,9 @@ export const Payments = () => {
                     <div className="form-group">
                         {/* <button className="btn btn-success" id="autoFillAll">🔄 Автозаполнить все выплаты</button> */}
                         <button
-                        className="btn"
-                        id="addPension"
-                        onClick={()=> addPaymet(PAYMENT_TYPE.pension.raw)}
+                            className="btn"
+                            id="addPension"
+                            onClick={() => addPaymet(PAYMENT_TYPE.pension.raw)}
                         >+ Добавить пенсию</button>
                         {/* <button className="btn" id="addEdv">+ Добавить ЕДВ</button>
                         <button className="btn" id="addEgdv">+ Добавить ЕГДВ</button>
@@ -45,11 +60,11 @@ export const Payments = () => {
                     <div id="paymentsContainer">
                         {payments.map((payment, index) => (
                             <Payment
-                            id={payment.id}
-                            index={index + 1}
-                            paymentData={payment}
-                            onUpdate={updatePayment}
-                            onRemove={removePayment}
+                                id={payment.id}
+                                index={index + 1}
+                                paymentData={payment}
+                                onUpdate={updatePayment}
+                                onRemove={removePayment}
                             />
                         ))}
                         {/* <Payment

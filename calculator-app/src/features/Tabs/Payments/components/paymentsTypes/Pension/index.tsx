@@ -1,1 +1,0 @@
-export { PensionPayment as default} from "./components/Pension";

@@ -1,7 +1,7 @@
 import { Rubles } from "../../../../../shared";
 import { DateString } from "../../../../../shared";
 
-export type PaymentTypeRaw = 'pension' | 'edv' | 'egdv' | 'housin' | 'custom';
+export type PaymentTypeRaw = 'pension' | 'edv' | 'egdv' | 'housing' | 'custom';
 export type PaymentTypeDisplay = 'Пенсия' | 'ЕДВ' | 'ЕГДВ' | 'ЖКУ' | 'Другая выплата';
 
 export type PensionCategoryRaw = 'insurance_SPK' | 'social_SPK' | 'social_disability';

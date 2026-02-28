@@ -26,8 +26,8 @@ export const PAYMENT_TYPE = {
         raw: 'egdv',
         display: 'ЕГДВ'
     },
-    housin: {
-        raw: 'housin',
+    housing: {
+        raw: 'housing',
         display: 'ЖКУ'
     },
     custom: {

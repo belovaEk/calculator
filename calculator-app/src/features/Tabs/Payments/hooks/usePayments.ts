@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { PaymentInterface } from "../components/types/paymentType";
 import { PaymentTypeRaw } from "../components/types/paymentType";
 import { useGlobalStore } from "../../../../store";
-import { PAYMENT_TYPE } from "../constants.ts/payment";
+import { PAYMENT_TYPE } from "../constants/payment";
 
 export const usePayments = () => {
     const navigate = useNavigate();
 
-    const {store, updateStore} = useGlobalStore();
+    const { store, updateStore } = useGlobalStore();
 
     const [payments, setPayments] = useState<Array<PaymentInterface>>([]);
     const [nextId, setNextId] = useState<number>(0);
@@ -44,7 +44,7 @@ export const usePayments = () => {
         updateStore('payments', payments);
     };
 
-    useEffect(()=> {
+    useEffect(() => {
         updateGlobalPayments()
     }, payments)
 
@@ -56,6 +56,7 @@ export const usePayments = () => {
     return {
         navigate,
         store,
+        updateStore,
         payments,
         addPaymet,
         updatePayment,

@@ -1,4 +1,4 @@
-import { PAYMENT_TYPE, PENSION_CATEGORIES } from "../constants.ts/payment";
+import { PAYMENT_TYPE, PENSION_CATEGORIES } from "../constants/payment";
 import { PaymentInterface } from "../components/types/paymentType";
 
 
@@ -10,7 +10,7 @@ interface usePaymentParams {
 }
 
 
-export const usePayment = ({id, paymentData, onUpdate, onRemove}: usePaymentParams) => {
+export const usePayment = ({ id, paymentData, onUpdate, onRemove }: usePaymentParams) => {
 
     const updatePayment = (field: keyof PaymentInterface, value: any) => {
         const updated = {
