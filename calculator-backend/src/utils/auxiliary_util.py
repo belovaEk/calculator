@@ -1,5 +1,5 @@
 from src.schemas.json_query_schema import JsonQuerySchema
-
+from dateutil.relativedelta import relativedelta
 
 def sort_periods_in_data(data: JsonQuerySchema) -> JsonQuerySchema:
     """
@@ -42,5 +42,15 @@ def sort_periods_in_data(data: JsonQuerySchema) -> JsonQuerySchema:
     return data
 
 
-
+async def is_adult(today, date_of_birth) -> bool:
+    """
+    Проверяет, является ли человек совершеннолетним (достиг 18 лет)
+    
+    Returns:
+        bool: True если возраст 18 лет или больше, иначе False
+    """
+    delta = relativedelta(today, date_of_birth)
+    if delta.years >= 18:
+        return True
+    return False
 

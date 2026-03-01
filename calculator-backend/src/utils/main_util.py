@@ -6,14 +6,17 @@ from src.schemas.json_query_schema import (
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from typing import List
-from src.utils.calculate_util import (
-    is_adult,
+from src.utils.payment_util import (
     get_date_init_pension_Moscow,
+)
+
+from src.utils.registration.registration_util import (
     calculate_registration_summary,
-    breadwinner_or_representative,
+    breadwinner_or_representative_date10,
     calculate_total_registration_without_breaks
 )
-from src.utils.auxiliary_util import sort_periods_in_data
+
+from src.utils.auxiliary_util import sort_periods_in_data, is_adult
 
 from src.utils.pmp_gss_calculate.pmp_gss_reg_util import pmp_gss_registration
 
@@ -104,7 +107,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
             return {"date_of_10_years": sum_reg_10_date}
 
         # Если ребенок не набрал 10 лет, проверяем кормильца или представителя
-        breadwinner_result = await breadwinner_or_representative(data=data, today=today)
+        breadwinner_result = await breadwinner_or_representative_date10(data=data, today=today)
         if breadwinner_result:
             return {"date_of_10_years": breadwinner_result}
 
