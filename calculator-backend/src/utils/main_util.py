@@ -1,7 +1,7 @@
 from fastapi.background import P
 from src.schemas.json_query_schema import (
     JsonQuerySchema,
-    RegistrationPeriod,
+    PeriodType,
     PaymentInterface,
 )
 from datetime import date
@@ -35,9 +35,9 @@ async def main_util(data: JsonQuerySchema) -> dict:
 
     # Есть ли регистрация в Москве?
     if data.is_there_a_registration_in_moscow == True:
-        list_of_periods_child = data.periods_reg_moscow
+        list_of_periods_reg_child = data.periods_reg_moscow
         summary_registration = await calculate_registration_summary(
-            list_of_periods=list_of_periods_child
+            list_of_periods_reg= list_of_periods_reg_child
         )
 
         if summary_registration["total_period"].years > 10:

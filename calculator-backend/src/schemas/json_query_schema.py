@@ -4,7 +4,7 @@ from typing import List, Optional, Literal
 from dateutil.relativedelta import relativedelta
 
 
-class RegistrationPeriod(BaseModel):
+class PeriodType(BaseModel):
     DN: date
     DK: date
 
@@ -39,9 +39,9 @@ class JsonQuerySchema(BaseModel):
     is_there_a_registration_in_moscow: bool
     is_there_a_registration_in_moscow_of_the_breadwinner: bool
     is_there_a_registration_in_moscow_of_the_legal_representative: bool
-    periods_reg_moscow: List[RegistrationPeriod]
-    periods_reg_representative_moscow: List[RegistrationPeriod]
-    periods_reg_breadwinner_moscow: List[RegistrationPeriod]
+    periods_reg_moscow: List[PeriodType]
+    periods_reg_representative_moscow: List[PeriodType]
+    periods_reg_breadwinner_moscow: List[PeriodType]
     date_of_death_of_the_breadwinner: date
     there_is_a_breadwinner: bool
 
@@ -52,7 +52,7 @@ class JsonQuerySchema(BaseModel):
 
 
 
-class RegistrationPeriod(BaseModel):
+class PeriodType(BaseModel):
     DN: date
     DK: date
 
