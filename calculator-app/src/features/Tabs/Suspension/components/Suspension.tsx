@@ -3,10 +3,8 @@ import { PeriodsSection } from "../../../../shared/components/PeriodSelectionFor
 
 export const Suspension = () => {
     const {
-        store,
         navigate,
         ROUTES,
-        updateStore,
         isSuspension,
         updateIsSuspension,
         PERSONA,

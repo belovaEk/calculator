@@ -1,6 +1,6 @@
 import { DateString, DatePeriod } from "../shared";
 import { PaymentInterface } from "../features/Tabs/Payments/components/types/paymentType";
-import { SuspensionPeriodType } from "../features/Tabs/Suspension/types/suspensionType";
+
 
 export interface GlobalStoreContextInterface {
     store: GlobalStoreParameterInterface;
@@ -26,13 +26,13 @@ export interface GlobalStoreParameterInterface {
     // Кормилец
     date_of_death_of_the_breadwinner?: DateString,
 
-    periods_of_inpatient?: Array<DatePeriod>,
+    periods_inpatient?: Array<DatePeriod>,
 
     is_payment_transferred: boolean,
     is_get_PSD_FSD_last_mounth_payment_trasferred: boolean,
     is_Not_get_PSD_FSD_now_payment_trasferred: boolean,
 
     payments?: Array<PaymentInterface>,
-    periods_of_suspension?: Array<SuspensionPeriodType>,
+    periods_suspension?: Array<DatePeriod>,
 }
 

@@ -120,7 +120,7 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
 def sort_periods_in_data(data: JsonQuerySchema) -> JsonQuerySchema:
     """
     Сортирует периоды регистрации в Москве по дате начала (DN) внутри структуры data.
-    Сортирует поля: periods_reg_moscow, periods_reg_representative_moscow, periods_reg_breadwinner_moscow
+    Сортирует поля: periods_reg_moscow, periods_reg_representative_moscow, periods_reg_breadwinner_moscow,  periods_suspension
     """
     # Сортируем периоды регистрации ребенка
     if data.periods_reg_moscow:
@@ -140,6 +140,12 @@ def sort_periods_in_data(data: JsonQuerySchema) -> JsonQuerySchema:
     if data.periods_reg_breadwinner_moscow:
         data.periods_reg_breadwinner_moscow = sorted(
             data.periods_reg_breadwinner_moscow, 
+            key=lambda period: period.DN
+        )
+        
+    if data.periods_suspension:
+        data.periods_suspension = sorted(
+            data.periods_suspension, 
             key=lambda period: period.DN
         )
     
