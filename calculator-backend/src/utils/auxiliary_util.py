@@ -20,7 +20,7 @@ async def spv_init_date_earlier(dr10: date, spv_init_date: date, list_of_periods
     
     currentDate = date.today()
     
-    PMP.append([spv_init_date, dr10])
+    PMP.append({'DN': spv_init_date, 'DK': dr10})
     
     while i < n:
         
@@ -29,21 +29,21 @@ async def spv_init_date_earlier(dr10: date, spv_init_date: date, list_of_periods
         
         if DKreg >= dr10 >= DNreg:
             if i == n-1:
-                GSS.append([dr10, DKreg])
+                GSS.append({'DN':dr10, 'DK':DKreg})
                 if DKreg != currentDate:
-                    PMP.append([DKreg, currentDate])
+                    PMP.append({'DN': DKreg, 'DK': currentDate})
             else:
-                GSS.append([dr10, DKreg])
-                PMP.append([DKreg, list_of_periods_reg[i+1].DN])
+                GSS.append({'DN':dr10, 'DK': DKreg})
+                PMP.append({'DN': DKreg, 'DK': list_of_periods_reg[i+1].DN})
                 
         elif DNreg > dr10 and DKreg > dr10:
             if i == n-1:
-                GSS.append([DNreg, DKreg])
+                GSS.append({'DN': DNreg, 'DK': DKreg})
                 if DKreg != currentDate:
-                    PMP.append([DKreg, currentDate])
+                    PMP.append({'DN': DKreg, 'DK':currentDate})
             else:
-                GSS.append([DNreg, DKreg])
-                PMP.append([DKreg, list_of_periods_reg[i+1].DN])
+                GSS.append({'DN':DNreg, 'DK': DKreg})
+                PMP.append({'DN':DKreg, 'DK': list_of_periods_reg[i+1].DN})
         i+=1
     
     return {'PMP': PMP, 'GSS': GSS}
@@ -63,25 +63,25 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
         
         if DKreg > spv_init_date >= DNreg:
             if i == n-1:
-                GSS.append([spv_init_date, DKreg])
+                GSS.append({'DN':spv_init_date, 'DK': DKreg})
                 if DKreg != currentDate:
-                    PMP.append([DKreg, currentDate])
+                    PMP.append({'DN':DKreg, 'DK': currentDate})
             else:
-                GSS.append([spv_init_date, DKreg])
-                PMP.append([DKreg, list_of_periods_reg[i+1].DN])
+                GSS.append({'DN':spv_init_date, 'DK': DKreg})
+                PMP.append({'DN':DKreg, 'DK': list_of_periods_reg[i+1].DN})
                 
         elif DKreg <= spv_init_date < list_of_periods_reg[i+1].DN :
             if i == n-1:
-                PMP.append([spv_init_date, currentDate])
+                PMP.append({'DN':spv_init_date, 'DK': currentDate})
             else:
-                PMP.append([spv_init_date, DNreg])
+                PMP.append({'DN':spv_init_date, 'DK': DNreg})
                 
         elif spv_init_date < DNreg < DKreg:
             if i == n-1:
-                GSS.append([DNreg, DKreg])
+                GSS.append({'DN':DNreg, 'DK': DKreg})
                 if DKreg != currentDate:
-                    PMP.append([DKreg, currentDate])
+                    PMP.append({'DN':DKreg, 'DK': currentDate})
             else:
-                GSS.append([DNreg, DKreg])
-                PMP.append([DKreg, list_of_periods_reg[i+1].DN])
+                GSS.append({'DN':DNreg, 'DK': DKreg})
+                PMP.append({'DN':DKreg, 'DK': list_of_periods_reg[i+1].DN})
         i+=1
