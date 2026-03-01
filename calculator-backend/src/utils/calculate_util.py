@@ -42,7 +42,6 @@ async def calculate_registration_summary(list_of_periods_reg: List[PeriodType]) 
     for i in range(len(list_of_periods_reg)):
         if i > 0:
             prev_end = list_of_periods_reg[i - 1].DK
-            print(prev_end)
             curr_start = list_of_periods_reg[i].DN
             if (
                 relativedelta(curr_start, prev_end).months > 1
@@ -147,7 +146,6 @@ async def breadwinner_or_representative(data: JsonQuerySchema, today: date) -> O
         result = await calculate_total_registration_without_breaks(
             data.periods_reg_breadwinner_moscow
         )
-        print(result)
         if (
             data.periods_reg_breadwinner_moscow[-1].DK == data.date_of_death_of_the_breadwinner
             and result["has_10_years"] == True
