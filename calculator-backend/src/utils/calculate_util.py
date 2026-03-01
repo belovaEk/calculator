@@ -97,38 +97,6 @@ async def calculate_total_registration_without_breaks(
     return {"has_10_years": False, "date_of_10_years": None}
 
 
-
-# async def calculate_total_registration_without_breaks(
-#     list_of_periods_reg: List[PeriodType],
-# ):
-#     """
-#     Возвращает информацию о достижении 10 лет суммарной регистрации в Москве
-#     без обнуления счетчика при разрывах (суммируются все периоды подряд)
-#     """
-#     if not list_of_periods_reg:
-#         return {"has_10_years": False, "date_of_10_years": None}
-
-#     total = relativedelta()
-#     ten_years = relativedelta(years=10)
-
-#     my_date = date(2024, 12, 31)  
-#     today = date.today()
-
-    
-#     for period in list_of_periods_reg:
-#         period_delta = relativedelta(period.DK, period.DN)
-
-#         # Сравниваем через преобразование в порядковый номер дня
-#         if (period.DN + (ten_years - total)) <= period.DK:
-#             # Нашли период, в котором достигается 10 лет суммарно
-#             date_of_10_years = period.DN + (ten_years - total)
-#             return {"has_10_years": True, "date_of_10_years": date_of_10_years}
-        
-#         total += period_delta
-
-#     return {"has_10_years": False, "date_of_10_years": None}
-
-
 async def breadwinner_or_representative(data: JsonQuerySchema, today: date):
     """
     Сначала проверяет, что у представителя есть актуальная на сегодняшний день регистрация в Москве, далее
