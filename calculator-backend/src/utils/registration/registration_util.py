@@ -1,25 +1,10 @@
 from src.schemas.json_query_schema import (
     JsonQuerySchema,
     PeriodType,
-    PaymentInterface,
     PeriodDuration
 )
-from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from typing import List, Optional
-
-
-async def is_adult(today, date_of_birth) -> bool:
-    """
-    Проверяет, является ли человек совершеннолетним (достиг 18 лет)
-    
-    Returns:
-        bool: True если возраст 18 лет или больше, иначе False
-    """
-    delta = relativedelta(today, date_of_birth)
-    if delta.years >= 18:
-        return True
-    return False
 
 
 async def calculate_registration_summary(list_of_periods_reg: List[PeriodType]) -> dict:
@@ -57,32 +42,8 @@ async def calculate_registration_summary(list_of_periods_reg: List[PeriodType]) 
         "total_period": sum_of_periods,
         "last_break_date": break_dates[-1] if break_dates else list_of_periods_reg[0].DN,
     }
-
-
-async def get_date_init_pension_Moscow(payments: List[PaymentInterface]) -> Optional[date]:
-    """
-    Возвращает дату назначения первой пенсии в Москве
     
-    Returns:
-        Optional[date]: Дата назначения первой пенсии в Москве или None, если такой пенсии нет
-    """
-    # Добавить сортировку периодов и выбирать с ранней датой
-    for payment in payments:
-        if payment.is_Moscow and payment.type == "pension":
-            return payment.DN
-    return None
-
-
-def calculate_exact_duration(start_date: date, end_date: date) -> PeriodDuration:
-    """Вычисляет точную продолжительность периода с учетом лет, месяцев и дней
     
-    Returns:
-        PeriodDuration: Объект с годами, месяцами и днями разницы между датами
-    """
-    delta = relativedelta(end_date, start_date)
-    return PeriodDuration.from_relativedelta(delta)
-
-
 async def calculate_total_registration_without_breaks(list_of_periods_reg: List[PeriodType]) -> dict:
     """
     Возвращает информацию о достижении 10 лет суммарной регистрации в Москве
@@ -117,7 +78,7 @@ async def calculate_total_registration_without_breaks(list_of_periods_reg: List[
     return {"has_10_years": False, "date_of_10_years": None}
 
 
-async def breadwinner_or_representative(data: JsonQuerySchema, today: date) -> Optional[date]:
+async def breadwinner_or_representative_date10(data: JsonQuerySchema, today: date) -> Optional[date]:
     """
     Сначала проверяет, что у представителя есть актуальная на сегодняшний день регистрация в Москве, далее
     проверяет представителя на наличие суммарной регистрации в 10 лет.
@@ -163,3 +124,5 @@ async def breadwinner_or_representative(data: JsonQuerySchema, today: date) -> O
             return result["date_of_10_years"]
 
     return None
+
+
