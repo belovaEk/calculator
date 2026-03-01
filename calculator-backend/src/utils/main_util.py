@@ -30,8 +30,8 @@ async def main_util(data: JsonQuerySchema) -> dict:
     today = date.today()
     spv_init_date = await get_date_init_pension_Moscow(data.payments)  # Дата первой пенсии в Москве
     sum_reg_10_date = None  # Дата наступления 10 лет суммарной регистрации в Москве
-    pmp_periods = List[PeriodType]([])  # Периоды прожиточного минимума пенсионера
-    gss_periods = List[PeriodType]([])  # Периоды городского социального стандарта
+    pmp_periods: List[PeriodType] = []  # Периоды прожиточного минимума пенсионера
+    gss_periods: List[PeriodType] = []  # Периоды городского социального стандарта
 
     # Препроцессинг: сортировка полей периодов в data и валидация 
     data = sort_periods_in_data(data=data)
