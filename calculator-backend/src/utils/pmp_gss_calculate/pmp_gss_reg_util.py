@@ -36,7 +36,7 @@ async def spv_init_date_earlier(dr10: date, spv_init_date: date, list_of_periods
     
     currentDate = date.today()
     
-    PMP.append({'DN': spv_init_date, 'DK': dr10})
+    PMP.append(PeriodType(DN=spv_init_date,  DK=dr10))
     
     while i <= n - 1:
         
@@ -84,6 +84,8 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
         DKreg = list_of_periods_reg[i].DK
         DNreg = list_of_periods_reg[i].DN
         
+        # Если дата попадает на период регистрации
+        
         if DKreg > spv_init_date >= DNreg:
             if i == n-1:
                 GSS.append(PeriodType(DN=spv_init_date, DK=DKreg))
@@ -92,14 +94,9 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
             else:
                 GSS.append(PeriodType(DN=spv_init_date, DK=DKreg))
                 PMP.append(PeriodType(DN=DKreg, DK=list_of_periods_reg[i+1].DN))
-                
-        elif DKreg <= spv_init_date < list_of_periods_reg[i+1].DN :
-
-            if i == n-1:
-                PMP.append(PeriodType(DN=spv_init_date, DK=currentDate))
-            else:
-                PMP.append(PeriodType(DN=spv_init_date, DK=DNreg))
-                
+              
+              
+        # Если период регистрации больше даты назначения первой пенсии                  
         elif spv_init_date < DNreg < DKreg:
 
             if i == n-1:
@@ -109,6 +106,15 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
             else:
                 GSS.append(PeriodType(DN=DNreg, DK=DKreg))
                 PMP.append(PeriodType(DN=DKreg, DK=list_of_periods_reg[i+1].DN))
+                
+        
+        elif i == n - 1:
+            if DKreg <= spv_init_date:
+                PMP.append(PeriodType(DN=spv_init_date, DK=currentDate))
+        
+        # Если дата назначения первой пенсии попала между периодами регистрации
+        elif DKreg <= spv_init_date < list_of_periods_reg[i+1].DN:
+            PMP.append(PeriodType(DN=spv_init_date, DK=DNreg))
         i+=1
 
     return {'PMP': PMP, 'GSS': GSS}
