@@ -7,13 +7,10 @@ from dateutil.relativedelta import relativedelta
 class PeriodType(BaseModel):
     DN: date
     DK: date
-
-
-class SuspensionPeriodType(BaseModel):
+    
+    
+class PeriodWithIdType(PeriodType):
     id: int
-    DN: date
-    DK: date
-
 
 PaymentTypeRaw = Literal["pension", "edv", "egdv", "housin", "custom"]
 PensionCategoryRaw = Literal["insurance_SPK", "social_SPK", "social_disability"]
@@ -27,9 +24,6 @@ class PaymentInterface(BaseModel):
     DK: date
     paymentAmount: float  # Rubles
     is_Moscow: bool
-    is_suspension: bool
-    suspension: Optional[List[SuspensionPeriodType]] = None
-
 
 class JsonQuerySchema(BaseModel):
     is_adult: bool
@@ -49,6 +43,10 @@ class JsonQuerySchema(BaseModel):
     is_get_PSD_FSD_last_mounth_payment_trasferred: Optional[bool] = None
     is_Not_get_PSD_FSD_now_payment_trasferred: Optional[bool] = None
     payments: Optional[List[PaymentInterface]] = None
+    
+    periods_suspension: Optional[List[PeriodWithIdType]]
+    
+    periods_inpatient: Optional[List[PeriodWithIdType]]
 
 
 class PeriodDuration(BaseModel):

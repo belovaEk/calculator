@@ -46,11 +46,11 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
     }
 
     const updatePeriodInpatient = () => {
-        updateStore('periods_of_inpatient', periods);
+        updateStore('periods_inpatient', periods);
     }
 
     const updateGlobalPeriodSuspension = () => {
-        updateStore('periods_of_suspension', periods)
+        updateStore('periods_suspension', periods)
     }
 
     useEffect(() => {
