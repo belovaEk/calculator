@@ -1,4 +1,3 @@
-from fastapi.background import P
 from src.schemas.json_query_schema import (
     JsonQuerySchema,
     PeriodType,
@@ -18,8 +17,7 @@ from src.utils.registration.registration_util import (
 )
 
 from src.utils.auxiliary_util import sort_periods_in_data, is_adult
-
-from src.utils.pmp_gss_calculate.pmp_gss_reg_util import pmp_gss_registration
+from src.utils.pmp_gss_calculate.prepare_pmp_gss_result import prepare_pmp_gss_result
 
 
 # Главная функция для расчета
@@ -60,90 +58,38 @@ async def main_util(data: JsonQuerySchema) -> dict:
         list_of_periods_reg=list_of_periods_reg_child
     )
 
-    # Проверка достижения 10 лет суммарной регистрации ребенка
+    # ОСНОВНАЯ ЛОГИКА ОПРЕДЕЛЕНИЯ ДАТЫ 10 ЛЕТ
     if summary_registration["total_period"].years > 10:
-        # Достигнуто более 10 лет - вычисляем точную дату достижения
+        # Случай 1: У ребенка более 10 лет суммарной регистрации
         registration_result = await calculate_total_registration_without_breaks(
             data.periods_reg_moscow
         )
-
         if registration_result["has_10_years"]:
             sum_reg_10_date = registration_result["date_of_10_years"]
-
-            # Разделение на периоды ПМП и ГСС
-            # В зависимости от соотношения дат ДР10 и даты первой пенсии
-            pmp_gss_result = await pmp_gss_registration(
-                dr10=sum_reg_10_date,
-                spv_init_date=spv_init_date,
-                list_of_periods_reg=list_of_periods_reg_child,
-                PMP=pmp_periods,
-                GSS=gss_periods
-            )
-
-            pmp_periods = pmp_gss_result["PMP"]
-            gss_periods = pmp_gss_result["GSS"]
-
-            # Возвращаем результат с датой и периодами
-            # ОТЛАДОЧНЫЙ ВЫВОД
-            return {
-                "date_of_10_years_child": sum_reg_10_date,
-                "list_of_periods_reg_child": list_of_periods_reg_child,
-                "pmp_periods": pmp_periods,
-                "gss_periods": gss_periods
-            }
-
+    
+    elif (summary_registration["last_break_date"] 
+          and summary_registration["last_break_date"] < data.date_of_birth + relativedelta(months=6)
+          and summary_registration["last_break_date"] < spv_init_date):
+        # Случай 2: Сработало условие с датой последнего разрыва
+        sum_reg_10_date = summary_registration["last_break_date"]
+    
     else:
-        # Меньше 10 лет суммарной регистрации
-        dn_reg_m = summary_registration["last_break_date"]
-        
-        # Условие: дата последнего разрыва должна быть:
-        # 1. меньше даты рождения + 6 месяцев
-        # 2. меньше даты первой пенсии
-        if (
-            dn_reg_m
-            and dn_reg_m < data.date_of_birth + relativedelta(months=6)
-            and dn_reg_m < spv_init_date
-        ):
-            sum_reg_10_date = dn_reg_m
+        # Случай 3: Проверка через кормильца или представителя
+        sum_reg_10_date = await breadwinner_or_representative_date10(data=data, today=today)
+    
+    # ОБЩИЙ БЛОК: Если дата найдена, формируем периоды ПМП и ГСС
+    if sum_reg_10_date:
+        return await prepare_pmp_gss_result(
+            data=data,
+            sum_reg_10_date=sum_reg_10_date,
+            spv_init_date=spv_init_date,
+            list_of_periods_reg_child=list_of_periods_reg_child,
+            pmp_periods=pmp_periods,
+            gss_periods=gss_periods
+        )
+    
+    # Если ни одно условие не выполнилось
+    return {
+        "message": "Положено РСД до ПМП с даты назначения пенсии до окончания срока выплаты"
+    }
 
-            # Разделение на периоды ПМП и ГСС
-            # В зависимости от соотношения дат ДР10 и даты первой пенсии
-            pmp_gss_result = await pmp_gss_registration(sum_reg_10_date, spv_init_date, list_of_periods_reg_child, PMP=pmp_periods, GSS=gss_periods)
-
-            pmp_periods = pmp_gss_result["PMP"]
-            gss_periods = pmp_gss_result["GSS"]
-
-            # Возвращаем результат с датой и периодами
-            # ОТЛАДОЧНЫЙ ВЫВОД
-            return {
-                "date_of_10_years_child": sum_reg_10_date,
-                "list_of_periods_reg_child": list_of_periods_reg_child,
-                "pmp_periods": pmp_periods,
-                "gss_periods": gss_periods
-            }
-
-        # Если ребенок не набрал 10 лет, проверяем кормильца или представителя
-        breadwinner_result_date10 = await breadwinner_or_representative_date10(data=data, today=today)
-        if breadwinner_result_date10:
-            sum_reg_10_date = breadwinner_result_date10
-
-            # Разделение на периоды ПМП и ГСС
-            # В зависимости от соотношения дат ДР10 и даты первой пенсии
-            pmp_gss_result = await pmp_gss_registration(sum_reg_10_date, spv_init_date, list_of_periods_reg_child, PMP=pmp_periods, GSS=gss_periods)
-
-            pmp_periods = pmp_gss_result["PMP"]
-            gss_periods = pmp_gss_result["GSS"]
-
-            # Возвращаем результат с датой и периодами
-            # ОТЛАДОЧНЫЙ ВЫВОД
-            return {
-                "date_of_10_years": sum_reg_10_date,
-                "list_of_periods_reg": list_of_periods_reg_child,
-                "pmp_periods": pmp_periods,
-                "gss_periods": gss_periods
-            }
-
-        # Если ни одно условие не выполнилось возвращаем стандартное сообщение о положенной выплате
-        return {
-            "message": "Положено РСД до ПМП с даты назначения пенсии до окончания срока выплаты"
-        }
