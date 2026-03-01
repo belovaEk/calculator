@@ -12,11 +12,15 @@ async def PMP_GSS_primal(dr10: date, spv_init_date: date, list_of_periods_reg: L
         dict: Словарь с ключами:
             - PMP: List[PeriodType] - периоды, когда был назначен прожиточный минимум пенсионера (ПМП)
             - GSS: List[PeriodType] - периоды, когда был назначен городской социальный стандарт (ГСС)
+
+    {PMP: [{'DN':DNreg, 'DK': DKreg}, {'DN':DNreg, 'DK': DKreg}], 
+    GSS: [{'DN':DNreg, 'DK': DKreg}, {'DN':DNreg, 'DK': DKreg}]}
     """
+
     if dr10 < spv_init_date:
-        return dr10_earlier(spv_init_date, list_of_periods_reg, PMP, GSS)
+        return await dr10_earlier(spv_init_date, list_of_periods_reg, PMP, GSS)
     else:
-        return spv_init_date_earlier(dr10, spv_init_date, list_of_periods_reg, PMP, GSS)
+        return await spv_init_date_earlier(dr10, spv_init_date, list_of_periods_reg, PMP, GSS)
     
     
 async def spv_init_date_earlier(dr10: date, spv_init_date: date, list_of_periods_reg: List[PeriodType], PMP: List[PeriodType], GSS: List[PeriodType]) -> dict:
@@ -58,7 +62,7 @@ async def spv_init_date_earlier(dr10: date, spv_init_date: date, list_of_periods
                 GSS.append({'DN':DNreg, 'DK': DKreg})
                 PMP.append({'DN':DKreg, 'DK': list_of_periods_reg[i+1].DN})
         i+=1
-    
+
     return {'PMP': PMP, 'GSS': GSS}
     
 
@@ -71,13 +75,14 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
         dict: Словарь с ключами:
             - PMP: List[PeriodType] - периоды, когда был назначен прожиточный минимум пенсионера (ПМП)
             - GSS: List[PeriodType] - периоды, когда был назначен городской социальный стандарт (ГСС)
+
     """
     i = 0
     n = len(list_of_periods_reg)
     
     currentDate = date.today()
     
-    while i < n:
+    while i < n - 1:
         
         DKreg = list_of_periods_reg[i].DK
         DNreg = list_of_periods_reg[i].DN
@@ -92,12 +97,14 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
                 PMP.append({'DN':DKreg, 'DK': list_of_periods_reg[i+1].DN})
                 
         elif DKreg <= spv_init_date < list_of_periods_reg[i+1].DN :
+
             if i == n-1:
                 PMP.append({'DN':spv_init_date, 'DK': currentDate})
             else:
                 PMP.append({'DN':spv_init_date, 'DK': DNreg})
                 
         elif spv_init_date < DNreg < DKreg:
+
             if i == n-1:
                 GSS.append({'DN':DNreg, 'DK': DKreg})
                 if DKreg != currentDate:
@@ -106,4 +113,34 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
                 GSS.append({'DN':DNreg, 'DK': DKreg})
                 PMP.append({'DN':DKreg, 'DK': list_of_periods_reg[i+1].DN})
         i+=1
+
     return {'PMP': PMP, 'GSS': GSS}
+
+
+def sort_periods_in_data(data: JsonQuerySchema) -> JsonQuerySchema:
+    """
+    Сортирует периоды регистрации в Москве по дате начала (DN) внутри структуры data.
+    Сортирует поля: periods_reg_moscow, periods_reg_representative_moscow, periods_reg_breadwinner_moscow
+    """
+    # Сортируем периоды регистрации ребенка
+    if data.periods_reg_moscow:
+        data.periods_reg_moscow = sorted(
+            data.periods_reg_moscow, 
+            key=lambda period: period.DN
+        )
+    
+    # Сортируем периоды регистрации законного представителя
+    if data.periods_reg_representative_moscow:
+        data.periods_reg_representative_moscow = sorted(
+            data.periods_reg_representative_moscow, 
+            key=lambda period: period.DN
+        )
+    
+    # Сортируем периоды регистрации кормильца
+    if data.periods_reg_breadwinner_moscow:
+        data.periods_reg_breadwinner_moscow = sorted(
+            data.periods_reg_breadwinner_moscow, 
+            key=lambda period: period.DN
+        )
+    
+    return data

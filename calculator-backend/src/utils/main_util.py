@@ -14,60 +14,100 @@ from src.utils.calculate_util import (
     breadwinner_or_representative,
     calculate_total_registration_without_breaks
 )
-from src.utils.auxiliary_util import PMP_GSS_primal
+from src.utils.auxiliary_util import PMP_GSS_primal, sort_periods_in_data
 
 
 # Главная функция для расчета
 async def main_util(data: JsonQuerySchema) -> dict:
-    '''
+    """
     Главная вызываемая функция, точка входа в весь алгоритм.
     Имеет основную логику алгоритма, и использует другие функции для реализации каждого шага.
-    '''
+    """
+    # Инициализация основных переменных
     today = date.today()
-    spv_init_date = await get_date_init_pension_Moscow(data.payments)
-    sum_reg_10_date = None  # Дата наступления 10 лет регистрации в Москве
+    spv_init_date = await get_date_init_pension_Moscow(data.payments)  # Дата первой пенсии в Москве
+    sum_reg_10_date = None  # Дата наступления 10 лет суммарной регистрации в Москве
+    pmp_periods: List[PeriodType] = []  # Периоды прожиточного минимума пенсионера
+    gss_periods: List[PeriodType] = []  # Периоды городского социального стандарта
+
+    # Препроцессинг: сортировка полей периодов в data
+    data = sort_periods_in_data(data=data)
 
     # Проверка возраста
-    if await is_adult(today=today, date_of_birth=data.date_of_birth) == True:
-        return {"Взрослые не обрабатываются"}
+    # Алгоритм работает только с несовершеннолетними (дети)
+    if await is_adult(today=today, date_of_birth=data.date_of_birth):
+        return {"message": "Взрослые не обрабатываются"}
 
-    # # Проверка, что с даты первичного назначения СПВ прошло больше 1 месяца
-    # spv_delta = relativedelta(today, spv_init_date)
-    # # Проверяем, прошло ли меньше 1 месяца
-    # if spv_delta.years == 0 and spv_delta.months == 0:
-    #     return {"С даты первичного назначения СПВ прошло меньше 1 месяца"}
+    # Проверка, что с даты первичного назначения СПВ прошло больше 1 месяца
+    spv_delta = relativedelta(today, spv_init_date)
+    if spv_delta.years == 0 and spv_delta.months == 0:
+        return {"message": "С даты первичного назначения СПВ прошло меньше 1 месяца"}
 
-    # Есть ли регистрация в Москве?
-    if data.is_there_a_registration_in_moscow == True:
-        list_of_periods_reg_child = data.periods_reg_moscow
-        summary_registration = await calculate_registration_summary(
-            list_of_periods_reg= list_of_periods_reg_child
+    # Проверка наличия регистрации в Москве
+    if not data.is_there_a_registration_in_moscow:
+        return {"message": "Нет регистрации в Москве"}
+
+    # Получаем периоды регистрации ребенка
+    list_of_periods_reg_child = data.periods_reg_moscow
+    
+    # Рассчитываем суммарный срок регистрации и дату последнего разрыва
+    summary_registration = await calculate_registration_summary(
+        list_of_periods_reg=list_of_periods_reg_child
+    )
+
+    # Проверка достижения 10 лет суммарной регистрации ребенка
+    if summary_registration["total_period"].years > 10:
+        # Достигнуто более 10 лет - вычисляем точную дату достижения
+        registration_result = await calculate_total_registration_without_breaks(
+            data.periods_reg_moscow
         )
 
-        if summary_registration["total_period"].years > 10:
-            result = await calculate_total_registration_without_breaks(data.periods_reg_moscow)
-            
-            if result["has_10_years"] == True:
-                sum_reg_10_date = result["date_of_10_years"]
-                PMP_GSS_primal()
-                return {f"Дата 10 лет у ребенка: {sum_reg_10_date}"}
+        if registration_result["has_10_years"]:
+            sum_reg_10_date = registration_result["date_of_10_years"]
 
-        else:
-            DNregM = summary_registration["last_break_date"]
-            if (
-                DNregM < data.date_of_birth + relativedelta(months=6)
-                and DNregM
-                and DNregM < spv_init_date
-            ):
-                sum_reg_10_date = DNregM
-                return {f"10 лет регистрации: {sum_reg_10_date}"}
-            else:
-                result = await breadwinner_or_representative(data=data, today=today)
-                print(result)
-                if result:
-                    return {f"Дата 10 лет: {result}"}
-                return {
-                    "Вывод: положено РСД до ПМП с даты назначения пенсии до окончания срока выплаты"
-                }
+            # Разделение на периоды ПМП и ГСС
+            # В зависимости от соотношения дат ДР10 и даты первой пенсии
+            pmp_gss_result = await PMP_GSS_primal(
+                dr10=sum_reg_10_date,
+                spv_init_date=spv_init_date,
+                list_of_periods_reg=list_of_periods_reg_child,
+                PMP=pmp_periods,
+                GSS=gss_periods
+            )
 
-    return {"end": True}
+            pmp_periods = pmp_gss_result["PMP"]
+            gss_periods = pmp_gss_result["GSS"]
+
+            # Возвращаем результат с датой и периодами
+            # ОТЛАДОЧНЫЙ ВЫВОД
+            return {
+                "date_of_10_years_child": sum_reg_10_date,
+                "list_of_periods_reg_child": list_of_periods_reg_child,
+                "pmp_periods": pmp_periods,
+                "gss_periods": gss_periods
+            }
+
+    else:
+        # Меньше 10 лет суммарной регистрации
+        dn_reg_m = summary_registration["last_break_date"]
+        
+        # Условие: дата последнего разрыва должна быть:
+        # 1. меньше даты рождения + 6 месяцев
+        # 2. меньше даты первой пенсии
+        if (
+            dn_reg_m
+            and dn_reg_m < data.date_of_birth + relativedelta(months=6)
+            and dn_reg_m < spv_init_date
+        ):
+            sum_reg_10_date = dn_reg_m
+            return {"date_of_10_years": sum_reg_10_date}
+
+        # Если ребенок не набрал 10 лет, проверяем кормильца или представителя
+        breadwinner_result = await breadwinner_or_representative(data=data, today=today)
+        if breadwinner_result:
+            return {"date_of_10_years": breadwinner_result}
+
+        # Если ни одно условие не выполнилось возвращаем стандартное сообщение о положенной выплате
+        return {
+            "message": "Положено РСД до ПМП с даты назначения пенсии до окончания срока выплаты"
+        }
