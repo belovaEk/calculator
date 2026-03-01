@@ -50,7 +50,7 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
     }
 
     const updateGlobalPeriodSuspension = () => {
-        updateStore('suspension', periods)
+        updateStore('periods_of_suspension', periods)
     }
 
     useEffect(() => {

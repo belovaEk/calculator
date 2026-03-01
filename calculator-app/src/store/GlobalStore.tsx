@@ -1,14 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
 import { GlobalStoreContextInterface, GlobalStoreParameterInterface } from './type';
 
-const GlobalStoreContext = createContext<GlobalStoreContextInterface>({
-    store: {},
-    updateStore: () => { },
-    resetStore: () => { }
-});
-
-export const useGlobalStore = () => useContext(GlobalStoreContext);
-
 const initStore: GlobalStoreParameterInterface = {
     is_adult: false,
     is_there_a_registration_in_moscow_of_the_breadwinner: false,
@@ -18,6 +10,15 @@ const initStore: GlobalStoreParameterInterface = {
     is_get_PSD_FSD_last_mounth_payment_trasferred: false,
     is_Not_get_PSD_FSD_now_payment_trasferred: false,
 }
+
+
+const GlobalStoreContext = createContext<GlobalStoreContextInterface>({
+    store: initStore,
+    updateStore: () => { },
+    resetStore: () => { }
+});
+
+export const useGlobalStore = () => useContext(GlobalStoreContext);
 
 export const GlobalStoreProvider = ({ children }: { children: React.ReactNode }) => {
 
