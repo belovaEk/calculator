@@ -8,12 +8,13 @@ from dateutil.relativedelta import relativedelta
 from typing import List
 from src.utils.payment_util import (
     get_date_init_pension_Moscow,
+    
 )
 
 from src.utils.registration.registration_util import (
     calculate_registration_summary,
     breadwinner_or_representative_date10,
-    calculate_total_registration_without_breaks
+    calculate_total_registration_without_breaks,
 )
 
 from src.utils.auxiliary_util import sort_periods_in_data, is_adult
