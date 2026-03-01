@@ -39,9 +39,9 @@ class JsonQuerySchema(BaseModel):
     is_there_a_registration_in_moscow: bool
     is_there_a_registration_in_moscow_of_the_breadwinner: bool
     is_there_a_registration_in_moscow_of_the_legal_representative: bool
-    periods_reg_moscow: List[PeriodType]
-    periods_reg_representative_moscow: List[PeriodType]
-    periods_reg_breadwinner_moscow: List[PeriodType]
+    periods_reg_moscow: Optional[List[PeriodType]]
+    periods_reg_representative_moscow: Optional[List[PeriodType]]
+    periods_reg_breadwinner_moscow: Optional[List[PeriodType]]
     date_of_death_of_the_breadwinner: date
     there_is_a_breadwinner: bool
 
