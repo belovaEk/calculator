@@ -46,21 +46,21 @@ async def spv_init_date_earlier(dr10: date, spv_init_date: date, list_of_periods
         
         if DKreg >= dr10 >= DNreg:
             if i == n-1:
-                GSS.append({'DN':dr10, 'DK':DKreg})
+                GSS.append(PeriodType(DN=dr10, DK=DKreg))
                 if DKreg != currentDate:
-                    PMP.append({'DN': DKreg, 'DK': currentDate})
+                    PMP.append(PeriodType(DN=DKreg, DK=currentDate))
             else:
-                GSS.append({'DN':dr10, 'DK': DKreg})
-                PMP.append({'DN': DKreg, 'DK': list_of_periods_reg[i+1].DN})
+                GSS.append(PeriodType(DN=dr10, DK=DKreg))
+                PMP.append(PeriodType(DN=DKreg, DK=list_of_periods_reg[i+1].DN))
                 
         elif DNreg > dr10 and DKreg > dr10:
             if i == n-1:
-                GSS.append({'DN': DNreg, 'DK': DKreg})
+                GSS.append(PeriodType(DN=DNreg, DK=DKreg))
                 if DKreg != currentDate:
-                    PMP.append({'DN': DKreg, 'DK':currentDate})
+                    PMP.append(PeriodType(DN=DKreg, DK=currentDate))
             else:
-                GSS.append({'DN':DNreg, 'DK': DKreg})
-                PMP.append({'DN':DKreg, 'DK': list_of_periods_reg[i+1].DN})
+                GSS.append(PeriodType(DN=DNreg, DK=DKreg))
+                PMP.append(PeriodType(DN=DKreg, DK=list_of_periods_reg[i+1].DN))
         i+=1
 
     return {'PMP': PMP, 'GSS': GSS}
@@ -84,33 +84,32 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
     while i <= n - 1:
         DKreg = list_of_periods_reg[i].DK
         DNreg = list_of_periods_reg[i].DN
-        print(DNreg, spv_init_date, DKreg)
         
         if DKreg > spv_init_date >= DNreg:
             if i == n-1:
-                GSS.append({'DN':spv_init_date, 'DK': DKreg})
+                GSS.append(PeriodType(DN=spv_init_date, DK=DKreg))
                 if DKreg != currentDate:
-                    PMP.append({'DN':DKreg, 'DK': currentDate})
+                     PMP.append(PeriodType(DN=DKreg, DK=currentDate))
             else:
-                GSS.append({'DN':spv_init_date, 'DK': DKreg})
-                PMP.append({'DN':DKreg, 'DK': list_of_periods_reg[i+1].DN})
+                GSS.append(PeriodType(DN=spv_init_date, DK=DKreg))
+                PMP.append(PeriodType(DN=DKreg, DK=list_of_periods_reg[i+1].DN))
                 
         elif DKreg <= spv_init_date < list_of_periods_reg[i+1].DN :
 
             if i == n-1:
-                PMP.append({'DN':spv_init_date, 'DK': currentDate})
+                PMP.append(PeriodType(DN=spv_init_date, DK=currentDate))
             else:
-                PMP.append({'DN':spv_init_date, 'DK': DNreg})
+                PMP.append(PeriodType(DN=spv_init_date, DK=DNreg))
                 
         elif spv_init_date < DNreg < DKreg:
 
             if i == n-1:
-                GSS.append({'DN':DNreg, 'DK': DKreg})
+                GSS.append(PeriodType(DN=DNreg, DK=DKreg))
                 if DKreg != currentDate:
-                    PMP.append({'DN':DKreg, 'DK': currentDate})
+                    PMP.append(PeriodType(DN=DKreg, DK=currentDate))
             else:
-                GSS.append({'DN':DNreg, 'DK': DKreg})
-                PMP.append({'DN':DKreg, 'DK': list_of_periods_reg[i+1].DN})
+                GSS.append(PeriodType(DN=DNreg, DK=DKreg))
+                PMP.append(PeriodType(DN=DKreg, DK=list_of_periods_reg[i+1].DN))
         i+=1
 
     return {'PMP': PMP, 'GSS': GSS}
@@ -159,5 +158,50 @@ def sort_periods_in_data(data: JsonQuerySchema) -> JsonQuerySchema:
 
 
 
-# def PMP_GSS_suspension(data: JsonQuerySchema, pmp_periods, gss_periods):
+def PMP_GSS_suspension(data: JsonQuerySchema, pmp_periods: List[PeriodType], gss_periods: List[PeriodType]):
     
+    periods_suspension = data.periods_suspension or None
+    
+    if periods_suspension is not None:
+        
+        current_gss: List[PeriodType] = gss_periods.copy()
+        
+        for suspension in periods_suspension:
+            
+            new_gss: List[PeriodType] = []
+            
+            DNsus = suspension.DN # дата приостановки
+            DKsus = suspension.DK # дата возобновления
+
+            for gss in current_gss:
+                
+                DNgss = gss.DN # дата начала ГСС
+                DKgss = gss.DK # дата конца ГСС
+                
+                # Если дата приостановки пенсии попала между датами выплаты ГСС
+                if DNgss < DNsus and DKgss < DKsus: 
+                    new_gss.append(PeriodType(DN=DNgss, DK=DNsus))
+                    
+                # Еcли между датами периода выплат ГСС попадает дата возобновления выплаты пенсии
+                elif DNsus < DNgss < DKsus < DKgss:
+                    new_gss.append(PeriodType(DN=DKsus, DK=DKgss))
+                    
+                # Если период выплаты ГСС у нас попадает между двумя датами приостановки и возобновления пенсии
+                elif DNsus < DNgss < DKgss < DKsus:
+                    continue
+                    
+                # Если даты приостановки и возобновления наоборот попадают внутрь периода выплат ГСС
+                elif DNgss < DNsus < DKsus < DKgss:
+                    new_gss.append(PeriodType(DN=DNgss, DK=DNsus))
+                    new_gss.append(PeriodType(DN=DKsus, DK=DKgss))
+                  
+                # Если не подпал под условия добавляем исходный период 
+                else:
+                    new_gss.append(gss)
+                    
+            current_gss = new_gss # обновляем для следующей итерации
+            
+        gss_periods[:] = current_gss  # заменяем исходный список
+                    
+                
+               
