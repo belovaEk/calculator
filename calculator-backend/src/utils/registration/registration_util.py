@@ -5,7 +5,18 @@ from src.schemas.json_query_schema import (
 )
 from dateutil.relativedelta import relativedelta
 from typing import List, Optional
+from datetime import date
 
+
+
+def calculate_exact_duration(start_date: date, end_date: date) -> PeriodDuration:
+    """Вычисляет точную продолжительность периода с учетом лет, месяцев и дней
+    
+    Returns:
+        PeriodDuration: Объект с годами, месяцами и днями разницы между датами
+    """
+    delta = relativedelta(end_date, start_date)
+    return PeriodDuration.from_relativedelta(delta)
 
 async def calculate_registration_summary(list_of_periods_reg: List[PeriodType]) -> dict:
     """
