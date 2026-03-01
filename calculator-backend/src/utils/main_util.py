@@ -108,7 +108,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
 
             # Разделение на периоды ПМП и ГСС
             # В зависимости от соотношения дат ДР10 и даты первой пенсии
-            pmp_gss_result = await PMP_GSS_primal(sum_reg_10_date, spv_init_date, list_of_periods_reg_child, PMP=pmp_periods, GSS=gss_periods)
+            pmp_gss_result = await pmp_gss_registration(sum_reg_10_date, spv_init_date, list_of_periods_reg_child, PMP=pmp_periods, GSS=gss_periods)
 
             pmp_periods = pmp_gss_result["PMP"]
             gss_periods = pmp_gss_result["GSS"]
@@ -123,13 +123,13 @@ async def main_util(data: JsonQuerySchema) -> dict:
             }
 
         # Если ребенок не набрал 10 лет, проверяем кормильца или представителя
-        breadwinner_result = await breadwinner_or_representative_date10(data=data, today=today)
-        if breadwinner_result:
-            sum_reg_10_date = breadwinner_result
+        breadwinner_result_date10 = await breadwinner_or_representative_date10(data=data, today=today)
+        if breadwinner_result_date10:
+            sum_reg_10_date = breadwinner_result_date10
 
             # Разделение на периоды ПМП и ГСС
             # В зависимости от соотношения дат ДР10 и даты первой пенсии
-            pmp_gss_result = await PMP_GSS_primal(sum_reg_10_date, spv_init_date, list_of_periods_reg_child, PMP=pmp_periods, GSS=gss_periods)
+            pmp_gss_result = await pmp_gss_registration(sum_reg_10_date, spv_init_date, list_of_periods_reg_child, PMP=pmp_periods, GSS=gss_periods)
 
             pmp_periods = pmp_gss_result["PMP"]
             gss_periods = pmp_gss_result["GSS"]
