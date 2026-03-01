@@ -144,3 +144,4 @@ def sort_periods_in_data(data: JsonQuerySchema) -> JsonQuerySchema:
         )
     
     return data
+

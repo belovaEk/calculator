@@ -30,7 +30,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
     pmp_periods: List[PeriodType] = []  # Периоды прожиточного минимума пенсионера
     gss_periods: List[PeriodType] = []  # Периоды городского социального стандарта
 
-    # Препроцессинг: сортировка полей периодов в data
+    # Препроцессинг: сортировка полей периодов в data и валидация 
     data = sort_periods_in_data(data=data)
 
     # Проверка возраста

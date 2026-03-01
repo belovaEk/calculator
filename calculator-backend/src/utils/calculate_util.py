@@ -131,6 +131,11 @@ async def breadwinner_or_representative(data: JsonQuerySchema, today: date) -> O
     # Если есть законный представитель, и у него есть актуальная регистрация в Москве
     if data.periods_reg_representative_moscow:
 
+        # Корректируем даты окончания периодов представителя
+        for period in data.periods_reg_representative_moscow:
+            if period.DK > today:
+                period.DK = today
+
         result = await calculate_total_registration_without_breaks(
             data.periods_reg_representative_moscow
         )
@@ -142,6 +147,11 @@ async def breadwinner_or_representative(data: JsonQuerySchema, today: date) -> O
             return result["date_of_10_years"]
 
     if data.periods_reg_breadwinner_moscow:
+
+        # Корректируем даты окончания периодов кормильца
+        for period in data.periods_reg_breadwinner_moscow:
+            if period.DK > data.date_of_death_of_the_breadwinner:
+                period.DK = data.date_of_death_of_the_breadwinner
 
         result = await calculate_total_registration_without_breaks(
             data.periods_reg_breadwinner_moscow
