@@ -7,6 +7,7 @@ from typing import List
 from src.utils.pmp_gss_calculate.pmp_gss_reg_util import pmp_gss_registration
 from src.utils.pmp_gss_calculate.pmp_gss_suspension_util import pmp_gss_suspension
 from src.utils.pmp_gss_calculate.pmp_gss_inpatient_util import pmp_gss_inpatient
+from src.utils.pmp_gss_calculate.pmp_gss_payment import pmp_gss_pension
 
 
 async def prepare_pmp_gss_result(
@@ -40,7 +41,14 @@ async def prepare_pmp_gss_result(
         periods_inpatient=data.periods_inpatient,
     )
 
+    pmp_gss_pension_result = await pmp_gss_pension(
+        data=data,
+        pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
+        gss_periods=pmp_gss_inpatient_result["gss_periods"]
+    )
+
     return {
-        "pmp_periods": pmp_gss_inpatient_result["pmp_periods"],
-        "gss_periods": pmp_gss_inpatient_result["gss_periods"],
+        "pmp_periods": pmp_gss_pension_result["pmp_periods"],
+        "gss_periods": pmp_gss_pension_result["gss_periods"]
+
     }
