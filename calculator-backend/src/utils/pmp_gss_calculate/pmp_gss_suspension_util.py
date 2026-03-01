@@ -3,7 +3,18 @@ from typing import List
 
 
 async def PMP_GSS_suspension(data: JsonQuerySchema, pmp_periods: List[PeriodType], gss_periods: List[PeriodType]):
-    
+    """Функция для пересчета ГСС и ПМП с учетом периодов прерываний
+
+    Args:
+        data (JsonQuerySchema): 
+        pmp_periods (List[PeriodType]): периоды ПМП с учетом регистрации
+        gss_periods (List[PeriodType]): периоды ГСС с учетом регистрации
+
+    Returns:
+        dict: Словарь с ключами 
+        - PMP: List[PeriodType] - ПМП с учетом прерываний
+        - GSS: List[PeriodType] - ГСС с учетом прерываний
+    """    
     periods_suspension = data.periods_suspension or None
     
     if periods_suspension is not None: 
@@ -17,6 +28,16 @@ async def PMP_GSS_suspension(data: JsonQuerySchema, pmp_periods: List[PeriodType
 
 
 async def recalculation (periods: List[PeriodType], periods_suspension: List[PeriodWithIdType]):
+    
+    """Вспомогательная функция для пересчета ГСС и ПМП с учетом периодов прерываний
+    
+    Args:
+        periods (List[PeriodType]): периоды ПМП или ГСС с учетом регистрации
+        periods_suspension (List[PeriodWithIdType]): периоды прерывания 
+        
+    Returns:
+        List[PeriodType]: новый массив ПМП или ГСС с учето прерываний
+    """    
     
     current_gss_pmp: List[PeriodType] = periods.copy()
         
