@@ -14,11 +14,15 @@ from src.utils.calculate_util import (
     breadwinner_or_representative,
     calculate_total_registration_without_breaks
 )
+from src.utils.auxiliary_util import PMP_GSS_primal
 
 
 # Главная функция для расчета
 async def main_util(data: JsonQuerySchema) -> dict:
-
+    '''
+    Главная вызываемая функция, точка входа в весь алгоритм.
+    Имеет основную логику алгоритма, и использует другие функции для реализации каждого шага.
+    '''
     today = date.today()
     spv_init_date = await get_date_init_pension_Moscow(data.payments)
     sum_reg_10_date = None  # Дата наступления 10 лет регистрации в Москве
@@ -45,7 +49,9 @@ async def main_util(data: JsonQuerySchema) -> dict:
             
             if result["has_10_years"] == True:
                 sum_reg_10_date = result["date_of_10_years"]
+                PMP_GSS_primal()
                 return {f"Дата 10 лет у ребенка: {sum_reg_10_date}"}
+
         else:
             DNregM = summary_registration["last_break_date"]
             if (

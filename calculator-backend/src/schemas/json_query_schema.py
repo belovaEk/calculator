@@ -51,11 +51,6 @@ class JsonQuerySchema(BaseModel):
     payments: Optional[List[PaymentInterface]] = None
 
 
-
-class PeriodType(BaseModel):
-    DN: date
-    DK: date
-
 class PeriodDuration(BaseModel):
     years: int = 0
     months: int = 0

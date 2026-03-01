@@ -7,6 +7,11 @@ from typing import List
 async def PMP_GSS_primal(dr10: date, spv_init_date: date, list_of_periods_reg: List[PeriodType], PMP: List[PeriodType], GSS: List[PeriodType]) -> dict:
     """
     Возвращает ПМП и ГСС в зависимости от ДР10 и ДатыПервойСПВ
+    
+    Returns:
+        dict: Словарь с ключами:
+            - PMP: List[PeriodType] - периоды, когда был назначен прожиточный минимум пенсионера (ПМП)
+            - GSS: List[PeriodType] - периоды, когда был назначен городской социальный стандарт (ГСС)
     """
     if dr10 < spv_init_date:
         return dr10_earlier(spv_init_date, list_of_periods_reg, PMP, GSS)
@@ -15,6 +20,14 @@ async def PMP_GSS_primal(dr10: date, spv_init_date: date, list_of_periods_reg: L
     
     
 async def spv_init_date_earlier(dr10: date, spv_init_date: date, list_of_periods_reg: List[PeriodType], PMP: List[PeriodType], GSS: List[PeriodType]) -> dict:
+    """
+    Обрабатывает случай, когда дата первой СПВ раньше даты достижения 10 лет регистрации
+    
+    Returns:
+        dict: Словарь с ключами:
+            - PMP: List[PeriodType] - периоды, когда был назначен прожиточный минимум пенсионера (ПМП)
+            - GSS: List[PeriodType] - периоды, когда был назначен городской социальный стандарт (ГСС)
+    """
     i = 0
     n = len(list_of_periods_reg)
     
@@ -51,6 +64,14 @@ async def spv_init_date_earlier(dr10: date, spv_init_date: date, list_of_periods
 
             
 async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType], PMP: List[PeriodType], GSS: List[PeriodType]) -> dict:
+    """
+    Обрабатывает случай, когда дата достижения 10 лет регистрации раньше даты первой СПВ
+    
+    Returns:
+        dict: Словарь с ключами:
+            - PMP: List[PeriodType] - периоды, когда был назначен прожиточный минимум пенсионера (ПМП)
+            - GSS: List[PeriodType] - периоды, когда был назначен городской социальный стандарт (ГСС)
+    """
     i = 0
     n = len(list_of_periods_reg)
     
@@ -85,3 +106,4 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
                 GSS.append({'DN':DNreg, 'DK': DKreg})
                 PMP.append({'DN':DKreg, 'DK': list_of_periods_reg[i+1].DN})
         i+=1
+    return {'PMP': PMP, 'GSS': GSS}

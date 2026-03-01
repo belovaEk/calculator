@@ -6,20 +6,31 @@ from src.schemas.json_query_schema import (
 )
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
-from typing import List
+from typing import List, Optional
 
 
-async def is_adult(today, date_of_birth):
+async def is_adult(today, date_of_birth) -> bool:
+    """
+    Проверяет, является ли человек совершеннолетним (достиг 18 лет)
+    
+    Returns:
+        bool: True если возраст 18 лет или больше, иначе False
+    """
     delta = relativedelta(today, date_of_birth)
     if delta.years >= 18:
         return True
     return False
 
 
-async def calculate_registration_summary(list_of_periods_reg: List[PeriodType]):
+async def calculate_registration_summary(list_of_periods_reg: List[PeriodType]) -> dict:
     """
-    Возвращает суммарый срок регистрации в Москве и дату начала первого периода регистрации
+    Возвращает суммарный срок регистрации в Москве и дату начала первого периода регистрации
     (дату начала периода регистрации после разрыва в более, чем 1 месяц)
+    
+    Returns:
+        dict: Словарь с ключами:
+            - total_period: relativedelta - общая продолжительность регистрации
+            - last_break_date: Optional[date] - дата начала периода после последнего разрыва
     """
     if not list_of_periods_reg:
         return {"total_period": relativedelta(), "last_break_date": None}
@@ -49,9 +60,12 @@ async def calculate_registration_summary(list_of_periods_reg: List[PeriodType]):
     }
 
 
-async def get_date_init_pension_Moscow(payments: List[PaymentInterface]):
+async def get_date_init_pension_Moscow(payments: List[PaymentInterface]) -> Optional[date]:
     """
     Возвращает дату назначения первой пенсии в Москве
+    
+    Returns:
+        Optional[date]: Дата назначения первой пенсии в Москве или None, если такой пенсии нет
     """
     # Добавить сортировку периодов и выбирать с ранней датой
     for payment in payments:
@@ -61,17 +75,24 @@ async def get_date_init_pension_Moscow(payments: List[PaymentInterface]):
 
 
 def calculate_exact_duration(start_date: date, end_date: date) -> PeriodDuration:
-    """Вычисляет точную продолжительность периода с учетом лет, месяцев и дней"""
+    """Вычисляет точную продолжительность периода с учетом лет, месяцев и дней
+    
+    Returns:
+        PeriodDuration: Объект с годами, месяцами и днями разницы между датами
+    """
     delta = relativedelta(end_date, start_date)
     return PeriodDuration.from_relativedelta(delta)
 
 
-async def calculate_total_registration_without_breaks(
-    list_of_periods_reg: List[PeriodType],
-) -> dict:
+async def calculate_total_registration_without_breaks(list_of_periods_reg: List[PeriodType]) -> dict:
     """
     Возвращает информацию о достижении 10 лет суммарной регистрации в Москве
     без обнуления счетчика при разрывах (суммируются все периоды подряд)
+    
+    Returns:
+        dict: Словарь с ключами:
+            - has_10_years: bool - достигнуто ли 10 лет суммарной регистрации
+            - date_of_10_years: Optional[date] - дата достижения 10 лет (если достигнуто)
     """
     if not list_of_periods_reg:
         return {"has_10_years": False, "date_of_10_years": None}
@@ -97,12 +118,15 @@ async def calculate_total_registration_without_breaks(
     return {"has_10_years": False, "date_of_10_years": None}
 
 
-async def breadwinner_or_representative(data: JsonQuerySchema, today: date):
+async def breadwinner_or_representative(data: JsonQuerySchema, today: date) -> Optional[date]:
     """
     Сначала проверяет, что у представителя есть актуальная на сегодняшний день регистрация в Москве, далее
-    проверяет представиля на наличие суммарной регистрации в 10 лет.
+    проверяет представителя на наличие суммарной регистрации в 10 лет.
     Если условия не выполнились, проверяет была ли у кормильца на момент смерти регистрация в Москве,
     если была то тоже проверяет на наличие суммарной регистрации в 10 лет.
+    
+    Returns:
+        Optional[date]: Дата достижения 10 лет суммарной регистрации или None, если условия не выполнены
     """
 
     # Если есть законный представитель, и у него есть актуальная регистрация в Москве
