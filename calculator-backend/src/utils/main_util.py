@@ -14,7 +14,7 @@ from src.utils.calculate_util import (
     breadwinner_or_representative,
     calculate_total_registration_without_breaks
 )
-from src.utils.auxiliary_util import PMP_GSS_primal
+from src.utils.auxiliary_util import PMP_GSS_primal, sort_periods_in_data
 
 
 # Главная функция для расчета
@@ -29,6 +29,9 @@ async def main_util(data: JsonQuerySchema) -> dict:
     sum_reg_10_date = None  # Дата наступления 10 лет суммарной регистрации в Москве
     pmp_periods: List[PeriodType] = []  # Периоды прожиточного минимума пенсионера
     gss_periods: List[PeriodType] = []  # Периоды городского социального стандарта
+
+    # Препроцессинг: сортировка полей периодов в data
+    data = sort_periods_in_data(data=data)
 
     # Проверка возраста
     # Алгоритм работает только с несовершеннолетними (дети)
@@ -75,13 +78,11 @@ async def main_util(data: JsonQuerySchema) -> dict:
             pmp_periods = pmp_gss_result["PMP"]
             gss_periods = pmp_gss_result["GSS"]
 
-            # Отладочный вывод полученных периодов
-            print("ПМП периоды:", [(p["DN"], p["DK"]) for p in pmp_periods])
-            print("ГСС периоды:", [(p["DN"], p["DK"]) for p in gss_periods])
-
             # Возвращаем результат с датой и периодами
+            # ОТЛАДОЧНЫЙ ВЫВОД
             return {
-                "date_of_10_years": sum_reg_10_date,
+                "date_of_10_years_child": sum_reg_10_date,
+                "list_of_periods_reg_child": list_of_periods_reg_child,
                 "pmp_periods": pmp_periods,
                 "gss_periods": gss_periods
             }
