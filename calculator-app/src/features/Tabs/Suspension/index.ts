@@ -1,0 +1,1 @@
+export { Suspension as default} from "./components/Suspension";

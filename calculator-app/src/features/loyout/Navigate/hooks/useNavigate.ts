@@ -10,9 +10,10 @@ export const useTabs = () => {
         if (location.pathname.includes('params')) return 'params';
         if (location.pathname.includes('basic')) return 'basic';
         if (location.pathname.includes('payments')) return 'payments';
+        if (location.pathname.includes('suspension')) return 'suspension';
         if (location.pathname.includes('results')) return 'results';
         if (location.pathname.includes('inpatient')) return 'inpatient';
-        return 'params'; // по умолчанию
+        return 'basic'; // по умолчанию
     };
 
     const activeTab = getActiveTabFromPath();
@@ -22,6 +23,7 @@ export const useTabs = () => {
         { id: 'basic', label: 'Основные данные', route: ROUTES.basic },
         { id: 'inpatient', label: 'Размещение в стационарах', route: ROUTES.inpatient },
         { id: 'payments', label: 'Выплаты и периоды', route: ROUTES.payments },
+        { id: 'suspension', label: 'Приостановки выплат', route: ROUTES.suspension },
         { id: 'results', label: 'Результаты расчета', route: ROUTES.results },
     ];
 

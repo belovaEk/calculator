@@ -4,11 +4,9 @@ import { useGlobalStore } from "../../../../store";
 import { PERSONA, personaType } from "../../../constants/people";
 import { PeriodType, PERIOD_TYPE } from "../../../constants/periodsName";
 
-export const usePeriods = (persona: personaType, typePeriod: PeriodType, paymentId?: number) => {
+export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
 
     const { store, updateStore } = useGlobalStore();
-
-    const currentPayments = store.payments || [];
 
     const [periods, setPeriods] = useState<Array<DatePeriod>>([]);
     const [nextId, setNextId] = useState<number>(0);
@@ -34,15 +32,15 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType, payment
 
     const updatePeriodRegistration = () => {
         if (persona === PERSONA.children || persona === PERSONA.adult) {
-            updateStore('periods_of_registration_in_moscow', periods);
+            updateStore('periods_reg_moscow', periods);
             return;
         }
         if (persona === PERSONA.legal_representative) {
-            updateStore('periods_of_registration_in_moscow_of_the_legal_representative', periods);
+            updateStore('periods_reg_representative_moscow', periods);
             return;
         }
         if (persona === PERSONA.breadwinner) {
-            updateStore('periods_of_registration_in_moscow_of_the_breadwinner', periods);
+            updateStore('periods_reg_breadwinner_moscow', periods);
             return;
         }
     }
@@ -51,19 +49,8 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType, payment
         updateStore('periods_of_inpatient', periods);
     }
 
-    const updatedPayments = currentPayments.map(payment => {
-        if (payment.id === paymentId) {
-            return {
-                ...payment,
-                suspension: periods,
-                is_suspension: periods.length > 0
-            };
-        }
-        return payment;
-    });
-
-    const updateGlobalPeriodStopPayment = () => {
-        updateStore('payments', updatedPayments)
+    const updateGlobalPeriodSuspension = () => {
+        updateStore('suspension', periods)
     }
 
     useEffect(() => {
@@ -76,7 +63,7 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType, payment
             return;
         }
         if (typePeriod === PERIOD_TYPE.stop_payment) {
-            updateGlobalPeriodStopPayment();
+            updateGlobalPeriodSuspension();
             return;
         }
 

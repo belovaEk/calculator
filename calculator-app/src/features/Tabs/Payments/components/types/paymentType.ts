@@ -7,12 +7,6 @@ export type PaymentTypeDisplay = 'Пенсия' | 'ЕДВ' | 'ЕГДВ' | 'ЖК�
 export type PensionCategoryRaw = 'insurance_SPK' | 'social_SPK' | 'social_disability';
 export type PensionCategoryDisplay = 'Страховая по СПК' | 'Социальная по СПК' | 'Социальная по инвалидности';
 
-export type SuspensionPeriodType = {
-    id: number,
-    DN: DateString,
-    DK: DateString,
-}
-
 export interface PaymentInterface {
     id: number,
     type: PaymentTypeRaw,
@@ -20,9 +14,7 @@ export interface PaymentInterface {
     DN: DateString,
     DK: DateString,
     paymentAmount: Rubles,
-    is_Moscow: boolean,
-    is_suspension: boolean,
-    suspension?: Array<SuspensionPeriodType>,
+    is_Moscow: boolean
 }
 
 export interface PaymentProps  {

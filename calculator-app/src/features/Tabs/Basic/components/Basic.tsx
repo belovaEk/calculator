@@ -7,12 +7,11 @@ export const Basic = () => {
         navigate,
         store,
         updateStore,
+        isBreadwinner,
+        updateIsBreadwinner,
         ROUTES,
         PERIOD_TYPE,
         PERSONA,
-        isVisibleSection,
-        updateIsVisibleSection,
-
     } = useBasic();
 
 
@@ -157,13 +156,13 @@ export const Basic = () => {
                                         <input
                                             type="checkbox"
                                             id="breadwinnerCheck"
-                                            checked={store.there_is_a_breadwinner}
-                                            onChange={(e) => updateStore('there_is_a_breadwinner', e.target.checked)}
+                                            checked={isBreadwinner}
+                                            onChange={(e) => updateIsBreadwinner(e.target.checked)}
                                         />
                                         <label htmlFor="breadwinnerCheck">Потеря кормильца</label>
                                     </div>
 
-                                    {store.there_is_a_breadwinner && (
+                                    {isBreadwinner && (
                                         <>
                                             <div className="info-box warning">
                                                 <div className="grid">

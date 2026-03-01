@@ -3,13 +3,13 @@ import { usePeriods } from "./hooks/usePeriods";
 import { PeriodsSectionProps } from "./types/periodType";
 import { PERIOD_TYPE } from "../../constants/periodsName";
 
-export const PeriodsSection = ({ persona, typePeriod, paymentId }: PeriodsSectionProps) => {
+export const PeriodsSection = ({ persona, typePeriod }: PeriodsSectionProps) => {
     const {
         periods,
         addPeriod,
         updatePeriod,
         removePeriod
-    } = usePeriods(persona, typePeriod, paymentId);
+    } = usePeriods(persona, typePeriod);
 
     const handleAddPeriod = () => {
         addPeriod();

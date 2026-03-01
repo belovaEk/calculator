@@ -6,22 +6,22 @@ import { PERIOD_TYPE } from "../../../../shared/constants/periodsName";
 import { useState } from "react";
 
 
-export const useBasic = ()=> {
+export const useSuspension = ()=> {
     const navigate = useNavigate();
     const { store, updateStore } = useGlobalStore();
 
-    const [isBreadwinner, setIsBreadwinner] = useState(false);
-    
-    const updateIsBreadwinner = (value: boolean) => {
-        setIsBreadwinner(value)
+    const [isSuspension, setIsSuspension] = useState(false);
+
+    const updateIsSuspension = (value: boolean) => {
+        setIsSuspension(value);
     }
 
     return {
         navigate,
         store,
         updateStore,
-        isBreadwinner,
-        updateIsBreadwinner,
+        isSuspension,
+        updateIsSuspension,
         ROUTES,
         PERSONA,
         PERIOD_TYPE,

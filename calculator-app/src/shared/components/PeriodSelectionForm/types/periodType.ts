@@ -16,5 +16,4 @@ export interface PeriodFromProps {
 export interface PeriodsSectionProps {
     persona: personaType;
     typePeriod: PeriodType;
-    paymentId?: number,
 }

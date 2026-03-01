@@ -23,7 +23,6 @@ export const usePayments = () => {
             DK: '',
             paymentAmount: 0,
             is_Moscow: false,
-            is_suspension: false,
         };
 
         setPayments(prev => [...prev, newPayment]);

@@ -65,23 +65,6 @@ export const Payments = () => {
                                 onRemove={removePayment}
                             />
                         ))}
-                        {/* <Payment
-                        id={1} 
-                        index={1}
-                            type="pension"
-                            paymentData={{
-                                id: 1,
-                                type: 'pension',
-                                categoria:  '',
-                                DN: '',
-                                DK: '',
-                                paymentAmount: 0,
-                                is_Moscow: false,
-                                is_suspension: false,}
-                                }
-                                onUpdate={()=> console.log()}
-                                onRemove={()=> console.log()}
-                        /> */}
                     </div>
 
                     {/* <h3>Список всех выплат</h3>
@@ -96,7 +79,7 @@ export const Payments = () => {
 
                 <div className="form-group">
                     <button className="btn btn-secondary" id="backToBasic" onClick={() => navigate(ROUTES.inpatient)}>Назад: Размещение в стационарах</button>
-                    <button className="btn btn-success" id="nextToResults" onClick={() => navigate(ROUTES.results)}>Далее: Расчет</button>
+                    <button className="btn btn-success" id="nextToResults" onClick={() => navigate(ROUTES.suspension)}>Далее: Приостановка выплат</button>
                 </div>
             </div>
 

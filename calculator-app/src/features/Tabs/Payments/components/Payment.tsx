@@ -103,21 +103,6 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                             required />
                     </div>
 
-
-                    <div className="checkbox-group">
-                        <input
-                            type="checkbox"
-                            id="stopPeriodCheck"
-                            checked={paymentData.is_suspension}
-                            onChange={(e) => updatePayment('is_suspension', e.target.checked)}
-                        />
-                        <label htmlFor="stopPeriodCheck">Были периоды приостановки</label>
-                    </div>
-
-                    {paymentData.is_suspension && (
-                                <PeriodsSection persona="" typePeriod="приостановление выплаты" paymentId={paymentData.id}/>
-                    )}
-
                     {/* <div className="amount-period">
                         <div className="form-group">
                             <label>Размер на декабрь (руб.) *</label>
