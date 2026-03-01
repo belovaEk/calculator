@@ -39,7 +39,7 @@ async def spv_init_date_earlier(dr10: date, spv_init_date: date, list_of_periods
     
     PMP.append({'DN': spv_init_date, 'DK': dr10})
     
-    while i < n:
+    while i <= n - 1:
         
         DKreg = list_of_periods_reg[i].DK
         DNreg = list_of_periods_reg[i].DN
@@ -79,13 +79,12 @@ async def dr10_earlier(spv_init_date: date, list_of_periods_reg: List[PeriodType
     """
     i = 0
     n = len(list_of_periods_reg)
-    
     currentDate = date.today()
     
-    while i < n - 1:
-        
+    while i <= n - 1:
         DKreg = list_of_periods_reg[i].DK
         DNreg = list_of_periods_reg[i].DN
+        print(DNreg, spv_init_date, DKreg)
         
         if DKreg > spv_init_date >= DNreg:
             if i == n-1:
@@ -157,3 +156,8 @@ def sort_periods_in_data(data: JsonQuerySchema) -> JsonQuerySchema:
     
     return data
 
+
+
+
+# def PMP_GSS_suspension(data: JsonQuerySchema, pmp_periods, gss_periods):
+    
