@@ -2,7 +2,6 @@ from fastapi.background import P
 from src.schemas.json_query_schema import (
     JsonQuerySchema,
     PeriodType,
-    PaymentInterface,
 )
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -14,7 +13,9 @@ from src.utils.calculate_util import (
     breadwinner_or_representative,
     calculate_total_registration_without_breaks
 )
-from src.utils.auxiliary_util import PMP_GSS_primal, sort_periods_in_data
+from src.utils.auxiliary_util import sort_periods_in_data
+
+from src.utils.pmp_gss_calculate.pmp_gss_reg_util import pmp_gss_registration
 
 
 # Главная функция для расчета
@@ -67,7 +68,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
 
             # Разделение на периоды ПМП и ГСС
             # В зависимости от соотношения дат ДР10 и даты первой пенсии
-            pmp_gss_result = await PMP_GSS_primal(
+            pmp_gss_result = await pmp_gss_registration(
                 dr10=sum_reg_10_date,
                 spv_init_date=spv_init_date,
                 list_of_periods_reg=list_of_periods_reg_child,
