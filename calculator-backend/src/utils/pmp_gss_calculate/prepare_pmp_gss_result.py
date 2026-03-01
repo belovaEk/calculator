@@ -6,6 +6,7 @@ from datetime import date
 from typing import List
 from src.utils.pmp_gss_calculate.pmp_gss_reg_util import pmp_gss_registration
 from src.utils.pmp_gss_calculate.pmp_gss_suspension_util import pmp_gss_suspension
+from src.utils.pmp_gss_calculate.pmp_gss_inpatient_util import pmp_gss_inpatient
 
 
 async def prepare_pmp_gss_result(
@@ -19,14 +20,27 @@ async def prepare_pmp_gss_result(
     """
     Общая функция для формирования результата с периодами ПМП и ГСС.
     """
-    pmp_gss_result = await pmp_gss_registration(
+    pmp_gss_registration_result = await pmp_gss_registration(
         dr10=sum_reg_10_date,
         spv_init_date=spv_init_date,
         list_of_periods_reg=list_of_periods_reg_child,
-        PMP=pmp_periods,
-        GSS=gss_periods,
+        pmp_periods=pmp_periods,
+        gss_periods=gss_periods,
     )
 
     pmp_gss_suspension_result = await pmp_gss_suspension(
-        data=data, pmp_periods=pmp_gss_result["PMP"], gss_periods=pmp_gss_result["GSS"]
+        data=data,
+        pmp_periods=pmp_gss_registration_result["pmp_periods"],
+        gss_periods=pmp_gss_registration_result["gss_periods"],
     )
+
+    pmp_gss_inpatient_result = await pmp_gss_inpatient(
+        pmp_periods=pmp_gss_suspension_result["pmp_periods"],
+        gss_periods=pmp_gss_suspension_result["gss_periods"],
+        periods_inpatient=data.periods_inpatient,
+    )
+
+    return {
+        "pmp_periods": pmp_gss_inpatient_result["pmp_periods"],
+        "gss_periods": pmp_gss_inpatient_result["gss_periods"],
+    }

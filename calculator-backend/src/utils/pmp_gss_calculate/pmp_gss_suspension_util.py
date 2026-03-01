@@ -14,8 +14,8 @@ async def pmp_gss_suspension(
 
     Returns:
         dict: Словарь с ключами
-        - PMP: List[PeriodType] - ПМП с учетом прерываний
-        - GSS: List[PeriodType] - ГСС с учетом прерываний
+        - pmp_periods: List[PeriodType] - ПМП с учетом прерываний
+        - gss_periods: List[PeriodType] - ГСС с учетом прерываний
     """
     periods_suspension = data.periods_suspension or None
 
@@ -23,7 +23,7 @@ async def pmp_gss_suspension(
         gss_periods = await recalculation(gss_periods, periods_suspension)
         pmp_periods = await recalculation(pmp_periods, periods_suspension)
 
-    return {"PMP": pmp_periods, "GSS": gss_periods}
+    return {"pmp_periods": pmp_periods, "gss_periods": gss_periods}
 
 
 async def recalculation(
