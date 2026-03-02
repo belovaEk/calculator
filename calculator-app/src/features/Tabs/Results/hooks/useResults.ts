@@ -121,5 +121,6 @@ export const useResults = () => {
         message,
         resetStore: handleReset,
         handlePrint,
+        isLoading
     }
 }
