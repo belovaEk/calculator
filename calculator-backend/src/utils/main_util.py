@@ -53,25 +53,25 @@ async def main_util(data: JsonQuerySchema) -> dict:
     # Получаем периоды регистрации ребенка
     list_of_periods_reg_child = data.periods_reg_moscow
     
-    # Рассчитываем суммарный срок регистрации и дату последнего разрыва
+    # Рассчитываем суммарный срок регистрации и дату последнего разрыва для ребенка
     summary_registration = await calculate_registration_summary(
         list_of_periods_reg=list_of_periods_reg_child
     )
 
     # ОСНОВНАЯ ЛОГИКА ОПРЕДЕЛЕНИЯ ДАТЫ 10 ЛЕТ
-    if summary_registration["total_period"].years >= 10:
-        # Случай 1: У ребенка более 10 лет суммарной регистрации
+    if (summary_registration["last_break_date"] 
+          and summary_registration["last_break_date"] < data.date_of_birth + relativedelta(months=6)
+          and summary_registration["last_break_date"] < spv_init_date):
+        # Случай 1: Сработало условие с датой последнего разрыва
+        sum_reg_10_date = summary_registration["last_break_date"]
+    
+    elif summary_registration["total_period"].years >= 10:
+        # Случай 2: У ребенка более 10 лет суммарной регистрации
         registration_result = await calculate_total_registration_without_breaks(
             data.periods_reg_moscow
         )
         if registration_result["has_10_years"]:
             sum_reg_10_date = registration_result["date_of_10_years"]
-    
-    elif (summary_registration["last_break_date"] 
-          and summary_registration["last_break_date"] < data.date_of_birth + relativedelta(months=6)
-          and summary_registration["last_break_date"] < spv_init_date):
-        # Случай 2: Сработало условие с датой последнего разрыва
-        sum_reg_10_date = summary_registration["last_break_date"]
     
     else:
         # Случай 3: Проверка через кормильца или представителя
@@ -82,7 +82,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
         print(f'10 лет: {sum_reg_10_date}')
 
         return await prepare_pmp_gss_result(
-            data=data,
+            data=data,  
             sum_reg_10_date=sum_reg_10_date,
             spv_init_date=spv_init_date,
             list_of_periods_reg_child=list_of_periods_reg_child,
