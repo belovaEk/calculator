@@ -5,10 +5,7 @@ from src.schemas.json_query_schema import (
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from typing import List
-from src.utils.payment.payment_util import (
-    get_date_init_pension_Moscow,
-    
-)
+from src.utils.payment_util import get_first_moscow_pension
 
 from src.utils.registration.registration_util import (
     calculate_registration_summary,
@@ -28,7 +25,8 @@ async def main_util(data: JsonQuerySchema) -> dict:
     """
     # Инициализация основных переменных
     today = date.today()
-    spv_init_date = await get_date_init_pension_Moscow(data.payments)  # Дата первой пенсии в Москве
+    first_moscow_payment = await get_first_moscow_pension(data.payments) # Первая московская пенсия
+    spv_init_date = first_moscow_payment.DN  # Дата первой пенсии в Москве
     sum_reg_10_date = None  # Дата наступления 10 лет суммарной регистрации в Москве
     pmp_periods: List[PeriodType] = []  # Периоды прожиточного минимума пенсионера
     gss_periods: List[PeriodType] = []  # Периоды городского социального стандарта
@@ -87,7 +85,8 @@ async def main_util(data: JsonQuerySchema) -> dict:
             spv_init_date=spv_init_date,
             list_of_periods_reg_child=list_of_periods_reg_child,
             pmp_periods=pmp_periods,
-            gss_periods=gss_periods
+            gss_periods=gss_periods,
+            first_moscow_payment=first_moscow_payment
         )
     # Если ни одно условие не выполнилось
     return {

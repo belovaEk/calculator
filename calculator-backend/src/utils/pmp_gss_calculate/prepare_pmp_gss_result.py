@@ -1,6 +1,7 @@
 from src.schemas.json_query_schema import (
     PeriodType,
     JsonQuerySchema,
+    PaymentInterface
 )
 from datetime import date
 from typing import List
@@ -9,6 +10,10 @@ from src.utils.pmp_gss_calculate.pmp_gss_suspension_util import pmp_gss_suspensi
 from src.utils.pmp_gss_calculate.pmp_gss_inpatient_util import pmp_gss_inpatient
 from src.utils.pmp_gss_calculate.pmp_gss_payment import pmp_gss_pension
 from src.utils.pmp_gss_calculate.pmp_gss_date_index_util import pmp_gss_index
+from src.utils.pmp_gss_calculate.pmp_gss_payment_amount import (
+    pmp_gss_payment_amount,
+)
+
 
 async def prepare_pmp_gss_result(
     data: JsonQuerySchema,
@@ -17,6 +22,7 @@ async def prepare_pmp_gss_result(
     list_of_periods_reg_child: List[PeriodType],
     pmp_periods: List[PeriodType],
     gss_periods: List[PeriodType],
+    first_moscow_payment: PaymentInterface
 ) -> dict:
     """
     Общая функция для формирования результата с периодами ПМП и ГСС.
@@ -44,13 +50,24 @@ async def prepare_pmp_gss_result(
     pmp_gss_pension_result = await pmp_gss_pension(
         data=data,
         pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
-        gss_periods=pmp_gss_inpatient_result["gss_periods"]
+        gss_periods=pmp_gss_inpatient_result["gss_periods"],
     )
 
     pmp_gss_index_result = await pmp_gss_index(
         pmp_periods=pmp_gss_pension_result["pmp_periods"],
-        gss_periods=pmp_gss_pension_result["gss_periods"]
+        gss_periods=pmp_gss_pension_result["gss_periods"],
     )
+
+    if first_moscow_payment.categoria == "insurance_SPK": 
+        pmp_gss_payment_amount_result = await pmp_gss_payment_amount(
+            pmp_periods=pmp_gss_index_result["pmp_periods"],
+            gss_periods=pmp_gss_index_result["gss_periods"],
+        )
+
+        return {
+            "pmp_gss_payment-amount": pmp_gss_payment_amount_result["pmp_periods"],
+            "pmp_gss_payment-amount": pmp_gss_payment_amount_result["gss_periods"],
+        }
 
     return {
         "pmp_periods-registration": pmp_gss_registration_result["pmp_periods"],
@@ -61,10 +78,6 @@ async def prepare_pmp_gss_result(
         "gss_periods-inpatient": pmp_gss_inpatient_result["gss_periods"],
         "pmp_periods": pmp_gss_pension_result["pmp_periods"],
         "gss_periods": pmp_gss_pension_result["gss_periods"],
-
         "pmp_periods-index": pmp_gss_index_result["pmp_periods"],
         "gss_periods-index": pmp_gss_index_result["gss_periods"],
-
-        
-
     }
