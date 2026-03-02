@@ -3,7 +3,7 @@ import axios from "axios";
 const api: string = import.meta.env.VITE_BACK_HOST;
 
 export const http = axios.create({
-    baseURL: api,
+    baseURL: 'http://localhost:8000',
     withCredentials: true,
 });
 

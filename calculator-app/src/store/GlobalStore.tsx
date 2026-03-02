@@ -1,14 +1,17 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { GlobalStoreContextInterface, GlobalStoreParameterInterface } from './type';
 
 const initStore: GlobalStoreParameterInterface = {
     is_adult: false,
+    date_of_birth: '',
     is_there_a_registration_in_moscow_of_the_breadwinner: false,
     is_there_a_registration_in_moscow_of_the_legal_representative: false,
     is_there_a_registration_in_moscow: false,
     is_payment_transferred: false,
     is_get_PSD_FSD_last_mounth_payment_trasferred: false,
     is_Not_get_PSD_FSD_now_payment_trasferred: false,
+    is_inpatient: false,
+    is_suspension: false
 }
 
 
@@ -32,6 +35,11 @@ export const GlobalStoreProvider = ({ children }: { children: React.ReactNode })
     const resetStore = () => {
         setStore(initStore)
     }
+
+    // Логируем изменения store
+    useEffect(() => {
+        console.log('Store updated:', store);
+    }, [store]);
 
     return (
         <GlobalStoreContext.Provider value={{ store, updateStore, resetStore }}>

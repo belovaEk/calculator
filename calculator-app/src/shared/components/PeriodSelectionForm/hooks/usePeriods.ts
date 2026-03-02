@@ -8,8 +8,41 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
 
     const { store, updateStore } = useGlobalStore();
 
-    const [periods, setPeriods] = useState<Array<DatePeriod>>([]);
-    const [nextId, setNextId] = useState<number>(0);
+
+    const getPeriodsFromStore = (): DatePeriod[] => {
+        if (typePeriod === PERIOD_TYPE.registration) {
+            if (persona === PERSONA.children || persona === PERSONA.adult) {
+                return store.periods_reg_moscow || [];
+            }
+            if (persona === PERSONA.legal_representative) {
+                return store.periods_reg_representative_moscow || [];
+            }
+            if (persona === PERSONA.breadwinner) {
+                return store.periods_reg_breadwinner_moscow || [];
+            }
+        }
+        if (typePeriod === PERIOD_TYPE.inpatient) {
+            return store.periods_inpatient || [];
+        }
+        if (typePeriod === PERIOD_TYPE.stop_payment) {
+            return store.periods_suspension || [];
+        }
+        return [];
+    };
+    
+    const [periods, setPeriods] = useState<DatePeriod[]>(() => {
+        const storedPeriods = getPeriodsFromStore();
+        return storedPeriods;
+    });
+
+    
+
+    const [nextId, setNextId] = useState<number>(() => {
+        const storedPeriods = getPeriodsFromStore();
+        return storedPeriods.length > 0 
+            ? Math.max(...storedPeriods.map(p => p.id)) + 1 
+            : 0;
+    });
 
     const addPeriod = () => {
         const newPeriod: DatePeriod = {
@@ -67,7 +100,7 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
             return;
         }
 
-    }, periods);
+    }, [periods]);
 
     const removePeriod = (id: number) => {
         setPeriods(prev => prev.filter(periods => periods.id !== id));

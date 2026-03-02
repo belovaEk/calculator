@@ -48,6 +48,12 @@ async def prepare_pmp_gss_result(
     )
 
     return {
+        "pmp_periods-registration": pmp_gss_registration_result["pmp_periods"],
+        "gss_periods-registration": pmp_gss_registration_result["gss_periods"],
+        "pmp_periods-registration": pmp_gss_suspension_result["pmp_periods"],
+        "gss_periods-registration": pmp_gss_suspension_result["gss_periods"],
+        "pmp_periods-inpatient": pmp_gss_inpatient_result["pmp_periods"],
+        "gss_periods-inpatient": pmp_gss_inpatient_result["gss_periods"],
         "pmp_periods": pmp_gss_pension_result["pmp_periods"],
         "gss_periods": pmp_gss_pension_result["gss_periods"]
 

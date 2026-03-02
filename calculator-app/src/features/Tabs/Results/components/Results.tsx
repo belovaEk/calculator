@@ -1,15 +1,21 @@
 import { useResults } from "../hooks/useResults";
 import { ROUTES } from "../../../../shared/constants";
+import { useEffect } from "react";
 
 export const Results = () => {
 
     const {
         navigate,
         calculate,
-        resultData,
+        tableData,
         resetStore,
-        handlePrint
+        handlePrint,
+        message
     } = useResults();
+
+    useEffect(() => {
+        calculate();
+    }, [calculate]); // Зависимость от calculate
 
     return (
         <>
@@ -34,27 +40,46 @@ export const Results = () => {
                         <div id="errorsList"></div>
                     </div>
 
-                    <div id="calculationWarnings" className="info-box warning hidden">
-                        <h3>Предупреждения</h3>
-                        <div id="warningsList"></div>
-                    </div>
+                    {message && (
+                        <div id="calculationWarnings" className="info-box warning hidden">
+                            <h3>Предупреждения</h3>
+                            <div id="warningsList">{message}</div>
+                        </div>
+                    )
 
-                    <h3>Сводная таблица периодов ПМП и РСД</h3>
-                    <div id="consolidatedResults">
-                        <table className="params-table">
-                            <thead>
-                                <tr className="grid-header">
-                                    <th className="highlighting-header">Вид выплаты</th>
-                                    <th>Вид пенсии</th>
-                                    <th>Дата начала</th>
-                                    <th>Дата конца</th>
-                                </tr>
-                            </thead>
-                            <tbody id="paramsTableBody">
-                                {/* Данные будут заполнены через JavaScript */}
-                            </tbody>
-                        </table>
-                    </div>
+                    }
+
+                    {tableData && tableData.length > 0 ? (
+                        <><h3>Сводная таблица периодов ПМП и ГСС</h3>
+                            <div id="consolidatedResults">
+                                <table className="params-table">
+                                    <thead>
+                                        <tr className="grid-header">
+                                            <th className="highlighting-header">Вид выплаты</th>
+                                            <th>Вид пенсии</th>
+                                            <th>Дата начала</th>
+                                            <th>Дата конца</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="paramsTableBody">
+                                        {tableData.map((row, index) => (
+                                            <tr className="grid-header" key={index}>
+                                                <td>
+                                                    {row.paymentType}
+                                                </td>
+                                                <td>{row.pensionType}</td>
+                                                <td>{row.startDate}</td>
+                                                <td>{row.endDate}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </>) : !message && (
+                            <div className="info-box warning">
+                                <p>Нет данных для отображения. Возможно, не все обязательные поля заполнены.</p>
+                            </div>
+                        )}
 
                     <h3>Детализированный расчет</h3>
                     <div id="consolidatedResults">

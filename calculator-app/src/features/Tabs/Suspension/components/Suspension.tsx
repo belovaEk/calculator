@@ -5,11 +5,10 @@ export const Suspension = () => {
     const {
         navigate,
         ROUTES,
-        isSuspension,
-        updateIsSuspension,
         PERSONA,
         PERIOD_TYPE,
-
+        store,
+        updateStore,
     } = useSuspension();
 
     return (
@@ -22,13 +21,13 @@ export const Suspension = () => {
                     <input
                         type="checkbox"
                         id="inpatientPeriodCheck"
-                        checked={isSuspension}
-                        onChange={(e) => updateIsSuspension(e.target.checked)}
+                        checked={store.is_suspension}
+                        onChange={(e) =>updateStore('is_suspension',e.target.checked)}
                     />
                     <label htmlFor="inpatientPeriodCheck">Есть периоды приостановок выплат</label>
                 </div>
 
-                {isSuspension && (
+                {store.is_suspension && (
                     <PeriodsSection persona={PERSONA.adult} typePeriod={PERIOD_TYPE.stop_payment} />
                 )}
             </div>

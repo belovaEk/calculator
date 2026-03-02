@@ -57,6 +57,7 @@ export const Basic = () => {
                                 <input
                                     type="date"
                                     id="birthDate"
+                                    value={store.date_of_birth}
                                     onChange={(e) => updateStore('date_of_birth', e.target.value)}
                                     required />
                             </div>

@@ -10,7 +10,7 @@ export interface GlobalStoreContextInterface {
 
 export interface GlobalStoreParameterInterface {
     is_adult: boolean,
-    date_of_birth?: DateString,
+    date_of_birth: DateString,
     // document_on_full_time_OOP_education?: boolean,
     // type_of_social_payment?: string,
 
@@ -25,6 +25,9 @@ export interface GlobalStoreParameterInterface {
 
     // Кормилец
     date_of_death_of_the_breadwinner?: DateString,
+
+    is_inpatient: boolean,
+    is_suspension: boolean,
 
     periods_inpatient?: Array<DatePeriod>,
 

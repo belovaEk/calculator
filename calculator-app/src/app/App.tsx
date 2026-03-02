@@ -7,14 +7,14 @@ import { AppRoutes } from './appRoutes';
 
 function App() {
   return (
-    <Router>
-      <GlobalStoreProvider>
+    <GlobalStoreProvider>
+      <Router>
         <Layout>
           <ScrollToTop />
           <AppRoutes />
         </Layout>
-      </GlobalStoreProvider>
-    </Router>
+      </Router>
+    </GlobalStoreProvider>
   );
 }
 

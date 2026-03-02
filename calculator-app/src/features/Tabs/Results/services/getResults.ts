@@ -1,7 +1,6 @@
-import { fetchGet } from "../../../../shared/api/http";
-import { GlobalStoreParameterInterface } from "../../../../store/type";
+import { fetchPost } from "../../../../shared/api/http";
+import { JsonDataWithIndex, PromiseI } from "../types/resultType";
 
-
-export const getResults = async (allData: GlobalStoreParameterInterface): Promise<any> => {
-    return await fetchGet('/');
+export const getResults = async (jsonData: JsonDataWithIndex): Promise<PromiseI> => {
+    return await fetchPost('/calculate', jsonData);
 }

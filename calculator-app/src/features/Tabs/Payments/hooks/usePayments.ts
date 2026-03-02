@@ -8,10 +8,23 @@ import { PAYMENT_TYPE } from "../constants/payment";
 export const usePayments = () => {
     const navigate = useNavigate();
 
-    const { updateStore } = useGlobalStore();
+    const { store, updateStore } = useGlobalStore();
 
-    const [payments, setPayments] = useState<Array<PaymentInterface>>([]);
-    const [nextId, setNextId] = useState<number>(0);
+    const getPaymentsFromStore = (): PaymentInterface[] => {
+            return store.payments || [];
+        };
+
+    const [payments, setPayments] = useState<Array<PaymentInterface>>(() => {
+        const storedPayments = getPaymentsFromStore();
+        return storedPayments;
+    });
+
+    const [nextId, setNextId] = useState<number>(() => {
+        const storedPayments = getPaymentsFromStore();
+        return storedPayments.length > 0 
+            ? Math.max(...storedPayments.map(p => p.id)) + 1 
+            : 0;
+    });
 
 
     const addPaymet = (type: PaymentTypeRaw) => {
@@ -45,7 +58,7 @@ export const usePayments = () => {
 
     useEffect(() => {
         updateGlobalPayments()
-    }, payments)
+    }, [payments])
 
 
     const removePayment = (id: number) => {

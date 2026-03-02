@@ -10,18 +10,10 @@ export const useSuspension = ()=> {
     const navigate = useNavigate();
     const { store, updateStore } = useGlobalStore();
 
-    const [isSuspension, setIsSuspension] = useState(false);
-
-    const updateIsSuspension = (value: boolean) => {
-        setIsSuspension(value);
-    }
-
     return {
         navigate,
         store,
         updateStore,
-        isSuspension,
-        updateIsSuspension,
         ROUTES,
         PERSONA,
         PERIOD_TYPE,

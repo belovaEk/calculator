@@ -2,12 +2,12 @@ import { useInpatient } from "../hooks/useInpatient";
 import { PeriodsSection } from "../../../../shared/components/PeriodSelectionForm/PeriodsSection";
 export const Inpatient = () => {
     const {
-        isInpatient,
-        updateIsInpatient,
         navigate,
         ROUTES,
         PERSONA,
         PERIOD_TYPE,
+        store,
+        updateStore,
 
     } = useInpatient();
     return (
@@ -20,13 +20,13 @@ export const Inpatient = () => {
                     <input
                         type="checkbox"
                         id="inpatientPeriodCheck"
-                        checked={isInpatient}
-                        onChange={(e) => updateIsInpatient(e.target.checked)}
+                        checked={store.is_inpatient}
+                        onChange={(e) => updateStore('is_inpatient', e.target.checked)}
                     />
                     <label htmlFor="inpatientPeriodCheck">Есть периоды размещения в стационарных учреждениях</label>
                 </div>
 
-                {isInpatient && (
+                {store.is_inpatient && (
                     <PeriodsSection persona={PERSONA.adult} typePeriod={PERIOD_TYPE.inpatient} />
                 )}
             </div>

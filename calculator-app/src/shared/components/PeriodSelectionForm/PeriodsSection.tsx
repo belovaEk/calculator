@@ -53,8 +53,6 @@ export const PeriodsSection = ({ persona, typePeriod }: PeriodsSectionProps) => 
                     ))}
                 </div>
 
-
-
                 <button
                     className="btn"
                     id="addPeriod"

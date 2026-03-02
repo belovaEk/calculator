@@ -59,7 +59,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
     )
 
     # ОСНОВНАЯ ЛОГИКА ОПРЕДЕЛЕНИЯ ДАТЫ 10 ЛЕТ
-    if summary_registration["total_period"].years > 10:
+    if summary_registration["total_period"].years >= 10:
         # Случай 1: У ребенка более 10 лет суммарной регистрации
         registration_result = await calculate_total_registration_without_breaks(
             data.periods_reg_moscow
@@ -79,6 +79,8 @@ async def main_util(data: JsonQuerySchema) -> dict:
     
     # ОБЩИЙ БЛОК: Если дата найдена, формируем периоды ПМП и ГСС
     if sum_reg_10_date:
+        print(f'10 лет: {sum_reg_10_date}')
+
         return await prepare_pmp_gss_result(
             data=data,
             sum_reg_10_date=sum_reg_10_date,
@@ -87,7 +89,6 @@ async def main_util(data: JsonQuerySchema) -> dict:
             pmp_periods=pmp_periods,
             gss_periods=gss_periods
         )
-    
     # Если ни одно условие не выполнилось
     return {
         "message": "Положено РСД до ПМП с даты назначения пенсии до окончания срока выплаты"

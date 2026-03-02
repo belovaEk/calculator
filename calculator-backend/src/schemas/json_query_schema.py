@@ -36,7 +36,7 @@ class JsonQuerySchema(BaseModel):
     periods_reg_moscow: Optional[List[PeriodType]]
     periods_reg_representative_moscow: Optional[List[PeriodType]]
     periods_reg_breadwinner_moscow: Optional[List[PeriodType]]
-    date_of_death_of_the_breadwinner: date
+    date_of_death_of_the_breadwinner: Optional[date]
     there_is_a_breadwinner: bool
 
     is_payment_transferred: Optional[bool] = None
