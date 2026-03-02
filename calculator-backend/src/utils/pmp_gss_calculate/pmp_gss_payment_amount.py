@@ -43,7 +43,7 @@ def calculate_amount_for_period(
     if prev_amount is not None and amount <= prev_amount:
         amount = prev_amount
     
-    return amount
+    return round(amount, 2)
 
 
 async def process_payment_periods(
