@@ -13,20 +13,13 @@ async def pmp_gss_pension (data: JsonQuerySchema, pmp_periods: List[PeriodType],
     new_gss_periods: GssPmpPensionType = {}
     new_pmp_periods: GssPmpPensionType = {}
 
-    print(f'1: {pmp_periods}')
-
-
     if n > 1:
         new_pmp_periods = recalculation(pensions=pensions, n=n, periods=pmp_periods)
         new_gss_periods = recalculation(pensions=pensions, n=n, periods=gss_periods) 
-        print(f'3: {pmp_periods}')
-
 
     else:
         new_gss_periods = {0: gss_periods} 
-        
         new_pmp_periods = {0: pmp_periods}  
-        print(f'2: {new_pmp_periods}')
 
     return {
         'pmp_periods': new_pmp_periods,
