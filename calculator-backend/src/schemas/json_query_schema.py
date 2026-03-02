@@ -17,36 +17,35 @@ PensionCategoryRaw = Literal["insurance_SPK", "social_SPK", "social_disability"]
 
 
 class PaymentInterface(BaseModel):
-    id: int
-    type: PaymentTypeRaw
-    categoria: PensionCategoryRaw | str = ""
-    DN: date
-    DK: date
-    paymentAmount: float  # Rubles
-    is_Moscow: bool
+    id: Optional[int] = None
+    type: Optional[PaymentTypeRaw] = None
+    categoria: Optional[PensionCategoryRaw | str] = ""
+    DN: Optional[date] = None
+    DK: Optional[date] = None
+    paymentAmount: Optional[float] = None  # Rubles
+    is_Moscow: Optional[bool] = None
 
 class JsonQuerySchema(BaseModel):
-    is_adult: bool
-    date_of_birth: date
-    document_on_full_time_OOP_education: bool
-    type_of_social_payment: str
-    is_there_a_registration_in_moscow: bool
-    is_there_a_registration_in_moscow_of_the_breadwinner: bool
-    is_there_a_registration_in_moscow_of_the_legal_representative: bool
-    periods_reg_moscow: Optional[List[PeriodType]]
-    periods_reg_representative_moscow: Optional[List[PeriodType]]
-    periods_reg_breadwinner_moscow: Optional[List[PeriodType]]
-    date_of_death_of_the_breadwinner: Optional[date]
-    there_is_a_breadwinner: bool
+    is_adult: Optional[bool] = None
+    date_of_birth: Optional[date] = None
+    document_on_full_time_OOP_education: Optional[bool] = None
+    type_of_social_payment: Optional[str] = None
+    is_there_a_registration_in_moscow: Optional[bool] = None
+    is_there_a_registration_in_moscow_of_the_breadwinner: Optional[bool] = None
+    is_there_a_registration_in_moscow_of_the_legal_representative: Optional[bool] = None
+    periods_reg_moscow: Optional[List[PeriodType]] = None
+    periods_reg_representative_moscow: Optional[List[PeriodType]] = None
+    periods_reg_breadwinner_moscow: Optional[List[PeriodType]] = None
+    date_of_death_of_the_breadwinner: Optional[date] = None
+    there_is_a_breadwinner: Optional[bool] = None
 
     is_payment_transferred: Optional[bool] = None
     is_get_PSD_FSD_last_mounth_payment_trasferred: Optional[bool] = None
     is_Not_get_PSD_FSD_now_payment_trasferred: Optional[bool] = None
     payments: Optional[List[PaymentInterface]] = None
     
-    periods_suspension: Optional[List[PeriodWithIdType]]
-    
-    periods_inpatient: Optional[List[PeriodWithIdType]]
+    periods_suspension: Optional[List[PeriodWithIdType]] = None
+    periods_inpatient: Optional[List[PeriodWithIdType]] = None
 
 
 class PeriodDuration(BaseModel):
