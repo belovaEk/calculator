@@ -5,30 +5,15 @@ from datetime import date
 from typing import List, Optional
 
 
-async def get_date_init_pension_Moscow(payments: List[PaymentInterface]) -> Optional[date]:
+async def get_first_moscow_pension(payments: List[PaymentInterface]) -> Optional[PaymentInterface]:
     """
-    Возвращает дату назначения первой пенсии в Москве
+    Возвращает объект - первую пенсию, назначенную в Москве
     
     Returns:
-        Optional[date]: Дата назначения первой пенсии в Москве или None, если такой пенсии нет
+        Optional[PaymentInterface]: Первая пенсия, назначенная в Москве
     """
     
     for payment in payments:
         if payment.is_Moscow and payment.type == "pension":
-            return payment.DN
+            return payment
     return None
-
-
-async def first_moscow_pension_is_spk(payments: List[PaymentInterface]) -> bool:
-    """
-    Возвращает True, если вид назначенной первоначально пенсии = страховая пенсия по СПК
-    Иначе False    
-    Returns:
-        bool: вид назначенной первоначально пенсии = страховая пенсия по СПК
-    """
-    for payment in payments:
-        if payment.is_Moscow and payment.type == "pension":
-            if payment.categoria == "insurance_SPK":
-                return True
-            else:
-                return False

@@ -1,6 +1,7 @@
 from src.schemas.json_query_schema import (
     PeriodType,
     JsonQuerySchema,
+    PaymentInterface
 )
 from datetime import date
 from typing import List
@@ -12,7 +13,6 @@ from src.utils.pmp_gss_calculate.pmp_gss_date_index_util import pmp_gss_index
 from src.utils.pmp_gss_calculate.pmp_gss_payment_amount import (
     pmp_gss_payment_amount,
 )
-from src.utils.payment_util import first_moscow_pension_is_spk
 
 
 async def prepare_pmp_gss_result(
@@ -22,6 +22,7 @@ async def prepare_pmp_gss_result(
     list_of_periods_reg_child: List[PeriodType],
     pmp_periods: List[PeriodType],
     gss_periods: List[PeriodType],
+    first_moscow_payment: PaymentInterface
 ) -> dict:
     """
     Общая функция для формирования результата с периодами ПМП и ГСС.
@@ -57,19 +58,15 @@ async def prepare_pmp_gss_result(
         gss_periods=pmp_gss_pension_result["gss_periods"],
     )
 
-    if await first_moscow_pension_is_spk(data.payments):
+    if first_moscow_payment.categoria == "insurance_SPK": 
         pmp_gss_payment_amount_result = await pmp_gss_payment_amount(
             pmp_periods=pmp_gss_index_result["pmp_periods"],
             gss_periods=pmp_gss_index_result["gss_periods"],
         )
 
         return {
-            "pmp_gss_payment-amount": pmp_gss_payment_amount_result[
-                "pmp_periods"
-            ],
-            "pmp_gss_payment-amount": pmp_gss_payment_amount_result[
-                "gss_periods"
-            ],
+            "pmp_gss_payment-amount": pmp_gss_payment_amount_result["pmp_periods"],
+            "pmp_gss_payment-amount": pmp_gss_payment_amount_result["gss_periods"],
         }
 
     return {
