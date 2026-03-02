@@ -9,6 +9,8 @@ from src.utils.pmp_gss_calculate.pmp_gss_suspension_util import pmp_gss_suspensi
 from src.utils.pmp_gss_calculate.pmp_gss_inpatient_util import pmp_gss_inpatient
 from src.utils.pmp_gss_calculate.pmp_gss_payment import pmp_gss_pension
 from src.utils.pmp_gss_calculate.pmp_gss_date_index_util import pmp_gss_index
+from src.utils.pmp_gss_calculate.pmp_gss_split_pairs import pmp_gss_split_pairs
+
 
 async def prepare_pmp_gss_result(
     data: JsonQuerySchema,
@@ -52,6 +54,10 @@ async def prepare_pmp_gss_result(
         gss_periods=pmp_gss_pension_result["gss_periods"]
     )
 
+    pmp_gss_split_pairs_result = await pmp_gss_split_pairs(
+        pmp_periods=pmp_gss_index_result["pmp_periods"],
+        gss_periods=pmp_gss_index_result["gss_periods"])
+
     return {
         "pmp_periods-registration": pmp_gss_registration_result["pmp_periods"],
         "gss_periods-registration": pmp_gss_registration_result["gss_periods"],
@@ -65,6 +71,7 @@ async def prepare_pmp_gss_result(
         "pmp_periods-index": pmp_gss_index_result["pmp_periods"],
         "gss_periods-index": pmp_gss_index_result["gss_periods"],
 
-        
+        "pmp_periods-split_pairs": pmp_gss_split_pairs_result["pmp_periods"],
+        "gss_periods-split_pairs": pmp_gss_split_pairs_result["gss_periods"],
 
     }

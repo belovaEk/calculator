@@ -1,6 +1,5 @@
 from src.utils.pmp_gss_calculate.type import GssPmpPensionType, GssPmpIndexType
 from datetime import date
-from dateutil.relativedelta import relativedelta
 
 async def pmp_gss_index (pmp_periods: GssPmpPensionType, gss_periods: GssPmpPensionType):
 
