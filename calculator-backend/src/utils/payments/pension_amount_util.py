@@ -1,13 +1,9 @@
-# from typing import List, Dict, TypeAlias
-from src.utils.payments.constants.payment_const import INSURANCE_PENSION_SCORE, INSURANCE_PENSION_FIX_AMOUNT
+from constants.payment_const import INSURANCE_PENSION_SCORE, INSURANCE_PENSION_FIX_AMOUNT
+from datetime import date
 
-
-from src.utils.payments.types.paymentType import AmountByYear, PaymentsByYear
-
-from dateutil.relativedelta import relativedelta
+from src.utils.payments.types.paymentType import PaymentsByYear
 from src.schemas.json_query_schema import (
     JsonQuerySchema,
-    PeriodType,
 )
 
 async def pension_insurance_SPK_amount(data: JsonQuerySchema) -> PaymentsByYear:
@@ -17,17 +13,42 @@ async def pension_insurance_SPK_amount(data: JsonQuerySchema) -> PaymentsByYear:
 
     for pension in pensions:
 
-        current_pension_amount = insurance_pension_by_year[pension.id]
-        pass
+        DNpen = pension.DN
+        score = get_score_fix_amount['score']
+        fix_amount = get_score_fix_amount['fix_amount']
+
+        year = DNpen.year
+
+        insurance_pension_by_year[pension.id] = {}
+        IPK = (pension.amount - fix_amount) / score
+
+        sp = pension.amount
+
+        current_year = date.today().year
+        while year < current_year:
+            insurance_pension_by_year[pension.id][year] = sp
+            year+=1
+            sp = IPK*INSURANCE_PENSION_SCORE[date(year, 01, 01)]+INSURANCE_PENSION_FIX_AMOUNT[date(year, 01, 01)]
+
+        insurance_pension_by_year[pension.id][year] = sp
+    
+    return {
+        'sp_standart': insurance_pension_by_year
+    }
 
 
 
-
-    # year = DN.year
-    # IPK = (sp[year] -fix_amount[year])/ipk[year]
-    # while year != current_year:
-    #     year: IPK
-    #     year +=1
-    #     sp[ year +=1] = IPK*ipk[ year +=1]+ fix_amount[year+1]
-
-    # year: IPK
+def get_score_fix_amount(DNpen: date):
+    target_score = 0
+    target_fix_amount = 0
+    
+    for current_date, score in INSURANCE_PENSION_SCORE.items():
+        if current_date <= DNpen:
+            target_score = score
+            target_fix_amount = INSURANCE_PENSION_FIX_AMOUNT[current_date]
+        else:
+            break
+    return {
+            'score': target_score,
+            'fix_amount': target_fix_amount
+        }
