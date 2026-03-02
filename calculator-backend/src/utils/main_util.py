@@ -7,6 +7,8 @@ from dateutil.relativedelta import relativedelta
 from typing import List
 from src.utils.payment_util import get_first_moscow_pension
 
+from src.constants.payments_calculate import calculate_payments_standart
+
 from src.utils.registration.registration_util import (
     calculate_registration_summary,
     breadwinner_or_representative_date10,
@@ -30,6 +32,8 @@ async def main_util(data: JsonQuerySchema) -> dict:
     sum_reg_10_date = None  # Дата наступления 10 лет суммарной регистрации в Москве
     pmp_periods: List[PeriodType] = []  # Периоды прожиточного минимума пенсионера
     gss_periods: List[PeriodType] = []  # Периоды городского социального стандарта
+
+    await calculate_payments_standart(data=data)
 
     # Препроцессинг: сортировка полей периодов в data и валидация 
     data = sort_periods_in_data(data=data)

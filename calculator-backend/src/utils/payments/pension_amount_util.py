@@ -1,4 +1,4 @@
-from constants.payment_const import INSURANCE_PENSION_SCORE, INSURANCE_PENSION_FIX_AMOUNT
+from src.constants.payment_const import INSURANCE_PENSION_SCORE, INSURANCE_PENSION_FIX_AMOUNT
 from datetime import date
 
 from src.utils.payments.types.paymentType import PaymentsByYear
@@ -41,10 +41,7 @@ async def pension_insurance_SPK_amount(data: JsonQuerySchema) -> PaymentsByYear:
 
         insurance_pension_by_year[pension.id][year] = sp
     
-    return {
-        'sp_standart': insurance_pension_by_year
-    }
-
+    return insurance_pension_by_year
 
 
 def get_score_fix_amount(DNpen: date):

@@ -22,7 +22,7 @@ class PaymentInterface(BaseModel):
     categoria: Optional[PensionCategoryRaw | str] = ""
     DN: Optional[date] = None
     DK: Optional[date] = None
-    amount: Optional[float] = None  # Rubles
+    amount: float  # Rubles
     is_Moscow: Optional[bool] = None
 
 class JsonQuerySchema(BaseModel):
