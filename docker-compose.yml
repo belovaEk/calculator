@@ -2,23 +2,23 @@ version: '3.8'
 
 services:
   backend:
-    build: ./calculator-backend
+    image: calculator-backend:latest 
     container_name: calculator-backend
     ports:
       - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
-    volumes:
-      - ./calculator-backend:/app
+    # volumes:                         
+    #   - ./calculator_backend:/app
     networks:
       - calculator-network
     restart: unless-stopped
 
   frontend:
-    build: ./calculator-app
+    image: calculator-frontend:latest    # было build: ./calculator_app
     container_name: calculator-frontend
     ports:
-      - "8081:80"
+      - "8080:80"
     depends_on:
       - backend
     networks:
