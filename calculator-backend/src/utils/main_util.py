@@ -5,7 +5,7 @@ from src.schemas.json_query_schema import (
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from typing import List
-from src.utils.payment_util import (
+from src.utils.payment.payment_util import (
     get_date_init_pension_Moscow,
     
 )

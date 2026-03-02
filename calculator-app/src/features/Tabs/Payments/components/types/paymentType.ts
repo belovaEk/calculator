@@ -13,7 +13,7 @@ export interface PaymentInterface {
     categoria: PensionCategoryRaw | '',
     DN: DateString,
     DK: DateString,
-    paymentAmount: Rubles,
+    amount: Rubles,
     is_Moscow: boolean
 }
 

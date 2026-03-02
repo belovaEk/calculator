@@ -98,8 +98,8 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                             type="number"
                             className="payment-amount"
                             min="0" step="0.01"
-                            value={paymentData.paymentAmount}
-                            onChange={(e) => updatePayment('paymentAmount', e.target.value)}
+                            value={paymentData.amount}
+                            onChange={(e) => updatePayment('amount', e.target.value)}
                             required />
                     </div>
 
