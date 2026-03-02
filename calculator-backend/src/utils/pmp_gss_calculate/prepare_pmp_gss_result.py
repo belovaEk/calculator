@@ -9,7 +9,10 @@ from src.utils.pmp_gss_calculate.pmp_gss_suspension_util import pmp_gss_suspensi
 from src.utils.pmp_gss_calculate.pmp_gss_inpatient_util import pmp_gss_inpatient
 from src.utils.pmp_gss_calculate.pmp_gss_payment import pmp_gss_pension
 from src.utils.pmp_gss_calculate.pmp_gss_date_index_util import pmp_gss_index
-from src.utils.pmp_gss_calculate.pmp_gss_split_pairs import pmp_gss_split_pairs
+from src.utils.pmp_gss_calculate.pmp_gss_payment_amount import (
+    pmp_gss_payment_amount,
+)
+from src.utils.payment_util import first_moscow_pension_is_spk
 
 
 async def prepare_pmp_gss_result(
@@ -46,17 +49,28 @@ async def prepare_pmp_gss_result(
     pmp_gss_pension_result = await pmp_gss_pension(
         data=data,
         pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
-        gss_periods=pmp_gss_inpatient_result["gss_periods"]
+        gss_periods=pmp_gss_inpatient_result["gss_periods"],
     )
 
     pmp_gss_index_result = await pmp_gss_index(
         pmp_periods=pmp_gss_pension_result["pmp_periods"],
-        gss_periods=pmp_gss_pension_result["gss_periods"]
+        gss_periods=pmp_gss_pension_result["gss_periods"],
     )
 
-    pmp_gss_split_pairs_result = await pmp_gss_split_pairs(
-        pmp_periods=pmp_gss_index_result["pmp_periods"],
-        gss_periods=pmp_gss_index_result["gss_periods"])
+    if await first_moscow_pension_is_spk(data.payments):
+        pmp_gss_payment_amount_result = await pmp_gss_payment_amount(
+            pmp_periods=pmp_gss_index_result["pmp_periods"],
+            gss_periods=pmp_gss_index_result["gss_periods"],
+        )
+
+        return {
+            "pmp_gss_payment-amount": pmp_gss_payment_amount_result[
+                "pmp_periods"
+            ],
+            "pmp_gss_payment-amount": pmp_gss_payment_amount_result[
+                "gss_periods"
+            ],
+        }
 
     return {
         "pmp_periods-registration": pmp_gss_registration_result["pmp_periods"],
@@ -67,11 +81,6 @@ async def prepare_pmp_gss_result(
         "gss_periods-inpatient": pmp_gss_inpatient_result["gss_periods"],
         "pmp_periods": pmp_gss_pension_result["pmp_periods"],
         "gss_periods": pmp_gss_pension_result["gss_periods"],
-
         "pmp_periods-index": pmp_gss_index_result["pmp_periods"],
         "gss_periods-index": pmp_gss_index_result["gss_periods"],
-
-        "pmp_periods-split_pairs": pmp_gss_split_pairs_result["pmp_periods"],
-        "gss_periods-split_pairs": pmp_gss_split_pairs_result["gss_periods"],
-
     }

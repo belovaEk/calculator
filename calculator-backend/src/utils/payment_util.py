@@ -18,3 +18,17 @@ async def get_date_init_pension_Moscow(payments: List[PaymentInterface]) -> Opti
             return payment.DN
     return None
 
+
+async def first_moscow_pension_is_spk(payments: List[PaymentInterface]) -> bool:
+    """
+    Возвращает True, если вид назначенной первоначально пенсии = страховая пенсия по СПК
+    Иначе False    
+    Returns:
+        bool: вид назначенной первоначально пенсии = страховая пенсия по СПК
+    """
+    for payment in payments:
+        if payment.is_Moscow and payment.type == "pension":
+            if payment.categoria == "insurance_SPK":
+                return True
+            else:
+                return False
