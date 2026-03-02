@@ -28,8 +28,13 @@ async def pension_insurance_SPK_amount(data: JsonQuerySchema) -> PaymentsByYear:
 
         insurance_pension_by_year[pension.id] = {}
 
-        IPK = (pension.amount - fix_amount) / score
+        if (score != 0 and fix_amount != 0):
+            IPK = (pension.amount - fix_amount) / score
 
+        else:
+            print("Даты вне заданных периодов ")
+            return 
+        
         sp = pension.amount
 
         current_year = date.today().year

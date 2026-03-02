@@ -11,8 +11,8 @@ export const usePayments = () => {
     const { store, updateStore } = useGlobalStore();
 
     const getPaymentsFromStore = (): PaymentInterface[] => {
-            return store.payments || [];
-        };
+        return store.payments || [];
+    };
 
     const [payments, setPayments] = useState<Array<PaymentInterface>>(() => {
         const storedPayments = getPaymentsFromStore();
@@ -21,8 +21,8 @@ export const usePayments = () => {
 
     const [nextId, setNextId] = useState<number>(() => {
         const storedPayments = getPaymentsFromStore();
-        return storedPayments.length > 0 
-            ? Math.max(...storedPayments.map(p => p.id)) + 1 
+        return storedPayments.length > 0
+            ? Math.max(...storedPayments.map(p => p.id)) + 1
             : 0;
     });
 
@@ -34,7 +34,7 @@ export const usePayments = () => {
             categoria: '',
             DN: '',
             DK: '',
-            paymentAmount: 0,
+            amount: 0,
             is_Moscow: false,
         };
 

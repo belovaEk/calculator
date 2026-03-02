@@ -1,12 +1,13 @@
-import { DateRange, DatePeriod } from "../../../../shared";
+import { DateRange, DatePeriod, DateString, Rubles } from "../../../../shared";
 import { PaymentInterface } from "../../Payments/components/types/paymentType";
 
 
 export type RowType = {
     paymentType: string;
-    pensionType: string;
+    pensionType?: string;
     startDate: string;
     endDate: string;
+    amount?: number
 };
 
 
@@ -38,10 +39,23 @@ export interface GssPmpI {
     [id: number]: Array<DateRange>
 }
 
+export interface RsdItem {
+  DN: DateString; 
+  DK: DateString;     
+  amount: Rubles;  
+}
+
+
+export interface RadGssPmpI {
+    [id: number]: RsdItem[]
+}
+
 export interface PromiseI {
     message?: string,
     pmp_periods?: GssPmpI,
     gss_periods?: GssPmpI,
+    pmp_rsd?: RadGssPmpI,
+    gss_rsd?: RadGssPmpI,
 }
 
 

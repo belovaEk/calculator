@@ -36,7 +36,7 @@ export const JSON_TEST = {
             "categoria": "",
             "DN": "2024-03-01",
             "DK": "2026-03-01",
-            "paymentAmount": 0,
+            "amount": 0,
             "is_Moscow": true
         }
     ],

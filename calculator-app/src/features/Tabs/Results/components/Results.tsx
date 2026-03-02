@@ -7,7 +7,8 @@ export const Results = () => {
     const {
         navigate,
         calculate,
-        tableData,
+        tableDataPmpGss,
+        tableDataPmpGssRsd,
         resetStore,
         handlePrint,
         message,
@@ -54,10 +55,10 @@ export const Results = () => {
                                 </div>
                             )}
 
-                            {tableData && tableData.length > 0 ? (
+                            {tableDataPmpGss && tableDataPmpGss.length > 0 ? (
                                 <>
                                     <h3>Сводная таблица периодов ПМП и ГСС</h3>
-                                    <div id="consolidatedResults">
+                                    <div id="consolidatedResults_GssPmp">
                                         <table className="params-table">
                                             <thead>
                                                 <tr className="grid-header">
@@ -67,8 +68,8 @@ export const Results = () => {
                                                     <th>Дата конца</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="paramsTableBody">
-                                                {tableData.map((row, index) => (
+                                            <tbody>
+                                                {tableDataPmpGss.map((row, index) => (
                                                     <tr className="grid-header" key={index}>
                                                         <td>
                                                             {row.paymentType}
@@ -84,43 +85,58 @@ export const Results = () => {
                                 </>
                             ) : !message && (
                                 <div className="info-box warning">
+                                    <p>Нет данных для отображения. Возможно, не все обязательные поля заполнены или <b>выбраны года раньше 2020</b></p>
+                                </div>
+                            )}
+
+                            {tableDataPmpGssRsd && tableDataPmpGssRsd.length > 0 ? (
+                                <>
+                                    <h3>Детализированный расчет</h3>
+                                    <div id="consolidatedResults_Rsd">
+                                        <table className="params-table">
+                                            <thead>
+                                                <tr className="grid-header">
+                                                    <th className="highlighting-header">Вид выплаты</th>
+                                                    <th>Дата начала</th>
+                                                    <th>Дата конца</th>
+                                                    <th>Сумма рсд ежемесячно руб/мес</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {tableDataPmpGssRsd.map((row, index) => (
+                                                    <tr className="grid-header" key={index}>
+                                                        <td>{row.paymentType}</td>
+                                                        <td>{row.startDate}</td>
+                                                        <td>{row.endDate}</td>
+                                                        <td>{row.amount}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div></>
+                            ) : message && (
+                                <div className="info-box warning">
                                     <p>Нет данных для отображения. Возможно, не все обязательные поля заполнены.</p>
                                 </div>
                             )}
 
-                            {/* <h3>Детализированный расчет</h3>
-                            <div id="consolidatedResults">
-                                <table className="params-table">
-                                    <thead>
-                                        <tr className="grid-header">
-                                            <th className="highlighting-header">Вид выплаты</th>
-                                            <th>Дата начала</th>
-                                            <th>Дата конца</th>
-                                            <th>Сумма рсд ежемесячно руб/мес</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="paramsTableBody">
-                                    </tbody>
-                                </table>
-                            </div> */}
-
                             {/* <h3>Детализированный расчет по дням</h3>
                             <div id="detailedResults"></div> */}
 
-                            <div className="result-section">
+                            {/* <div className="result-section">
                                 <h3>Итоги расчета</h3>
                                 <p><strong>Общая сумма положенной доплаты за все периоды:</strong> <span id="totalPayment" className="highlight">0.00 руб.</span></p>
                                 <p><strong>Общая недополученная сумма (за 3 года до даты заявления):</strong> <span id="totalUnderpayment" className="highlight">0.00 руб.</span></p>
                                 <p><strong>Дата расчета:</strong> <span id="calculationDate"></span></p>
-                            </div>
+                            </div> */}
                         </>
                     )}
                 </div>
 
                 <div className="form-group">
-                    <button 
-                        className="btn btn-secondary" 
-                        id="backToPayments" 
+                    <button
+                        className="btn btn-secondary"
+                        id="backToPayments"
                         onClick={() => navigate(ROUTES.payments)}
                         disabled={isLoading}
                     >

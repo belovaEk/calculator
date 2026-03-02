@@ -3,7 +3,8 @@ import { getResults } from "../services/getResults";
 import { useGlobalStore } from "../../../../store";
 import { useState, useEffect, useCallback } from "react";
 import { DatePeriod, DateRange } from "../../../../shared";
-import { RowType, ResultsRequestData, PromiseI } from "../types/resultType";
+import { RowType, ResultsRequestData, PromiseI, RsdItem } from "../types/resultType";
+import { PENSION_CATEGORIES } from "../../Payments/constants/payment";
 
 
 
@@ -13,7 +14,8 @@ export const useResults = () => {
     const { store, resetStore } = useGlobalStore();
     const [resultData, setResultData] = useState<PromiseI>();
     const [message, setMessage] = useState('');
-    const [tableData, setTableData] = useState<Array<RowType>>([]);
+    const [tableDataPmpGss, setTableDataPmpGss] = useState<Array<RowType>>([]);
+    const [tableDataPmpGssRsd, setTableDataPmpGssRsd] = useState<Array<RowType>>([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const getJsonData = useCallback((): ResultsRequestData => {
@@ -48,15 +50,17 @@ export const useResults = () => {
 
 
     const transformDataToTable = useCallback((data: PromiseI) => {
-        const rows: Array<RowType> = [];
+        const rowsPmpGss: Array<RowType> = [];
+        const rowsPmpGssRsd: Array<RowType> = [];
 
         // Обрабатываем ГСС
         if (data.gss_periods) {
             Object.entries(data.gss_periods).forEach(([id, periods]) => {
                 periods.forEach((period: DateRange) => {
-                    rows.push({
+                    const categoriaValue = store.payments[Number(id)].categoria;
+                    rowsPmpGss.push({
                         paymentType: 'ГСС',
-                        pensionType: id,
+                        pensionType: PENSION_CATEGORIES[categoriaValue as keyof typeof PENSION_CATEGORIES].display,
                         startDate: period.DN,
                         endDate: period.DK
                     });
@@ -68,9 +72,10 @@ export const useResults = () => {
         if (data.pmp_periods) {
             Object.entries(data.pmp_periods).forEach(([id, periods]) => {
                 periods.forEach((period: DateRange) => {
-                    rows.push({
+                    const categoriaValue = store.payments[Number(id)].categoria;
+                    rowsPmpGss.push({
                         paymentType: 'ПМП',
-                        pensionType: id,
+                        pensionType: PENSION_CATEGORIES[categoriaValue as keyof typeof PENSION_CATEGORIES].display,
                         startDate: period.DN,
                         endDate: period.DK
                     });
@@ -78,18 +83,62 @@ export const useResults = () => {
             });
         }
 
-        setTableData(rows);
+        // Обрабатываем ГСС РСД
+        if (data.gss_rsd) {
+            Object.entries(data.gss_rsd).forEach(([id, periods]) => {
+                periods.forEach((period: RsdItem) => {
+                    rowsPmpGssRsd.push({
+                        paymentType: 'ГСС',
+                        startDate: period.DN,
+                        endDate: period.DK,
+                        amount: period.amount
+                    });
+                });
+                console.log(store.payments[Number(id)].categoria)
+            });
+
+
+        }
+
+        // Обрабатываем ПМП РСД
+        if (data.pmp_rsd) {
+            Object.entries(data.pmp_rsd).forEach(([id, periods]) => {
+                periods.forEach((period: RsdItem) => {
+                    rowsPmpGssRsd.push({
+                        paymentType: 'ПМП',
+                        startDate: period.DN,
+                        endDate: period.DK,
+                        amount: period.amount
+                    });
+                });
+            });
+        }
+
+
+
+        setTableDataPmpGss(rowsPmpGss);
+        setTableDataPmpGssRsd(rowsPmpGssRsd)
     }, []);
 
-    
+
     const calculate = useCallback(async () => {
         const jsonData = getJsonData();
-    
+
+        const startTime = Date.now();
+
         setIsLoading(true);
         try {
             const newData: PromiseI = await getResults(jsonData);
+
+            const elapsedTime = Date.now() - startTime;
+            const remainingTime = Math.max(0, 700 - elapsedTime);
+
+            if (remainingTime > 0) {
+                await new Promise(resolve => setTimeout(resolve, remainingTime));
+            }
+
             setResultData(newData);
-            
+
             if (newData?.message) {
                 setMessage(newData.message);
             } else {
@@ -97,6 +146,12 @@ export const useResults = () => {
             }
         } catch (error) {
             console.error('Ошибка при получении результатов:', error);
+            const elapsedTime = Date.now() - startTime;
+            const remainingTime = Math.max(0, 700 - elapsedTime);
+
+            if (remainingTime > 0) {
+                await new Promise(resolve => setTimeout(resolve, remainingTime));
+            }
         } finally {
             setIsLoading(false);
         }
@@ -109,7 +164,8 @@ export const useResults = () => {
 
     const handleReset = () => {
         resetStore();
-        setTableData([]);
+        setTableDataPmpGss([]);
+        setTableDataPmpGssRsd([]);
         setMessage('');
         setResultData(undefined);
     };
@@ -117,7 +173,8 @@ export const useResults = () => {
     return {
         navigate,
         calculate,
-        tableData,
+        tableDataPmpGss,
+        tableDataPmpGssRsd,
         message,
         resetStore: handleReset,
         handlePrint,

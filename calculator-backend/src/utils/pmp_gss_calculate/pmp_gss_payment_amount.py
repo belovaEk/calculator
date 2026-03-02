@@ -67,7 +67,7 @@ async def process_payment_periods(
     standart_dict = PMP_STANDART if period_type == "pmp" else GSS_STANDART
    
     SP_STANDART = await pension_insurance_SPK_amount(data)
-    print(SP_STANDART)
+    
     result = {}
     
     for pension_id, period_lists in periods_data.items():

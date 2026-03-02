@@ -1,5 +1,6 @@
 import { PAYMENT_TYPE, PENSION_CATEGORIES } from "../constants/payment";
 import { PaymentInterface } from "../components/types/paymentType";
+import { useGlobalStore } from "../../../../store";
 
 
 interface usePaymentParams {

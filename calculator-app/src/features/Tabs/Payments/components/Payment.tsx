@@ -1,8 +1,7 @@
 import { usePayment } from "../hooks/usePayment";
 
 import { PaymentProps } from "./types/paymentType";
-import PeriodsSection from "../../../../shared/components/PeriodSelectionForm";
-import { PERSONA } from "../../../../shared/constants/people";
+
 
 export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentProps) => {
 
@@ -13,6 +12,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
         handleRemove,
         handleCurrentDate,
     } = usePayment({ id, paymentData, onUpdate, onRemove });
+    
 
     return (
         <>
@@ -81,7 +81,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
 
                             <div className="form-group">
                                 <label>Вид пенсии *</label>
-                                <select className="pensionType" required onChange={(e) => updatePayment('categoria', e.target.value)}>
+                                <select className="pensionType" required onChange={(e) => updatePayment('categoria', e.target.value)} value={paymentData.categoria}>
                                     <option value="">Выберите вид пенсии</option>
                                     ({Object.entries(PENSION_CATEGORIES).map(([key, category]) => (
                                         <option key={key} value={category.raw}>{category.display}</option>
