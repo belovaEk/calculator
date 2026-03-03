@@ -9,7 +9,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     volumes:
-      - ./calculator_backend:/app
+      - ./calculator-backend:/app
     networks:
       - calculator-network
     restart: unless-stopped
@@ -18,7 +18,7 @@ services:
     build: ./calculator-app
     container_name: calculator-frontend
     ports:
-      - "80:80"
+      - "8081:80"
     depends_on:
       - backend
     networks:
