@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    build: ./calculator_backend
+    build: ./calculator-backend
     container_name: calculator-backend
     ports:
       - "8000:8000"
@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./calculator_app
+    build: ./calculator-app
     container_name: calculator-frontend
     ports:
       - "80:80"
