@@ -12,7 +12,8 @@ const initStore: GlobalStoreParameterInterface = {
     is_Not_get_PSD_FSD_now_payment_trasferred: false,
     is_inpatient: false,
     is_suspension: false,
-    payments: []
+    payments: [],
+    is_breadwinner: false
 }
 
 

@@ -157,13 +157,13 @@ export const Basic = () => {
                                         <input
                                             type="checkbox"
                                             id="breadwinnerCheck"
-                                            checked={isBreadwinner}
-                                            onChange={(e) => updateIsBreadwinner(e.target.checked)}
+                                            checked={store.is_breadwinner}
+                                            onChange={(e) => updateStore('is_breadwinner', e.target.checked)}
                                         />
                                         <label htmlFor="breadwinnerCheck">Потеря кормильца</label>
                                     </div>
 
-                                    {isBreadwinner && (
+                                    {store.is_breadwinner && (
                                         <>
                                             <div className="info-box warning">
                                                 <div className="grid">
