@@ -18,6 +18,8 @@ LOCAL_ORIGIN_REGEX = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 
 origins = [
     "http://192.168.0.170:8081",
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
 ]
 
 def start_application():
