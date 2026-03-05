@@ -5,24 +5,20 @@ import uvicorn
 
 LOCAL_ORIGIN_REGEX = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 
-origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://localhost:8080", 
-    "http://127.0.0.1:8080",  
-    "http://localhost:80", 
-    "http://127.0.0.1:80",
-    "http://localhost:8081", 
-    "http://127.0.0.1:8081",
-    "http://localhost:8082", 
-    "http://127.0.0.1:8082",
-]
+# origins = [
+#     "http://localhost:8000",
+#     "http://127.0.0.1:8000",
+#     "http://localhost:8080", 
+#     "http://127.0.0.1:8080",  
+#     "http://localhost:8081", 
+#     "http://127.0.0.1:8081",
+#     "http://localhost:8082", 
+#     "http://127.0.0.1:8082",
+# ]
 
+origins = [
+    "http://192.168.0.170:8081",
+]
 
 def start_application():
 

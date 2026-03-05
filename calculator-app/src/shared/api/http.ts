@@ -3,9 +3,11 @@ import axios from "axios";
 const api: string = import.meta.env.VITE_BACK_HOST;
 
 export const http = axios.create({
-    baseURL: '/api',
+    baseURL: 'http://192.168.0.170:8000',
     withCredentials: true,
 });
+
+
 
 export async function fetchPost<T, R>(url: string, data: T): Promise<R> {
     try {
