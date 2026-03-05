@@ -27,15 +27,12 @@ def start_application():
     app = FastAPI(title="Calculator", version="beta")
 
     app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_origin_regex=LOCAL_ORIGIN_REGEX,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-        max_age=86400,
-    )
-
+    CORSMiddleware,
+    allow_origins=["*"],      # чтоб работало с любым IP/доменом фронта
+    allow_credentials=False,  # с "*" креды нельзя
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
     app.include_router(api_router)
     return app
 
