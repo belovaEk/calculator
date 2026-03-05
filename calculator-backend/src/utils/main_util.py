@@ -14,7 +14,7 @@ from src.utils.registration.registration_util import (
 )
 
 from src.utils.auxiliary_util import sort_periods_in_data, is_adult
-from src.utils.pmp_gss_calculate.prepare_pmp_gss_result import prepare_pmp_gss_result
+from src.utils.pmp_gss_calculate.prepare_pmp_gss_result import prepare_pmp_gss_reg_result, prepare_pmp_gss_NoReg_result
 
 
 # Главная функция для расчета
@@ -46,7 +46,13 @@ async def main_util(data: JsonQuerySchema) -> dict:
 
     # Проверка наличия регистрации в Москве
     if not data.is_there_a_registration_in_moscow:
-        return {"message": "Нет регистрации в Москве"}
+        return await prepare_pmp_gss_NoReg_result(
+            data=data,  
+            spv_init_date=spv_init_date,
+            pmp_periods=pmp_periods,
+            gss_periods=gss_periods,
+            first_moscow_payment=first_moscow_payment
+        )
 
     # Получаем периоды регистрации ребенка
     list_of_periods_reg_child = data.periods_reg_moscow
@@ -79,7 +85,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
     if sum_reg_10_date:
         print(f'10 лет: {sum_reg_10_date}')
 
-        return await prepare_pmp_gss_result(
+        return await prepare_pmp_gss_reg_result(
             data=data,  
             sum_reg_10_date=sum_reg_10_date,
             spv_init_date=spv_init_date,
