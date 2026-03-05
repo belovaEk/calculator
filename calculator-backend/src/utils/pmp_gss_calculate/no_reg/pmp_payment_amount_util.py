@@ -11,9 +11,8 @@ from src.utils.pmp_gss_calculate.common.process_payment_periods_util import proc
 
 
 
-async def pmp_gss_payment_amount(
+async def pmp_payment_amount(
     pmp_periods: Dict[str, List[List[date]]],
-    gss_periods: Dict[str, List[List[date]]],
     suspension_periods: List[PeriodWithIdType],
     data: JsonQuerySchema,
 ) -> dict:
@@ -31,16 +30,8 @@ async def pmp_gss_payment_amount(
         "pmp"
     )
     
-    processed_gss = await process_payment_periods(
-        data,
-        gss_periods, 
-        suspension_dks, 
-        "gss"
-    )
-    
     return {
         "pmp_periods": processed_pmp,
-        "gss_periods": processed_gss
     }
 
 

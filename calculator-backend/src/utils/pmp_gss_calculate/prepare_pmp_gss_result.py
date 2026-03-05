@@ -17,8 +17,9 @@ from src.utils.pmp_gss_calculate.reg.pmp_gss_payment_amount import (
 
 from src.utils.pmp_gss_calculate.no_reg.pmp_init_util import pmp_init
 from src.utils.pmp_gss_calculate.no_reg.pmp_suspension_util import pmp_suspension
-
 from src.utils.pmp_gss_calculate.no_reg.pmp_payment_util import pmp_pension
+from src.utils.pmp_gss_calculate.no_reg.pmp_date_index_util import pmp_date_index
+from src.utils.pmp_gss_calculate.no_reg.pmp_payment_amount_util import pmp_payment_amount
 
 
 async def prepare_pmp_gss_reg_result(
@@ -112,27 +113,23 @@ async def prepare_pmp_gss_NoReg_result(
         pmp_periods=pmp_suspension_result["pmp_periods"],
     )
 
-    # pmp_gss_index_result = await pmp_gss_index(
-    #     pmp_periods=pmp_gss_pension_result["pmp_periods"],
-    #     gss_periods=pmp_gss_pension_result["gss_periods"],
-    # )
+    pmp_index_result = await pmp_date_index(
+        pmp_periods=pmp_pension_result["pmp_periods"],
+    )
 
 
-    # if first_moscow_payment.categoria == "insurance_SPK": 
-    #     pmp_gss_payment_amount_result = await pmp_gss_payment_amount(
-    #         pmp_periods=pmp_gss_index_result["pmp_periods"],
-    #         gss_periods=pmp_gss_index_result["gss_periods"],
-    #         suspension_periods=data.periods_suspension,
-    #         data=data
-    #     )
+    if first_moscow_payment.categoria == "insurance_SPK": 
+        pmp_payment_amount_result = await pmp_payment_amount(
+            pmp_periods=pmp_index_result["pmp_periods"],
+            suspension_periods=data.periods_suspension,
+            data=data
+        )
 
-    #     return {
-    #         "pmp_periods": pmp_gss_pension_result["pmp_periods"],
-    #         "gss_periods": pmp_gss_pension_result["gss_periods"],
-    #         "pmp_rsd": pmp_gss_payment_amount_result["pmp_periods"],
-    #         "gss_rsd": pmp_gss_payment_amount_result["gss_periods"],
-    #     }
+        return {
+            "pmp_periods": pmp_payment_amount_result["pmp_periods"],
+            "pmp_rsd": pmp_payment_amount_result["pmp_periods"],
+        }
 
     return {
-        "pmp_periods": pmp_pension_result["pmp_periods"],
+        "pmp_periods": pmp_index_result["pmp_periods"]
     }
