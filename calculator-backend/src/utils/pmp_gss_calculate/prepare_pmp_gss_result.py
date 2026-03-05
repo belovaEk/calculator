@@ -16,6 +16,9 @@ from src.utils.pmp_gss_calculate.reg.pmp_gss_payment_amount import (
 
 
 from src.utils.pmp_gss_calculate.no_reg.pmp_init_util import pmp_init
+from src.utils.pmp_gss_calculate.no_reg.pmp_suspension_util import pmp_suspension
+
+from src.utils.pmp_gss_calculate.no_reg.pmp_payment_util import pmp_pension
 
 
 async def prepare_pmp_gss_reg_result(
@@ -99,23 +102,15 @@ async def prepare_pmp_gss_NoReg_result(
         pmp_periods=pmp_periods,
     )
 
-    # pmp_gss_suspension_result = await pmp_gss_suspension(
-    #     data=data,
-    #     pmp_periods=pmp_gss_registration_result["pmp_periods"],
-    #     gss_periods=pmp_gss_registration_result["gss_periods"],
-    # )
+    pmp_suspension_result = await pmp_suspension(
+        data=data,
+        pmp_periods=pmp_init_result["pmp_periods"],
+    )
 
-    # pmp_gss_inpatient_result = await pmp_gss_inpatient(
-    #     pmp_periods=pmp_gss_suspension_result["pmp_periods"],
-    #     gss_periods=pmp_gss_suspension_result["gss_periods"],
-    #     periods_inpatient=data.periods_inpatient,
-    # )
-
-    # pmp_gss_pension_result = await pmp_gss_pension(
-    #     data=data,
-    #     pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
-    #     gss_periods=pmp_gss_inpatient_result["gss_periods"],
-    # )
+    pmp_pension_result = await pmp_pension(
+        data=data,
+        pmp_periods=pmp_suspension_result["pmp_periods"],
+    )
 
     # pmp_gss_index_result = await pmp_gss_index(
     #     pmp_periods=pmp_gss_pension_result["pmp_periods"],
@@ -139,5 +134,5 @@ async def prepare_pmp_gss_NoReg_result(
     #     }
 
     return {
-        "pmp_periods": pmp_init_result["pmp_periods"],
+        "pmp_periods": pmp_pension_result["pmp_periods"],
     }
