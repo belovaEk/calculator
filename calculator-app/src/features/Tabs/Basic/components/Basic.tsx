@@ -170,6 +170,7 @@ export const Basic = () => {
                                                     <div className="form-group">
                                                         <label htmlFor="date_of_death_of_the_breadwinner">Дата смерти *</label>
                                                         <input
+                                                            value={store.date_of_death_of_the_breadwinner}
                                                             type="date"
                                                             id="date_of_death_of_the_breadwinner"
                                                             onChange={(e) => updateStore('date_of_death_of_the_breadwinner', e.target.value)}
