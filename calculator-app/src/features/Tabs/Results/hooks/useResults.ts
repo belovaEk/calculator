@@ -25,7 +25,7 @@ export const useResults = () => {
             "document_on_full_time_OOP_education": true,
             "type_of_social_payment": "string",
             "is_there_a_registration_in_moscow": store?.is_there_a_registration_in_moscow || false,
-            "is_there_a_registration_in_moscow_of_the_breadwinner": store?.date_of_death_of_the_breadwinner || false,
+            "is_there_a_registration_in_moscow_of_the_breadwinner": store?.is_there_a_registration_in_moscow_of_the_breadwinner || false,
             "is_there_a_registration_in_moscow_of_the_legal_representative": store?.is_there_a_registration_in_moscow_of_the_legal_representative || false,
             "periods_reg_moscow": store?.periods_reg_moscow ?? [],
             "periods_reg_representative_moscow": store?.periods_reg_representative_moscow ?? [],
