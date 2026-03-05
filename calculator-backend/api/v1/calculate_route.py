@@ -4,6 +4,11 @@ from src.schemas.json_query_schema import JsonQuerySchema
 
 router = APIRouter()
 
+@router.post("/api/calculate")
+async def calculate(data: JsonQuerySchema):
+    result = await main_util(data=data)
+    return result
+
 @router.post("/calculate")
 async def calculate(data: JsonQuerySchema):
     result = await main_util(data=data)

@@ -14,13 +14,8 @@ LOCAL_ORIGIN_REGEX = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 #     "http://127.0.0.1:8081",
 #     "http://localhost:8082", 
 #     "http://127.0.0.1:8082",
+#     "http://192.168.0.170:8081",
 # ]
-
-origins = [
-    "http://192.168.0.170:8081",
-    "http://localhost:8081",
-    "http://127.0.0.1:8081",
-]
 
 def start_application():
 
@@ -28,11 +23,12 @@ def start_application():
 
     app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],      # чтоб работало с любым IP/доменом фронта
-    allow_credentials=False,  # с "*" креды нельзя
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
     app.include_router(api_router)
     return app
 
