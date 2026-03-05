@@ -2,6 +2,13 @@ from typing import  Dict
 from datetime import date
 
 INSURANCE_PENSION_SCORE: Dict[date, float] = {
+    date(2015, 1, 1): 64.10,
+    date(2015, 2, 1): 71.41,
+    date(2016, 2, 1): 74.27,
+    date(2017, 2, 1): 78.28,
+    date(2017, 4, 1): 78.58,
+    date(2018, 1, 1): 81.49,
+    date(2019, 1, 1): 87.24,
     date(2020, 1, 1): 93.00,
     date(2021, 1, 1): 98.86,
     date(2022, 1, 1): 107.36,
@@ -13,6 +20,13 @@ INSURANCE_PENSION_SCORE: Dict[date, float] = {
 }
 
 INSURANCE_PENSION_FIX_AMOUNT: Dict[date, float] = {
+    date(2015, 1, 1): 3935.00,
+    date(2015, 2, 1): 4383.59,
+    date(2016, 2, 1): 4558.93,
+    date(2017, 2, 1): 4805.11,
+    date(2017, 4, 1): 4805.11,
+    date(2018, 1, 1): 4982.90,
+    date(2019, 1, 1): 5334.19,
     date(2020, 1, 1): 5686.25,
     date(2021, 1, 1): 6044.48,
     date(2022, 1, 1): 6564.31,

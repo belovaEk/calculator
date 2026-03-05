@@ -22,14 +22,14 @@ async def pension_insurance_SPK_amount(data: JsonQuerySchema) -> PaymentsByYear:
 
         score_fix = get_score_fix_amount(DNpen)
         score = score_fix['score']
-        fix_amount = score_fix['fix_amount']
+        fix_amount = score_fix['fix_amount'] / 2
 
         year = DNpen.year
 
         insurance_pension_by_year[pension.id] = {}
 
         if (score != 0 and fix_amount != 0):
-            IPK = (pension.amount - fix_amount) / score
+            IPK = (pension.amount - (fix_amount / 2)) / score
 
         else:
             print("Даты вне заданных периодов ")
@@ -42,7 +42,7 @@ async def pension_insurance_SPK_amount(data: JsonQuerySchema) -> PaymentsByYear:
         while year < current_year:
             insurance_pension_by_year[pension.id][year] = sp
             year+=1
-            sp = IPK*INSURANCE_PENSION_SCORE[date(year, 1, 1)] + INSURANCE_PENSION_FIX_AMOUNT[date(year, 1, 1)]
+            sp = IPK*INSURANCE_PENSION_SCORE[date(year, 1, 1)] + (INSURANCE_PENSION_FIX_AMOUNT[date(year, 1, 1)] / 2)
 
         insurance_pension_by_year[pension.id][year] = sp
     
