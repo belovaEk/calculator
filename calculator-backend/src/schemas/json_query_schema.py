@@ -8,6 +8,16 @@ class PeriodType(BaseModel):
     DN: date
     DK: date
     
+    def __hash__(self):
+        return hash((self.DN, self.DK))
+    
+    def __eq__(self, other):
+        if not isinstance(other, PeriodType):
+            return False
+        return self.DN == other.DN and self.DK == other.DK
+    
+    class Config:
+        frozen = True  # делает объекты неизменяемыми, что требуется для хеширования
     
 class PeriodWithIdType(PeriodType):
     id: int
