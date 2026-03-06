@@ -1,8 +1,4 @@
-from src.schemas.json_query_schema import (
-    PeriodType,
-    JsonQuerySchema,
-    PaymentInterface
-)
+from src.schemas.json_query_schema import PeriodType, JsonQuerySchema, PaymentInterface
 from datetime import date
 from typing import List
 from src.utils.pmp_gss_calculate.reg.pmp_gss_reg_util import pmp_gss_registration
@@ -19,7 +15,18 @@ from src.utils.pmp_gss_calculate.no_reg.pmp_init_util import pmp_init
 from src.utils.pmp_gss_calculate.no_reg.pmp_suspension_util import pmp_suspension
 from src.utils.pmp_gss_calculate.no_reg.pmp_payment_util import pmp_pension
 from src.utils.pmp_gss_calculate.no_reg.pmp_date_index_util import pmp_date_index
-from src.utils.pmp_gss_calculate.no_reg.pmp_payment_amount_util import pmp_payment_amount
+from src.utils.pmp_gss_calculate.no_reg.pmp_payment_amount_util import (
+    pmp_payment_amount,
+)
+
+import logging
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,  # Уровень: DEBUG, INFO, WARNING, ERROR, CRITICAL
+    format="%(asctime)s - %(levelname)s - %(message)s",  # Формат: время - уровень - сообщение
+    handlers=[logging.StreamHandler()],  # Вывод в консоль
+)
 
 
 async def prepare_pmp_gss_reg_result(
@@ -29,7 +36,7 @@ async def prepare_pmp_gss_reg_result(
     list_of_periods_reg_child: List[PeriodType],
     pmp_periods: List[PeriodType],
     gss_periods: List[PeriodType],
-    first_moscow_payment: PaymentInterface
+    first_moscow_payment: PaymentInterface,
 ) -> dict:
     """
     Общая функция для формирования результата с периодами ПМП и ГСС если у ребенка есть регистрация в Москве.
@@ -59,19 +66,21 @@ async def prepare_pmp_gss_reg_result(
         pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
         gss_periods=pmp_gss_inpatient_result["gss_periods"],
     )
-
+    logging.info(f"Периоды pmp_gss_pension_result: {pmp_gss_pension_result['gss_periods']}")
+    
     pmp_gss_index_result = await pmp_gss_index(
         pmp_periods=pmp_gss_pension_result["pmp_periods"],
         gss_periods=pmp_gss_pension_result["gss_periods"],
     )
 
+    logging.info(f"Периоды с индексацией: {pmp_gss_index_result['pmp_periods']}")
 
-    if first_moscow_payment.categoria == "insurance_SPK": 
+    if first_moscow_payment.categoria == "insurance_SPK":
         pmp_gss_payment_amount_result = await pmp_gss_payment_amount(
             pmp_periods=pmp_gss_index_result["pmp_periods"],
             gss_periods=pmp_gss_index_result["gss_periods"],
             suspension_periods=data.periods_suspension,
-            data=data
+            data=data,
         )
 
         return {
@@ -84,8 +93,8 @@ async def prepare_pmp_gss_reg_result(
     return {
         "pmp_periods": pmp_gss_pension_result["pmp_periods"],
         "gss_periods": pmp_gss_pension_result["gss_periods"],
-        "message": 'Обрабатывается только страховая по СПК'
-    }
+        "message": "Обрабатывается только страховая по СПК",
+    }   
 
 
 async def prepare_pmp_gss_NoReg_result(
@@ -93,7 +102,7 @@ async def prepare_pmp_gss_NoReg_result(
     spv_init_date: date,
     pmp_periods: List[PeriodType],
     gss_periods: List[PeriodType],
-    first_moscow_payment: PaymentInterface
+    first_moscow_payment: PaymentInterface,
 ) -> dict:
     """
     Общая функция для формирования результата с периодами ПМП если у ребенка нет регистрации в Москве.
@@ -117,12 +126,11 @@ async def prepare_pmp_gss_NoReg_result(
         pmp_periods=pmp_pension_result["pmp_periods"],
     )
 
-
-    if first_moscow_payment.categoria == "insurance_SPK": 
+    if first_moscow_payment.categoria == "insurance_SPK":
         pmp_payment_amount_result = await pmp_payment_amount(
             pmp_periods=pmp_index_result["pmp_periods"],
             suspension_periods=data.periods_suspension,
-            data=data
+            data=data,
         )
 
         return {
@@ -130,6 +138,4 @@ async def prepare_pmp_gss_NoReg_result(
             "pmp_rsd": pmp_payment_amount_result["pmp_periods"],
         }
 
-    return {
-        "pmp_periods": pmp_index_result["pmp_periods"]
-    }
+    return {"pmp_periods": pmp_index_result["pmp_periods"]}
