@@ -7,22 +7,16 @@ from src.utils.pmp_gss_calculate.common.recalculation_pension_util import recalc
 
 async def pmp_pension (data: JsonQuerySchema, pmp_periods: List[PeriodType]):
 
-    """Функция пересчета ПМП с учетом периодов пенсии
-    """    
+    """Функция пересчета ПМП с учетом периодов пенсии"""    
     
     pensions = [p for p in data.payments if p.type == 'pension']
     n = len(pensions)
 
     new_pmp_periods: GssPmpPensionType = {}
 
-    if n > 1:
-        new_pmp_periods = recalculation_payment(pensions=pensions, n=n, periods=pmp_periods)
-    else:
-        new_pmp_periods = {0: pmp_periods}  
+    new_pmp_periods = recalculation_payment(pensions=pensions, n=n, periods=pmp_periods)
 
-    return {
-        'pmp_periods': new_pmp_periods,
-    }
+    return {'pmp_periods': new_pmp_periods}
     
 
 
