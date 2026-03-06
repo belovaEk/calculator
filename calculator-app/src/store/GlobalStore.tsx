@@ -9,6 +9,7 @@ const initStore: GlobalStoreParameterInterface = {
     is_there_a_registration_in_moscow: false,
     is_payment_transferred: false,
     is_get_PSD_FSD_last_mounth_payment_trasferred: false,
+    is_get_PSD_FSD_last_year_payment_trasferred: false,
     is_Not_get_PSD_FSD_now_payment_trasferred: false,
     is_inpatient: false,
     is_suspension: false,

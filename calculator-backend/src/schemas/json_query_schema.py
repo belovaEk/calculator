@@ -41,6 +41,7 @@ class JsonQuerySchema(BaseModel):
 
     is_payment_transferred: Optional[bool] = None
     is_get_PSD_FSD_last_mounth_payment_trasferred: Optional[bool] = None
+    is_get_PSD_FSD_last_year_payment_trasferred: Optional[bool] = None
     is_Not_get_PSD_FSD_now_payment_trasferred: Optional[bool] = None
     payments: Optional[List[PaymentInterface]] = None
     

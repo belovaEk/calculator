@@ -104,6 +104,15 @@ export const Basic = () => {
                                 <div className="checkbox-group">
                                     <input
                                         type="checkbox"
+                                        id="transferredCheckGetPSDFSDLM"
+                                        checked={store.is_get_PSD_FSD_last_year_payment_trasferred}
+                                        onChange={(e) => updateStore('is_get_PSD_FSD_last_year_payment_trasferred', e.target.checked)}
+                                    />
+                                    <label htmlFor="transferredCheckGetPSDFSDLM">Получал РСД или ФСД в прошлом году</label>
+                                </div>
+                                <div className="checkbox-group">
+                                    <input
+                                        type="checkbox"
                                         id="transferredCheckGetPSDFSDNow"
                                         checked={store.is_Not_get_PSD_FSD_now_payment_trasferred}
                                         onChange={(e) => updateStore('is_Not_get_PSD_FSD_now_payment_trasferred', e.target.checked)}

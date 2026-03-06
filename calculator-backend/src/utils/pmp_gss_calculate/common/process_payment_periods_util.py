@@ -5,7 +5,7 @@ from src.utils.payments.types.paymentType import PaymentsByYear
 
 from datetime import date
 from typing import Dict, List, Optional
-from src.utils.payments.pension_amount_util import pension_insurance_SPK_amount
+from src.utils.payments.pension_amount_util import calculate_sp_standart
 from src.schemas.json_query_schema import (
     JsonQuerySchema,
 )
@@ -64,7 +64,7 @@ async def process_payment_periods(
     # Выбираем нужный словарь стандартов
     standart_dict = PMP_STANDART if period_type == "pmp" else GSS_STANDART
    
-    SP_STANDART = await pension_insurance_SPK_amount(data)
+    SP_STANDART = await calculate_sp_standart(data)
     
     result = {}
     

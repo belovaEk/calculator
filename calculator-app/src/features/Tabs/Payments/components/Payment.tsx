@@ -12,7 +12,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
         handleRemove,
         handleCurrentDate,
     } = usePayment({ id, paymentData, onUpdate, onRemove });
-    
+
 
     return (
         <>
@@ -26,7 +26,6 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                             onClick={handleRemove}
                         >Удалить выплату</button>
                     </div>
-
                     <div className="payment-dates">
                         <div className="form-group">
                             <label>Дата начала выплаты *</label>
@@ -67,6 +66,9 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                         </div> */}
                     </div>
 
+
+
+
                     {paymentData.type === PAYMENT_TYPE.pension.raw && (
                         <>
                             <div className="checkbox-group">
@@ -91,7 +93,6 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                         </>
                     )}
 
-
                     <div className="form-group">
                         <label>Размер назначенной выплаты*</label>
                         <input
@@ -102,6 +103,69 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                             onChange={(e) => updatePayment('amount', e.target.value)}
                             required />
                     </div>
+
+                    {paymentData.categoria === PENSION_CATEGORIES.departmental.raw && (
+                        <p style={{color: 'red'}}>В разработке</p>
+                    )}
+
+
+                    {/* {paymentData.categoria === PENSION_CATEGORIES.departmental.raw && (
+
+                        <>
+                            <div className="grid-4">
+                                <div className="form-group">
+                                    <label>Дата начала выплаты *</label>
+                                    <input
+                                        type="date"
+                                        className="payment-start"
+                                        required
+                                        value={paymentData.DN}
+                                        onChange={(e) => updatePayment('DN', e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Дата окончания выплаты *</label>
+                                    <input
+                                        type="date"
+                                        className="payment-end"
+                                        value={paymentData.DK}
+                                        onChange={(e) => updatePayment('DK', e.target.value)}
+                                        required
+                                    />
+                                </div>
+
+
+
+
+                                <div className="form-group">
+                                    <label>Размер назначенной выплаты*</label>
+                                    <input
+                                        type="number"
+                                        className="payment-amount"
+                                        min="0" step="0.01"
+                                        value={paymentData.amount}
+                                        onChange={(e) => updatePayment('amount', e.target.value)}
+                                        required />
+                                </div>
+
+
+                            </div>
+                            <div className="date-options">
+                                <div className="date-option-group">
+                                    <input
+                                        type="checkbox"
+                                        className="current-date"
+                                        value={paymentData.DK}
+                                        onChange={handleCurrentDate}
+                                    />
+                                    <label className="date-option-label">По настоящее время</label>
+                                </div>
+                            </div>
+                        </>
+                    )
+                    } */}
+
 
                     {/* <div className="amount-period">
                         <div className="form-group">

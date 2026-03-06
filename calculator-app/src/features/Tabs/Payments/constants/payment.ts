@@ -10,6 +10,11 @@ export const PENSION_CATEGORIES = {
     social_disability:{
         raw: 'social_disability',
         display: 'Социальная по инвалидности'
+    },
+
+    departmental:{
+        raw: 'departmental',
+        display: 'Ведомственная'
     }
 }
 

@@ -35,6 +35,7 @@ export const useResults = () => {
             "is_payment_transferred": store.is_payment_transferred,
             "is_get_PSD_FSD_last_mounth_payment_trasferred": store.is_get_PSD_FSD_last_mounth_payment_trasferred,
             "is_Not_get_PSD_FSD_now_payment_trasferred": store.is_Not_get_PSD_FSD_now_payment_trasferred,
+            "is_get_PSD_FSD_last_year_payment_trasferred": store.is_get_PSD_FSD_last_year_payment_trasferred,
             "payments": store?.payments ?? [],
             "periods_suspension": store?.periods_suspension ?? [],
             "periods_inpatient": store?.periods_inpatient ?? []

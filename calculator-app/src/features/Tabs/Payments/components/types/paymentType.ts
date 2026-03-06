@@ -4,8 +4,8 @@ import { DateString } from "../../../../../shared";
 export type PaymentTypeRaw = 'pension' | 'edv' | 'egdv' | 'housing' | 'custom';
 export type PaymentTypeDisplay = 'Пенсия' | 'ЕДВ' | 'ЕГДВ' | 'ЖКУ' | 'Другая выплата';
 
-export type PensionCategoryRaw = 'insurance_SPK' | 'social_SPK' | 'social_disability';
-export type PensionCategoryDisplay = 'Страховая по СПК' | 'Социальная по СПК' | 'Социальная по инвалидности';
+export type PensionCategoryRaw = 'insurance_SPK' | 'social_SPK' | 'social_disability' | 'departmental';
+export type PensionCategoryDisplay = 'Страховая по СПК' | 'Социальная по СПК' | 'Социальная по инвалидности' | 'Ведомственная';
 
 export interface PaymentInterface {
     id: number,

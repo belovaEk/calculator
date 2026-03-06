@@ -37,3 +37,15 @@ INSURANCE_PENSION_FIX_AMOUNT: Dict[date, float] = {
     date(2026, 1, 1): 9584.69,
 }
 
+
+SOCIAL_PENSION_INDEX: Dict[date, float] = {
+    date(2018, 4, 1): 1.029,
+    date(2019, 4, 1): 1.02,
+    date(2020, 4, 1): 1.061,
+    date(2021, 4, 1): 1.034,
+    date(2022, 4, 1): 1.086,
+    date(2022, 6, 1): 1.1,
+    date(2023, 4, 1): 1.033,
+    date(2024, 4, 1): 1.075,
+    date(2025, 4, 1): 1.1475,
+}

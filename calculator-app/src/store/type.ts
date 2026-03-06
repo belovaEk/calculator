@@ -35,6 +35,7 @@ export interface GlobalStoreParameterInterface {
     is_breadwinner: boolean,
 
     is_get_PSD_FSD_last_mounth_payment_trasferred: boolean,
+    is_get_PSD_FSD_last_year_payment_trasferred: boolean,
     is_Not_get_PSD_FSD_now_payment_trasferred: boolean,
 
     payments: Array<PaymentInterface>,
