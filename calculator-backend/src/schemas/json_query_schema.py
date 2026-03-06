@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import date
 from typing import List, Optional, Literal
 from dateutil.relativedelta import relativedelta
+from typing import TypeAlias
 
 
 class PeriodType(BaseModel):
@@ -23,36 +24,43 @@ class PeriodWithIdType(PeriodType):
     id: int
 
 PaymentTypeRaw = Literal["pension", "edv", "egdv", "housin", "custom"]
-PensionCategoryRaw = Literal["insurance_SPK", "social_SPK", "social_disability"]
+PensionCategoryRaw = Literal["insurance_SPK", "social_SPK", "social_disability", "departmental"]
+
+
+class RecalculationData(BaseModel):
+    date: date
+    amount: float
 
 
 class PaymentInterface(BaseModel):
-    id: Optional[int] = None
-    type: Optional[PaymentTypeRaw] = None
-    categoria: Optional[PensionCategoryRaw | str] = ""
-    DN: Optional[date] = None
-    DK: Optional[date] = None
+    id: int
+    type: PaymentTypeRaw
+    categoria: PensionCategoryRaw
+    DN: date 
+    DK: date 
     amount: float  # Rubles
-    is_Moscow: Optional[bool] = None
+    is_Moscow: bool
+    is_recalculation:  Optional[bool] = None
+    recalculation: Optional[List[RecalculationData]] = None
 
 class JsonQuerySchema(BaseModel):
-    is_adult: Optional[bool] = None
-    date_of_birth: Optional[date] = None
+    is_adult: bool = None
+    date_of_birth: date = None
     document_on_full_time_OOP_education: Optional[bool] = None
-    type_of_social_payment: Optional[str] = None
-    is_there_a_registration_in_moscow: Optional[bool] = None
-    is_there_a_registration_in_moscow_of_the_breadwinner: Optional[bool] = None
-    is_there_a_registration_in_moscow_of_the_legal_representative: Optional[bool] = None
+    is_there_a_registration_in_moscow: bool
+    is_there_a_registration_in_moscow_of_the_breadwinner: bool
+    is_there_a_registration_in_moscow_of_the_legal_representative: bool
     periods_reg_moscow: Optional[List[PeriodType]] = None
     periods_reg_representative_moscow: Optional[List[PeriodType]] = None
     periods_reg_breadwinner_moscow: Optional[List[PeriodType]] = None
     date_of_death_of_the_breadwinner: Optional[date] = None
-    there_is_a_breadwinner: Optional[bool] = None
+    there_is_a_breadwinner: bool
 
-    is_payment_transferred: Optional[bool] = None
-    is_get_PSD_FSD_last_mounth_payment_trasferred: Optional[bool] = None
-    is_get_PSD_FSD_last_year_payment_trasferred: Optional[bool] = None
-    is_Not_get_PSD_FSD_now_payment_trasferred: Optional[bool] = None
+    is_payment_transferred: bool
+    is_get_PSD_FSD_last_mounth_payment_trasferred: bool
+    is_get_PSD_FSD_last_year_payment_trasferred: bool
+    is_Not_get_PSD_FSD_now_payment_trasferred: bool
+
     payments: Optional[List[PaymentInterface]] = None
     
     periods_suspension: Optional[List[PeriodWithIdType]] = None
