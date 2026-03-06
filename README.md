@@ -1,4 +1,12 @@
-Для запуска системы необходимо открыть отдельно папки 
+
+
+Чтобы поднять Докер пропишите в общей папке:
+
+docker compose up -d --build
+
+
+
+Для запуска системы для разработки необходимо открыть отдельно папки 
 calculator-app и calculator-backend
 
 Чтоб поднять frontend:
@@ -18,5 +26,7 @@ calculator-app и calculator-backend
 4.  pip install -r requirements.txt
 5.  python main.py
   
-   Верися python 3.11.14
-   Версия Node 20.18.0
+Верися python 3.11.14
+Версия Node 20.18.0
+
+
