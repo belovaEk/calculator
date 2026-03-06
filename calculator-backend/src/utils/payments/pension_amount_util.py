@@ -31,7 +31,6 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByYear:
     """    
 
     pensions = [p for p in data.payments if p.type == 'pension']
-    print(43)
     sp_standart_by_year: PaymentsByYear = {}
 
     for pension in pensions:
@@ -82,13 +81,14 @@ async def pension_insurance_SPK_calculate(data: JsonQuerySchema, pension: Paymen
         date_for_period = date(DNpen.year, 12, 31)
         date_index = date(DNpen.year+1, 12, 31)
     else:
-        if data.is_payment_transferred:
-            if data.is_get_PSD_FSD_last_mounth_payment_trasferred and data.is_get_PSD_FSD_last_year_payment_trasferred:
-                if data.is_Not_get_PSD_FSD_now_payment_trasferred:
-                    sp_prev = IPK*INSURANCE_PENSION_SCORE[date(DNpen.year-1, 1, 1)] + INSURANCE_PENSION_FIX_AMOUNT[date(DNpen.year-1, 1, 1)]/2
-                    sp_standart_by_year[pension.id][PeriodType(DN=date(DNpen.year-1, 12, 31), DK=DNpen)] = sp_prev
-                else:
-                    isRSD = False
+        if pension.id == 0:
+            if data.is_payment_transferred:
+                if data.is_get_PSD_FSD_last_mounth_payment_trasferred and data.is_get_PSD_FSD_last_year_payment_trasferred:
+                    if data.is_Not_get_PSD_FSD_now_payment_trasferred:
+                        sp_prev = IPK*INSURANCE_PENSION_SCORE[date(DNpen.year-1, 1, 1)] + INSURANCE_PENSION_FIX_AMOUNT[date(DNpen.year-1, 1, 1)]/2
+                        sp_standart_by_year[pension.id][PeriodType(DN=date(DNpen.year-1, 12, 31), DK=DNpen)] = sp_prev
+                    else:
+                        isRSD = False
         date_for_period = DNpen
         summa = pension.amount
         date_index = date(DNpen.year, 12, 31)
@@ -135,14 +135,15 @@ async def pension_social_calculate(data:  JsonQuerySchema, pension: PaymentInter
     date_index = date(DNpen.year, 4, 1)
 
     if DNpen > date_index:
-        if data.is_payment_transferred:
-            if data.is_get_PSD_FSD_last_mounth_payment_trasferred and data.is_get_PSD_FSD_last_year_payment_trasferred:
-                if data.is_Not_get_PSD_FSD_now_payment_trasferred:
-                    sp_standart_by_year[pension.id][PeriodType(DN=date(year-1, 12, 1), DK=DNpen)] = summa / SOCIAL_PENSION_INDEX[date_index]
-                    date_for_period = DNpen               
-                else:
-                    isRSD = False # РСД не положено
-                    sp_standart_by_year[pension.id][PeriodType(DN=DNpen, DK=date_index)] = 0
+        if pension.id == 0:
+            if data.is_payment_transferred:
+                if data.is_get_PSD_FSD_last_mounth_payment_trasferred and data.is_get_PSD_FSD_last_year_payment_trasferred:
+                    if data.is_Not_get_PSD_FSD_now_payment_trasferred:
+                        sp_standart_by_year[pension.id][PeriodType(DN=date(year-1, 12, 1), DK=DNpen)] = summa / SOCIAL_PENSION_INDEX[date_index]
+                        date_for_period = DNpen               
+                    else:
+                        isRSD = False # РСД не положено
+                        sp_standart_by_year[pension.id][PeriodType(DN=DNpen, DK=date_index)] = 0
     else:
         sp_standart_by_year[pension.id][PeriodType(DN=DNpen, DK=date_index)] = summa
         summa = summa*SOCIAL_PENSION_INDEX[date_index]
