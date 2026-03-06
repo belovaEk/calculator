@@ -481,8 +481,15 @@ tr:nth-child(even) {
   margin-top: 10px;
 }
 
-
 .grid-header {
   display: grid;
   grid-template-columns: 0.5fr 1fr 1fr 1fr;
+}
+
+.recalculation-header {
+  display: flex;
+  justify-content: space-between;
+}
+.recalculation-header button {
+  max-height: 33px;
 }
