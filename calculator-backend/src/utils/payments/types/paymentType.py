@@ -6,8 +6,12 @@ AmountByYear: TypeAlias = Dict[int, float]
 
 class PeriodAmount(PeriodType):
     amount: float
+
+
+class PaymentsByYearItem(PeriodAmount):
     type: PensionCategoryRaw
+    periods: List[PeriodAmount]
 
 
-PaymentsByYear: TypeAlias = Dict[int, List[PeriodAmount]]
+PaymentsByYear: TypeAlias = Dict[int, PaymentsByYearItem]
 
