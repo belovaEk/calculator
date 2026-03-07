@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from datetime import date
 from typing import List, Optional, Literal
 from dateutil.relativedelta import relativedelta
-from typing import TypeAlias
 
 
 class PeriodType(BaseModel):
@@ -12,8 +11,15 @@ class PeriodType(BaseModel):
 class PeriodWithIdType(PeriodType):
     id: int
 
+
+class OrderType(BaseModel):
+    id: int
+    date: date
+
 PaymentTypeRaw = Literal["pension", "edv", "egdv", "housin", "custom"]
 PensionCategoryRaw = Literal["insurance_SPK", "social_SPK", "social_disability", "departmental"]
+
+PensionCategoryAdultRaw = Literal["insurance", "social", "departmental", "gosudarstvennaya", "other", "monthPay"]
 
 
 class RecalculationData(BaseModel):
@@ -24,11 +30,12 @@ class RecalculationData(BaseModel):
 class PaymentInterface(BaseModel):
     id: int
     type: PaymentTypeRaw
-    categoria: PensionCategoryRaw
+    categoria: PensionCategoryRaw | PensionCategoryAdultRaw
     DN: date 
     DK: date 
-    amount: float  # Rubles
+    amount: float  
     is_Moscow: bool
+
     is_recalculation:  Optional[bool] = None
     recalculation: Optional[List[RecalculationData]] = None
 
@@ -36,6 +43,11 @@ class PaymentInterface(BaseModel):
     is_get_PSD_FSD_last_mounth_payment_trasferred: bool
     is_get_PSD_FSD_last_year_payment_trasferred: bool
     is_Not_get_PSD_FSD_now_payment_trasferred: bool
+
+    is_fix_amoumt: Optional[bool] = None
+    invalid_categoria: Optional[1 | 2 | 3] = None
+    num_dependents: Optional[0 | 1 | 2 | 3] = None
+    change_last_date: date
 
 class JsonQuerySchema(BaseModel):
     is_adult: bool = None
@@ -54,7 +66,9 @@ class JsonQuerySchema(BaseModel):
     
     periods_suspension: Optional[List[PeriodWithIdType]] = None
     periods_inpatient: Optional[List[PeriodWithIdType]] = None
-
+    periods_employment: Optional[List[PeriodWithIdType]] = None
+    is_order: Optional[bool] = None
+    orders_date: Optional[List[OrderType]]
 
 class PeriodDuration(BaseModel):
     years: int = 0
