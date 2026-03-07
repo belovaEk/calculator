@@ -9,17 +9,6 @@ class PeriodType(BaseModel):
     DN: date
     DK: date
     
-    def __hash__(self):
-        return hash((self.DN, self.DK))
-    
-    def __eq__(self, other):
-        if not isinstance(other, PeriodType):
-            return False
-        return self.DN == other.DN and self.DK == other.DK
-    
-    class Config:
-        frozen = True  # делает объекты неизменяемыми, что требуется для хеширования
-    
 class PeriodWithIdType(PeriodType):
     id: int
 
@@ -43,6 +32,11 @@ class PaymentInterface(BaseModel):
     is_recalculation:  Optional[bool] = None
     recalculation: Optional[List[RecalculationData]] = None
 
+    is_payment_transferred: bool
+    is_get_PSD_FSD_last_mounth_payment_trasferred: bool
+    is_get_PSD_FSD_last_year_payment_trasferred: bool
+    is_Not_get_PSD_FSD_now_payment_trasferred: bool
+
 class JsonQuerySchema(BaseModel):
     is_adult: bool = None
     date_of_birth: date = None
@@ -55,11 +49,6 @@ class JsonQuerySchema(BaseModel):
     periods_reg_breadwinner_moscow: Optional[List[PeriodType]] = None
     date_of_death_of_the_breadwinner: Optional[date] = None
     there_is_a_breadwinner: bool
-
-    is_payment_transferred: bool
-    is_get_PSD_FSD_last_mounth_payment_trasferred: bool
-    is_get_PSD_FSD_last_year_payment_trasferred: bool
-    is_Not_get_PSD_FSD_now_payment_trasferred: bool
 
     payments: Optional[List[PaymentInterface]] = None
     
