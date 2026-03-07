@@ -1,17 +1,17 @@
 from ast import List
-from typing import  Dict, TypeAlias
+from typing import Dict, TypeAlias
 from src.schemas.json_query_schema import PeriodType, PensionCategoryRaw
 
 AmountByYear: TypeAlias = Dict[int, float]
+
 
 class PeriodAmount(PeriodType):
     amount: float
 
 
-class PaymentsByYearItem(PeriodAmount):
-    type: PensionCategoryRaw
-    periods: List[PeriodAmount]
+class PaymentsByPeriodsItem(PeriodAmount):
+    type: PensionCategoryRaw  # "insurance_SPK", "social_SPK", "social_disability", "departmental"
+    periods: List[PeriodAmount]  # [DN, DK, amount]
 
 
-PaymentsByYear: TypeAlias = Dict[int, PaymentsByYearItem]
-
+PaymentsByPeriods: TypeAlias = Dict[int, PaymentsByPeriodsItem]
