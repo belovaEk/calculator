@@ -10,18 +10,10 @@ export const useBasic = ()=> {
     const navigate = useNavigate();
     const { store, updateStore } = useGlobalStore();
 
-    const [isBreadwinner, setIsBreadwinner] = useState(false);
-    
-    const updateIsBreadwinner = (value: boolean) => {
-        setIsBreadwinner(value)
-    }
-
     return {
         navigate,
         store,
         updateStore,
-        isBreadwinner,
-        updateIsBreadwinner,
         ROUTES,
         PERSONA,
         PERIOD_TYPE,

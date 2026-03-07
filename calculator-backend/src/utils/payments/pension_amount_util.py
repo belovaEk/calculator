@@ -44,16 +44,16 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
     for pension in pensions:
 
         if pension.categoria == "insurance_SPK":
-            sp_standart_by_year = await pension_insurance_SPK_calculate(data=data, pension=pension, sp_standart_by_year=sp_standart_by_year)
+            sp_standart_by_year = await pension_insurance_SPK_calculate(pension=pension, sp_standart_by_year=sp_standart_by_year)
         elif pension.categoria == "social_SPK" or pension.categoria == "social_disability":
-            sp_standart_by_year = await pension_social_calculate(data=data, pension=pension, sp_standart_by_year=sp_standart_by_year)
+            sp_standart_by_year = await pension_social_calculate(pension=pension, sp_standart_by_year=sp_standart_by_year)
         elif pension.categoria == "departmental":
             sp_standart_by_year = await pension_departmental_calculate(pension=pension, sp_standart_by_year=sp_standart_by_year)
     return sp_standart_by_year
     
 
 
-async def pension_insurance_SPK_calculate(data: JsonQuerySchema, pension: PaymentInterface, sp_standart_by_year) -> PaymentsByPeriods:
+async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart_by_year) -> PaymentsByPeriods:
 
     """ Функция по расчета стандартных выплат по страховой пенсии по годам
 
@@ -123,7 +123,7 @@ async def pension_insurance_SPK_calculate(data: JsonQuerySchema, pension: Paymen
 
 
 
-async def pension_social_calculate(data:  JsonQuerySchema, pension: PaymentInterface, sp_standart_by_year) -> PaymentsByPeriods:
+async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_year) -> PaymentsByPeriods:
 
     """ Функция по расчета стандартных выплат по социальной пенсии по годам
 

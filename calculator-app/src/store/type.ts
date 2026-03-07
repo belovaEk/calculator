@@ -31,12 +31,8 @@ export interface GlobalStoreParameterInterface {
 
     periods_inpatient?: Array<DatePeriod>,
 
-    is_payment_transferred: boolean,
+    
     is_breadwinner: boolean,
-
-    is_get_PSD_FSD_last_mounth_payment_trasferred: boolean,
-    is_get_PSD_FSD_last_year_payment_trasferred: boolean,
-    is_Not_get_PSD_FSD_now_payment_trasferred: boolean,
 
     payments: Array<PaymentInterface>,
     periods_suspension?: Array<DatePeriod>,

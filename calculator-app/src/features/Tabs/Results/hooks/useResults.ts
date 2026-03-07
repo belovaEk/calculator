@@ -32,10 +32,6 @@ export const useResults = () => {
             "periods_reg_breadwinner_moscow": store?.periods_reg_breadwinner_moscow ?? [],
             "date_of_death_of_the_breadwinner": store?.date_of_death_of_the_breadwinner,
             "there_is_a_breadwinner": store?.date_of_death_of_the_breadwinner ? true : false,
-            "is_payment_transferred": store.is_payment_transferred,
-            "is_get_PSD_FSD_last_mounth_payment_trasferred": store.is_get_PSD_FSD_last_mounth_payment_trasferred,
-            "is_Not_get_PSD_FSD_now_payment_trasferred": store.is_Not_get_PSD_FSD_now_payment_trasferred,
-            "is_get_PSD_FSD_last_year_payment_trasferred": store.is_get_PSD_FSD_last_year_payment_trasferred,
             "payments": store?.payments ?? [],
             "periods_suspension": store?.periods_suspension ?? [],
             "periods_inpatient": store?.periods_inpatient ?? []

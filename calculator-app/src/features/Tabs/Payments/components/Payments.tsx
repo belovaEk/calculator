@@ -21,38 +21,19 @@ export const Payments = () => {
                 <div className="section">
                     <h2>Выплаты и периоды их получения</h2>
 
-                    {/* <div className="grid">
-                        <div className="form-group">
-                            <label>Дата первичного назначения пенсии в Москве*</label>
-                            <input
-                                type="date"
-                                className="payment-end"
-                                value={store.date_of_the_initial_appointment_of_the_spv}
-                                onChange={(e) => updateStore('date_of_the_initial_appointment_of_the_spv', e.target.value)}
-                                required
-                            />
-                        </div>
-                    </div> */}
-
-
-                    {/* <div className="info-box warning">
-                        <p><strong>Важно:</strong> При расчете РСД на январь используются значения пенсий и ЕДВ на декабрь
-                            предыдущего года. Для правильного расчета необходимо заполнить раздельные значения.</p>
-                        <p><strong>Примечание:</strong> Поле "Размер на январь" не является обязательным. Если не заполнено,
-                            будет использоваться значение на декабрь.</p>
-                    </div> */}
 
                     <div className="form-group">
-                        {/* <button className="btn btn-success" id="autoFillAll">🔄 Автозаполнить все выплаты</button> */}
                         <button
                             className="btn"
                             id="addPension"
                             onClick={() => addPaymet(PAYMENT_TYPE.pension.raw)}
                         >+ Добавить пенсию</button>
+
                         {/* <button className="btn" id="addEdv">+ Добавить ЕДВ</button>
                         <button className="btn" id="addEgdv">+ Добавить ЕГДВ</button>
                         <button className="btn" id="addHousing">+ Добавить ЖКУ</button>
                         <button className="btn btn-secondary" id="addCustom">+ Добавить другую выплату</button> */}
+                        
                     </div>
 
                     <div id="paymentsContainer">

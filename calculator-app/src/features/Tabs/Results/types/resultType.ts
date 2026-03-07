@@ -24,9 +24,6 @@ export interface ResultsRequestData {
     periods_reg_breadwinner_moscow: Array<any>;
     date_of_death_of_the_breadwinner?: string;
     there_is_a_breadwinner: boolean;
-    is_payment_transferred: any;
-    is_get_PSD_FSD_last_mounth_payment_trasferred: any;
-    is_Not_get_PSD_FSD_now_payment_trasferred: any;
     payments: Array<PaymentInterface>;
     periods_suspension: Array<DatePeriod>;
     periods_inpatient: Array<DatePeriod> | undefined;

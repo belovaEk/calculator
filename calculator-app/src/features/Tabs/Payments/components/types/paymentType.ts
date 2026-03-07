@@ -23,6 +23,11 @@ export interface PaymentInterface {
     is_Moscow: boolean,
     is_recalculation?: boolean,
     recalculation?: RecalculationData[]
+
+    is_payment_transferred: boolean,
+    is_get_PSD_FSD_last_mounth_payment_trasferred: boolean,
+    is_get_PSD_FSD_last_year_payment_trasferred: boolean,
+    is_Not_get_PSD_FSD_now_payment_trasferred: boolean,
 }
 
 export interface PaymentProps  {

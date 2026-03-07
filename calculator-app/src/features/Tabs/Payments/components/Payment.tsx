@@ -69,7 +69,6 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
 
 
 
-
                     {paymentData.type === PAYMENT_TYPE.pension.raw && (
                         <>
                             <div className="checkbox-group">
@@ -81,6 +80,48 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                 />
                                 <label htmlFor="MoscowCheck">Назначена в Москве</label>
                             </div>
+
+                            <div className="checkbox-group">
+                                <input
+                                    type="checkbox"
+                                    id="transferredCheck"
+                                    checked={paymentData.is_payment_transferred}
+                                    onChange={(e) => updatePayment('is_payment_transferred', e.target.checked)}
+                                />
+                                <label htmlFor="transferredCheck">Пенсия была переведена из другого региона</label>
+                            </div>
+
+                            {paymentData.is_payment_transferred && (
+                                <div className="info-box">
+                                    <div className="checkbox-group">
+                                        <input
+                                            type="checkbox"
+                                            id="transferredCheckGetPSDFSDLM"
+                                            checked={paymentData.is_get_PSD_FSD_last_mounth_payment_trasferred}
+                                            onChange={(e) => updatePayment('is_get_PSD_FSD_last_mounth_payment_trasferred', e.target.checked)}
+                                        />
+                                        <label htmlFor="transferredCheckGetPSDFSDLM">Получал РСД или ФСД в предыдщуем месяце</label>
+                                    </div>
+                                    <div className="checkbox-group">
+                                        <input
+                                            type="checkbox"
+                                            id="transferredCheckGetPSDFSDLM"
+                                            checked={paymentData.is_get_PSD_FSD_last_year_payment_trasferred}
+                                            onChange={(e) => updatePayment('is_get_PSD_FSD_last_year_payment_trasferred', e.target.checked)}
+                                        />
+                                        <label htmlFor="transferredCheckGetPSDFSDLM">Получал РСД или ФСД в прошлом году</label>
+                                    </div>
+                                    <div className="checkbox-group">
+                                        <input
+                                            type="checkbox"
+                                            id="transferredCheckGetPSDFSDNow"
+                                            checked={paymentData.is_Not_get_PSD_FSD_now_payment_trasferred}
+                                            onChange={(e) => updatePayment('is_Not_get_PSD_FSD_now_payment_trasferred', e.target.checked)}
+                                        />
+                                        <label htmlFor="transferredCheckGetPSDFSDNow">В текущее время не получает РСД или ФСД в другом регионе</label>
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="form-group">
                                 <label>Вид пенсии *</label>
