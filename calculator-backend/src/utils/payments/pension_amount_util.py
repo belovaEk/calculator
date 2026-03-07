@@ -71,6 +71,7 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
     fix_amount = score_fix['fix_amount'] / 2
 
     sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
+        is_payment_transferred=pension.is_payment_transferred,
         type=pension.categoria, 
         periods=[]
     )
@@ -139,6 +140,7 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
     summa = pension.amount
 
     sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
+        is_payment_transferred=pension.is_payment_transferred,
         type=pension.categoria, 
         periods=[]
     )
@@ -206,6 +208,7 @@ async def pension_departmental_calculate(pension: PaymentInterface, sp_standart_
     DKpen = pension.DK
 
     sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
+        is_payment_transferred=pension.is_payment_transferred,
         type=pension.categoria, 
         periods=[]
     )
