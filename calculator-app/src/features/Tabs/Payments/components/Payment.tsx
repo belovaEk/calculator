@@ -146,7 +146,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                             required />
                     </div>
 
-                    {paymentData.categoria === PENSION_CATEGORIES.departmental.raw && (
+                    {(paymentData.categoria === PENSION_CATEGORIES.departmental.raw || paymentData.categoria === PENSION_CATEGORIES.social_SPK.raw || paymentData.categoria === PENSION_CATEGORIES.social_disability.raw )&& (
 
                         <>
                             <div className="checkbox-group">
