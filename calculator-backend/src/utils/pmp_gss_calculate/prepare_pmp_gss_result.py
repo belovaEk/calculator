@@ -66,35 +66,28 @@ async def prepare_pmp_gss_reg_result(
         pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
         gss_periods=pmp_gss_inpatient_result["gss_periods"],
     )
-    logging.info(f"Периоды pmp_gss_pension_result: {pmp_gss_pension_result['gss_periods']}")
+    logging.info(f"Периоды gss_pension_result: {pmp_gss_pension_result['gss_periods']}")
     
     pmp_gss_index_result = await pmp_gss_index(
         pmp_periods=pmp_gss_pension_result["pmp_periods"],
         gss_periods=pmp_gss_pension_result["gss_periods"],
     )
 
-    logging.info(f"Периоды с индексацией: {pmp_gss_index_result['pmp_periods']}")
+    logging.info(f"Периоды ГСС с индексацией: {pmp_gss_index_result['gss_periods']}")
+    logging.info(f"Периоды ПМП с индексацией: {pmp_gss_index_result['pmp_periods']}")
 
-    if first_moscow_payment.categoria == "insurance_SPK":
-        pmp_gss_payment_amount_result = await pmp_gss_payment_amount(
-            pmp_periods=pmp_gss_index_result["pmp_periods"],
-            gss_periods=pmp_gss_index_result["gss_periods"],
-            suspension_periods=data.periods_suspension,
-            data=data,
-        )
-
-        return {
-            "pmp_periods": pmp_gss_pension_result["pmp_periods"],
-            "gss_periods": pmp_gss_pension_result["gss_periods"],
-            "pmp_rsd": pmp_gss_payment_amount_result["pmp_periods"],
-            "gss_rsd": pmp_gss_payment_amount_result["gss_periods"],
-        }
+    pmp_gss_payment_amount_result = await pmp_gss_payment_amount(
+        pmp_periods=pmp_gss_index_result["pmp_periods"],
+        gss_periods=pmp_gss_index_result["gss_periods"],
+        data=data,
+    )
 
     return {
         "pmp_periods": pmp_gss_pension_result["pmp_periods"],
         "gss_periods": pmp_gss_pension_result["gss_periods"],
-        "message": "Обрабатывается только страховая по СПК",
-    }   
+        "pmp_rsd": pmp_gss_payment_amount_result["pmp_periods"],
+        "gss_rsd": pmp_gss_payment_amount_result["gss_periods"],
+    }
 
 
 async def prepare_pmp_gss_NoReg_result(
