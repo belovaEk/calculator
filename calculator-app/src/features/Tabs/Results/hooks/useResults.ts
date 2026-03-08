@@ -81,32 +81,28 @@ export const useResults = () => {
         }
 
         // Обрабатываем ГСС РСД
-        if (data.gss_rsd) {
-            Object.entries(data.gss_rsd).forEach(([id, periods]) => {
-                periods.forEach((period: RsdItem) => {
-                    rowsPmpGssRsd.push({
-                        paymentType: 'ГСС',
-                        startDate: period.DN,
-                        endDate: period.DK,
-                        amount: period.amount
-                    });
+        if (data.gss_rsd && data.gss_rsd.length > 0) {
+            console.log(data.gss_rsd);
+
+            // Для каждого элемента РСД добавляем запись
+            data.gss_rsd.forEach((item: RsdItem) => {
+                rowsPmpGssRsd.push({
+                    paymentType: 'ГСС',
+                    startDate: item.DN,
+                    endDate: item.DK,
+                    amount: item.amount
                 });
-                console.log(store.payments[Number(id)].categoria)
             });
-
-
         }
 
         // Обрабатываем ПМП РСД
-        if (data.pmp_rsd) {
-            Object.entries(data.pmp_rsd).forEach(([id, periods]) => {
-                periods.forEach((period: RsdItem) => {
-                    rowsPmpGssRsd.push({
-                        paymentType: 'ПМП',
-                        startDate: period.DN,
-                        endDate: period.DK,
-                        amount: period.amount
-                    });
+        if (data.pmp_rsd && data.pmp_rsd.length > 0) {
+            data.pmp_rsd.forEach((item: RsdItem) => {
+                rowsPmpGssRsd.push({
+                    paymentType: 'ПМП',
+                    startDate: item.DN,
+                    endDate: item.DK,
+                    amount: item.amount
                 });
             });
         }

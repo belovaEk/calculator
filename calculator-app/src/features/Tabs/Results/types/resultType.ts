@@ -42,6 +42,7 @@ export interface RsdItem {
   amount: Rubles;  
 }
 
+export type RsdList = RsdItem[];
 
 export interface RadGssPmpI {
     [id: number]: RsdItem[]
@@ -51,8 +52,8 @@ export interface PromiseI {
     message?: string,
     pmp_periods?: GssPmpI,
     gss_periods?: GssPmpI,
-    pmp_rsd?: RadGssPmpI,
-    gss_rsd?: RadGssPmpI,
+    pmp_rsd?: RsdList,
+    gss_rsd?: RsdList,
 }
 
 

@@ -104,9 +104,8 @@ async def social_disability(
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
     gss_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
-
+    gss_periods_with_amount = []
     for i in range(len(gss_periods)):
-        gss_periods_with_amount[i] = []
         for j in range(len(gss_periods[i])-1):
             current_date = gss_periods[i][j]
             for d in range(len(sp_standart_item.periods)):
@@ -133,20 +132,24 @@ async def social_disability(
                 amount = gss_standart[year+1] - sp_year
             else:
                 amount = gss_standart[year + 1] - sp_year
-            if j == 0 or amount > gss_periods_with_amount[i][j - 1].amount:
-                gss_periods_with_amount[i].append(
+            if j == 0 or amount > gss_periods_with_amount[j - 1].amount:
+                gss_periods_with_amount.append(
                     PeriodAmount(DN=current_date, DK=gss_periods[i][j + 1], amount=round(amount, 2))
                 )
             else:
-                gss_periods_with_amount[i].append(
+                gss_periods_with_amount.append(
                     PeriodAmount(
                         DN=current_date,
                         DK=gss_periods[i][j + 1],
-                        amount=round(gss_periods_with_amount[i][j - 1].amount, 2),
+                        amount=round(gss_periods_with_amount[j - 1].amount, 2),
                     )
                 )
 
-    return gss_periods_with_amount
+    
+    return {
+        'pmp_periods': [],
+        'gss_periods': gss_periods_with_amount
+    }
 
 
 
@@ -178,9 +181,9 @@ async def recalculation_gss_amount(
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
     gss_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
+    gss_periods_with_amount = []
 
     for i in range(len(gss_periods)):
-        gss_periods_with_amount[i] = []
         for j in range(len(gss_periods[i])-1):
             current_date = gss_periods[i][j]
             for d in range(len(sp_standart_item.periods)):
@@ -200,16 +203,16 @@ async def recalculation_gss_amount(
                 amount = gss_standart[year+1] - sp_year_plus_one
             else:
                 amount = gss_standart[year] - sp_year
-            if j == 0 or amount > gss_periods_with_amount[i][j - 1].amount:
-                gss_periods_with_amount[i].append(
+            if j == 0 or amount > gss_periods_with_amount[j - 1].amount:
+                gss_periods_with_amount.append(
                     PeriodAmount(DN=current_date, DK=gss_periods[i][j + 1], amount=round(amount, 2))
                 )
             else:
-                gss_periods_with_amount[i].append(
+                gss_periods_with_amount.append(
                     PeriodAmount(
                         DN=current_date,
                         DK=gss_periods[i][j + 1],
-                        amount=round(gss_periods_with_amount[i][j - 1].amount, 2),
+                        amount=round(gss_periods_with_amount[j - 1].amount, 2),
                     )
                 )
     return gss_periods_with_amount
@@ -242,9 +245,9 @@ async def recalculation_pmp_amount(
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
     pmp_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
+    pmp_periods_with_amount = []
 
     for i in range(len(pmp_periods)):
-        pmp_periods_with_amount[i] = []
         for j in range(len(pmp_periods[i])-1):
             current_date = pmp_periods[i][j]
             for d in range(len(sp_standart_item.periods)):
@@ -279,16 +282,16 @@ async def recalculation_pmp_amount(
                     if k == len(suspension_dks) - 1: 
                         amount = pmp_standart[year] - sp_year
                 amount = pmp_standart[year + 1] - sp_year
-            if j == 0 or amount > pmp_periods_with_amount[i][j - 1].amount:
-                pmp_periods_with_amount[i].append(
+            if j == 0 or amount > pmp_periods_with_amount[j - 1].amount:
+                pmp_periods_with_amount.append(
                     PeriodAmount(DN=current_date, DK=pmp_periods[i][j + 1], amount=round(amount, 2))
                 )
             else:
-                pmp_periods_with_amount[i].append(
+                pmp_periods_with_amount.append(
                     PeriodAmount(
                         DN=current_date,
                         DK=pmp_periods[i][j + 1],
-                        amount=round(pmp_periods_with_amount[i][j - 1].amount, 2),
+                        amount=round(pmp_periods_with_amount[j - 1].amount, 2),
                     )
                 )
     return pmp_periods_with_amount

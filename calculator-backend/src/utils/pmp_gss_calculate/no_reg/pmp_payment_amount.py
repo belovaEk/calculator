@@ -25,6 +25,8 @@ async def pmp_payment_amount(
     suspension_dks = [p.DK for p in suspension_periods]
 
     SP_STANDART: PaymentsByPeriods = await calculate_sp_standart(data)
+
+    print(SP_STANDART)
     
     # SP_STANDART =
     #     0: {
@@ -91,9 +93,9 @@ async def recalculation_pmp_amount(
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
     pmp_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
+    pmp_periods_with_amount= []
 
     for i in range(len(pmp_periods)):
-        pmp_periods_with_amount[i] = []
         for j in range(len(pmp_periods[i])-1):
             current_date = pmp_periods[i][j]
             for d in range(len(sp_standart_item.periods)):
@@ -128,16 +130,16 @@ async def recalculation_pmp_amount(
                     if k == len(suspension_dks) - 1: 
                         amount = pmp_standart[year] - sp_year
                 amount = pmp_standart[year + 1] - sp_year
-            if j == 0 or amount > pmp_periods_with_amount[i][j - 1].amount:
-                pmp_periods_with_amount[i].append(
+            if j == 0 or amount > pmp_periods_with_amount[j - 1].amount:
+                pmp_periods_with_amount.append(
                     PeriodAmount(DN=current_date, DK=pmp_periods[i][j + 1], amount=round(amount, 2))
                 )
             else:
-                pmp_periods_with_amount[i].append(
+                pmp_periods_with_amount.append(
                     PeriodAmount(
                         DN=current_date,
                         DK=pmp_periods[i][j + 1],
-                        amount=round(pmp_periods_with_amount[i][j - 1].amount, 2),
+                        amount=round(pmp_periods_with_amount[j - 1].amount, 2),
                     )
                 )
     return pmp_periods_with_amount
