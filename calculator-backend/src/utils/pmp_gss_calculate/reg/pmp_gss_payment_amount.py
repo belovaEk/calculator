@@ -135,14 +135,14 @@ async def social_disability(
                 amount = gss_standart[year + 1] - sp_year
             if j == 0 or amount > gss_periods_with_amount[i][j - 1].amount:
                 gss_periods_with_amount[i].append(
-                    PeriodAmount(DN=current_date, DK=gss_periods[i][j + 1], amount=amount)
+                    PeriodAmount(DN=current_date, DK=gss_periods[i][j + 1], amount=round(amount, 2))
                 )
             else:
                 gss_periods_with_amount[i].append(
                     PeriodAmount(
                         DN=current_date,
                         DK=gss_periods[i][j + 1],
-                        amount=gss_periods_with_amount[i][j - 1].amount,
+                        amount=round(gss_periods_with_amount[i][j - 1].amount, 2),
                     )
                 )
 
@@ -202,14 +202,14 @@ async def recalculation_gss_amount(
                 amount = gss_standart[year] - sp_year
             if j == 0 or amount > gss_periods_with_amount[i][j - 1].amount:
                 gss_periods_with_amount[i].append(
-                    PeriodAmount(DN=current_date, DK=gss_periods[i][j + 1], amount=amount)
+                    PeriodAmount(DN=current_date, DK=gss_periods[i][j + 1], amount=round(amount, 2))
                 )
             else:
                 gss_periods_with_amount[i].append(
                     PeriodAmount(
                         DN=current_date,
                         DK=gss_periods[i][j + 1],
-                        amount=gss_periods_with_amount[i][j - 1].amount,
+                        amount=round(gss_periods_with_amount[i][j - 1].amount, 2),
                     )
                 )
     return gss_periods_with_amount
@@ -247,10 +247,6 @@ async def recalculation_pmp_amount(
         pmp_periods_with_amount[i] = []
         for j in range(len(pmp_periods[i])-1):
             current_date = pmp_periods[i][j]
-            print("A" * 60)
-            print(type(current_date))
-            print(current_date)
-            print("A" * 60)
             for d in range(len(sp_standart_item.periods)):
                 if (
                     i == 0
@@ -285,14 +281,14 @@ async def recalculation_pmp_amount(
                 amount = pmp_standart[year + 1] - sp_year
             if j == 0 or amount > pmp_periods_with_amount[i][j - 1].amount:
                 pmp_periods_with_amount[i].append(
-                    PeriodAmount(DN=current_date, DK=pmp_periods[i][j + 1], amount=amount)
+                    PeriodAmount(DN=current_date, DK=pmp_periods[i][j + 1], amount=round(amount, 2))
                 )
             else:
                 pmp_periods_with_amount[i].append(
                     PeriodAmount(
                         DN=current_date,
                         DK=pmp_periods[i][j + 1],
-                        amount=pmp_periods_with_amount[i][j - 1].amount,
+                        amount=round(pmp_periods_with_amount[i][j - 1].amount, 2),
                     )
                 )
     return pmp_periods_with_amount
@@ -313,6 +309,7 @@ async def social_SPK_insurance_SPK_departmental(
         pmp_standart=pmp_standart,
         suspension_dks=suspension_dks,
         )
+    
     gss_periods_amount = await recalculation_gss_amount(
         sp_standart_item,
         gss_periods,

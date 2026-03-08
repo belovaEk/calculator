@@ -48,7 +48,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
         return {"message": "С даты первичного назначения СПВ прошло меньше 1 месяца"}
 
     # Проверка наличия регистрации в Москве
-    if not data.is_there_a_registration_in_moscow:
+    if not data.is_there_a_registration_in_moscow or len(data.periods_reg_moscow) == 0:
         return await prepare_pmp_gss_NoReg_result(
             data=data,  
             spv_init_date=spv_init_date,
