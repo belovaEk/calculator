@@ -47,7 +47,7 @@ class PaymentInterface(BaseModel):
     is_fix_amoumt: Optional[bool] = None
     invalid_categoria: Optional[int] = None
     num_dependents: Optional[int] = None
-    change_last_date: date
+    change_last_date: Optional[date] = None
 
 class JsonQuerySchema(BaseModel):
     is_adult: bool = None
@@ -68,7 +68,7 @@ class JsonQuerySchema(BaseModel):
     periods_inpatient: Optional[List[PeriodWithIdType]] = None
     periods_employment: Optional[List[PeriodWithIdType]] = None
     is_order: Optional[bool] = None
-    orders_date: Optional[List[OrderType]]
+    orders_date: Optional[List[OrderType]] = None
 
 class PeriodDuration(BaseModel):
     years: int = 0
