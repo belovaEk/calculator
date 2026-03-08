@@ -57,7 +57,7 @@ async def pmp_gss_payment_amount(
     for l in range(len(SP_STANDART)):
         if SP_STANDART[l].type == "social_disability":
             result = await social_disability(
-                sp_standart_item=SP_STANDART[l], gss_periods=gss_periods
+                sp_standart_item=SP_STANDART[l], gss_periods=gss_periods[l]
             )
         elif (
             SP_STANDART[l].type == "social_SPK"
@@ -66,8 +66,8 @@ async def pmp_gss_payment_amount(
         ):
             result = await social_SPK_insurance_SPK_departmental(
                 sp_standart_item=SP_STANDART[l],
-                gss_periods=gss_periods,
-                pmp_periods=pmp_periods,
+                gss_periods=gss_periods[l],
+                pmp_periods=pmp_periods[l],
                 suspension_dks=suspension_dks,
             )
         else:
@@ -103,13 +103,13 @@ async def social_disability(
     # }
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
-    gss_periods_with_amount = Dict[int, List[PeriodAmount]]
+    gss_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
 
-    for i in len(gss_periods):
+    for i in range(len(gss_periods)):
         gss_periods_with_amount[i] = []
-        for j in len(i):
+        for j in range(len(gss_periods[i])-1):
             current_date = gss_periods[i][j]
-            for d in len(sp_standart_item.periods):
+            for d in range(len(sp_standart_item.periods)):
                 if (
                     i == 0
                     and j == 0
@@ -177,13 +177,13 @@ async def recalculation_gss_amount(
     # }
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
-    gss_periods_with_amount = Dict[int, List[PeriodAmount]]
+    gss_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
 
-    for i in len(gss_periods):
+    for i in range(len(gss_periods)):
         gss_periods_with_amount[i] = []
-        for j in len(i):
+        for j in range(len(gss_periods[i])-1):
             current_date = gss_periods[i][j]
-            for d in len(sp_standart_item.periods):
+            for d in range(len(sp_standart_item.periods)):
                 m = len(sp_standart_item.periods)
                 if d == m - 1:
                     sp_year = 0
@@ -241,13 +241,17 @@ async def recalculation_pmp_amount(
     # }
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
-    pmp_periods_with_amount = Dict[int, List[PeriodAmount]]
+    pmp_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
 
-    for i in len(pmp_periods):
+    for i in range(len(pmp_periods)):
         pmp_periods_with_amount[i] = []
-        for j in len(i):
+        for j in range(len(pmp_periods[i])-1):
             current_date = pmp_periods[i][j]
-            for d in len(sp_standart_item.periods):
+            print("A" * 60)
+            print(type(current_date))
+            print(current_date)
+            print("A" * 60)
+            for d in range(len(sp_standart_item.periods)):
                 if (
                     i == 0
                     and j == 0
@@ -303,13 +307,13 @@ async def social_SPK_insurance_SPK_departmental(
     gss_standart = GSS_STANDART
     pmp_standart = PMP_STANDART
 
-    pmp_periods_amount = recalculation_pmp_amount(
+    pmp_periods_amount = await recalculation_pmp_amount(
         sp_standart_item=sp_standart_item,
         pmp_periods=pmp_periods,
         pmp_standart=pmp_standart,
         suspension_dks=suspension_dks,
         )
-    gss_periods_amount = recalculation_gss_amount(
+    gss_periods_amount = await recalculation_gss_amount(
         sp_standart_item,
         gss_periods,
         gss_standart,

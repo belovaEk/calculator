@@ -45,8 +45,8 @@ class PaymentInterface(BaseModel):
     is_Not_get_PSD_FSD_now_payment_trasferred: bool
 
     is_fix_amoumt: Optional[bool] = None
-    invalid_categoria: Optional[1 | 2 | 3] = None
-    num_dependents: Optional[0 | 1 | 2 | 3] = None
+    invalid_categoria: Optional[int] = None
+    num_dependents: Optional[int] = None
     change_last_date: date
 
 class JsonQuerySchema(BaseModel):

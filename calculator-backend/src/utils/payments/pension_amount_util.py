@@ -97,7 +97,7 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
             if pension.is_get_PSD_FSD_last_mounth_payment_trasferred and pension.is_get_PSD_FSD_last_year_payment_trasferred:
                 if pension.is_Not_get_PSD_FSD_now_payment_trasferred:
                     sp_prev = IPK*INSURANCE_PENSION_SCORE[date(DNpen.year-1, 1, 1)] + INSURANCE_PENSION_FIX_AMOUNT[date(DNpen.year-1, 1, 1)]/2
-                    sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date(DNpen.year-1, 12, 31), DK=DNpen, amoun=sp_prev))
+                    sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date(DNpen.year-1, 12, 31), DK=DNpen, amount=sp_prev))
                 else:
                     isRSD = False
         date_for_period = DNpen
@@ -107,12 +107,12 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
 
     while date_index < DKpen:
         if isRSD:
-            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amoun=summa))
+            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amount=summa))
         else:
-            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=date_index), amount=0)
+            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amount=0))
         
         date_for_period = date_index
-        summa = IPK*INSURANCE_PENSION_SCORE[date_index]+INSURANCE_PENSION_FIX_AMOUNT[date_index]
+        summa = IPK*INSURANCE_PENSION_SCORE[date(date_index.year+1, 1, 1)]+INSURANCE_PENSION_FIX_AMOUNT[date(date_index.year+1, 1, 1)]
         date_index = date(date_for_period.year+1, 12, 31)
     
     if isRSD:
@@ -154,7 +154,7 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
         if pension.is_payment_transferred:
             if pension.is_get_PSD_FSD_last_mounth_payment_trasferred and pension.is_get_PSD_FSD_last_year_payment_trasferred:
                 if pension.is_Not_get_PSD_FSD_now_payment_trasferred:
-                    sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date(year-1, 12, 1), DK=DNpen), amount= summa / SOCIAL_PENSION_INDEX[date_index]) 
+                    sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date(year-1, 12, 1), DK=DNpen, amount= summa / SOCIAL_PENSION_INDEX[date_index])) 
                     date_for_period = DNpen               
                 else:
                     isRSD = False # РСД не положено
@@ -189,7 +189,7 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
         else: date_index = date(date_index.year+1, date_index.month, date_index.day) 
 
     if isRSD:
-        sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen), amount=summa)
+        sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen, amount=summa))
     else:
         sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen, amount=0))
     
@@ -222,7 +222,7 @@ async def pension_departmental_calculate(pension: PaymentInterface, sp_standart_
             if DNpen < date_rec <= DKpen:
                 if i == 0:
                     sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=DNpen, DK=date_rec, amount=pension.amount))
-                elif i == n:
+                elif i == n - 1:
                     sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_rec_prev, DK=DKpen, amount=amount_rec_prev))
                 else:
                     sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_rec_prev, DK=date_rec, amount=amount_rec_prev))
