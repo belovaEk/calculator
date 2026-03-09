@@ -80,6 +80,34 @@ export const GlobalStoreProvider = ({ children }: { children: React.ReactNode })
                 };
             }
 
+            if (parameter === 'is_employment' && value === false) {
+                newStore = {
+                    ...newStore,
+                    periods_employment: []
+                };
+            }
+
+            if (parameter === 'is_suspension' && value === false) {
+                newStore = {
+                    ...newStore,
+                    periods_suspension: []
+                };
+            }
+
+            if (parameter === 'is_inpatient' && value === false) {
+                newStore = {
+                    ...newStore,
+                    periods_inpatient: []
+                };
+            }
+
+            if (parameter === 'is_order' && value === false) {
+                newStore = {
+                    ...newStore,
+                    orders_date: []
+                };
+            }
+
             return newStore;
         });
         console.log(parameter, value);
