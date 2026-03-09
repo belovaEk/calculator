@@ -44,7 +44,8 @@ export interface GssPmpI {
 export interface RsdItem {
   DN: DateString; 
   DK: DateString;     
-  amount: Rubles;  
+  amount: Rubles;
+  pmp_or_gss: string;  
 }
 
 export type RsdList = RsdItem[];
@@ -57,8 +58,9 @@ export interface PromiseI {
     message?: string,
     pmp_periods?: GssPmpI,
     gss_periods?: GssPmpI,
-    pmp_rsd?: RsdList,
-    gss_rsd?: RsdList,
+    sorted_pensions?: {
+        [key: string]: RsdItem[]
+    },
 }
 
 
