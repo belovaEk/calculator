@@ -11,7 +11,11 @@ export const usePayments = () => {
     const { store, updateStore } = useGlobalStore();
 
     const getPaymentsFromStore = (): PaymentInterface[] => {
-        return store.payments || [];
+        const storedPayments = store.payments || [];
+        return storedPayments.map((payment, index) => ({
+            ...payment,
+            id: index
+        }));
     };
 
     const [payments, setPayments] = useState<Array<PaymentInterface>>(() => {
@@ -19,17 +23,10 @@ export const usePayments = () => {
         return storedPayments;
     });
 
-    const [nextId, setNextId] = useState<number>(() => {
-        const storedPayments = getPaymentsFromStore();
-        return storedPayments.length > 0
-            ? Math.max(...storedPayments.map(p => p.id)) + 1
-            : 0;
-    });
-
 
     const addPaymet = (type: PaymentTypeRaw) => {
         const newPayment: PaymentInterface = {
-            id: nextId,
+            id: payments.length,
             type: type,
             categoria: '',
             DN: '',
@@ -42,16 +39,21 @@ export const usePayments = () => {
         };
 
         setPayments(prev => [...prev, newPayment]);
-        setNextId(id => id + 1);
-        return nextId;
+        return payments.length
     }
 
 
     const updatePayment = (id: number, updatedPayment: PaymentInterface) => {
-        setPayments(prev =>
-            prev.map(payment =>
-                payment.id === id ? updatedPayment : payment
-            )
+         setPayments(prev =>
+            prev.map((payment, index) => {
+                if (index === id) {
+                    return {
+                        ...updatedPayment,
+                        id: index 
+                    };
+                }
+                return payment;
+            })
         );
     };
 
@@ -65,8 +67,15 @@ export const usePayments = () => {
 
 
     const removePayment = (id: number) => {
-        setPayments(prev => prev.filter(payments => payments.id !== id))
-    }
+        setPayments(prev => {
+            // Фильтруем и перенумеровываем
+            const filtered = prev.filter((_, index) => index !== id);
+            return filtered.map((payment, index) => ({
+                ...payment,
+                id: index
+            }));
+        });
+    };
 
     return {
         store,

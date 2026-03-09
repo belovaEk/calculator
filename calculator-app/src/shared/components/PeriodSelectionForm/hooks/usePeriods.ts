@@ -10,58 +10,64 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
 
 
     const getPeriodsFromStore = (): DatePeriod[] => {
+
+        let storedPeriods: DatePeriod[] = [];
+
         if (typePeriod === PERIOD_TYPE.registration) {
             if (persona === PERSONA.children || persona === PERSONA.adult) {
-                return store.periods_reg_moscow || [];
+                storedPeriods = store.periods_reg_moscow || [];
             }
             if (persona === PERSONA.legal_representative) {
-                return store.periods_reg_representative_moscow || [];
+                storedPeriods = store.periods_reg_representative_moscow || [];
             }
             if (persona === PERSONA.breadwinner) {
-                return store.periods_reg_breadwinner_moscow || [];
+                storedPeriods = store.periods_reg_breadwinner_moscow || [];
             }
         }
         if (typePeriod === PERIOD_TYPE.inpatient) {
-            return store.periods_inpatient || [];
+            storedPeriods = store.periods_inpatient || [];
         }
         if (typePeriod === PERIOD_TYPE.stop_payment) {
-            return store.periods_suspension || [];
+            storedPeriods = store.periods_suspension || [];
         }
         if (typePeriod === PERIOD_TYPE.employment) {
-            return store.periods_employment || [];
+            storedPeriods = store.periods_employment || [];
         }
-        return [];
+
+        return storedPeriods.map((period, index) => ({
+            ...period,
+            id: index
+        }));
     };
-    
+
     const [periods, setPeriods] = useState<DatePeriod[]>(() => {
         const storedPeriods = getPeriodsFromStore();
         return storedPeriods;
     });
-    
 
-    const [nextId, setNextId] = useState<number>(() => {
-        const storedPeriods = getPeriodsFromStore();
-        return storedPeriods.length > 0 
-            ? Math.max(...storedPeriods.map(p => p.id)) + 1 
-            : 0;
-    });
 
     const addPeriod = () => {
         const newPeriod: DatePeriod = {
-            id: nextId,
+            id: periods.length,
             DN: '',
             DK: ''
         };
         setPeriods(prev => [...prev, newPeriod]);
-        setNextId(prev => prev + 1);
-        return nextId;
+        return periods.length;
     };
 
     const updatePeriod = (id: number, updatedPeriod: DatePeriod) => {
         setPeriods(prev =>
-            prev.map(period =>
-                period.id === id ? updatedPeriod : period
-            )
+            prev.map((period, index) => {
+                // Обновляем по индексу, который равен id
+                if (index === id) {
+                    return {
+                        ...updatedPeriod,
+                        id: index // Убеждаемся, что ID соответствует индексу
+                    };
+                }
+                return period;
+            })
         );
     };
 
@@ -88,7 +94,7 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
         updateStore('periods_suspension', periods)
     }
 
-     const updateGlobalPeriodEmployment = () => {
+    const updateGlobalPeriodEmployment = () => {
         updateStore('periods_employment', periods)
     }
 
@@ -113,7 +119,15 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
     }, [periods]);
 
     const removePeriod = (id: number) => {
-        setPeriods(prev => prev.filter(periods => periods.id !== id));
+        setPeriods(prev => {
+            // Фильтруем по индексу
+            const filtered = prev.filter((_, index) => index !== id);
+            // Перенумеровываем ID в соответствии с новыми индексами
+            return filtered.map((period, index) => ({
+                ...period,
+                id: index
+            }));
+        });
     };
 
     return {

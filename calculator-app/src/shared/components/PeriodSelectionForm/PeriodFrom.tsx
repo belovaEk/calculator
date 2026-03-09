@@ -13,7 +13,8 @@ export const PeriodForm = ({
     const updatePeriod = (field: keyof DatePeriod, value: string) => {
         const updated = {
             ...periodData,
-            [field]: value
+            [field]: value,
+            id: id
         };
         onUpdate(id, updated);
     };

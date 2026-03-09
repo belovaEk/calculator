@@ -19,27 +19,37 @@ export const useResults = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const getJsonData = useCallback((): ResultsRequestData => {
-        return {
+        const data = {
             "is_adult": store.is_adult,
             "date_of_birth": store.date_of_birth,
-            "document_on_full_time_OOP_education": true,
-            "type_of_social_payment": "string",
-            "is_there_a_registration_in_moscow": store?.is_there_a_registration_in_moscow || false,
-            "is_there_a_registration_in_moscow_of_the_breadwinner": store?.is_there_a_registration_in_moscow_of_the_breadwinner || false,
-            "is_there_a_registration_in_moscow_of_the_legal_representative": store?.is_there_a_registration_in_moscow_of_the_legal_representative || false,
-            "periods_reg_moscow": store?.periods_reg_moscow ?? [],
-            "periods_reg_representative_moscow": store?.periods_reg_representative_moscow ?? [],
-            "periods_reg_breadwinner_moscow": store?.periods_reg_breadwinner_moscow ?? [],
-            "date_of_death_of_the_breadwinner": store?.date_of_death_of_the_breadwinner,
-            "there_is_a_breadwinner": store?.date_of_death_of_the_breadwinner ? true : false,
-            "payments": store?.payments ?? [],
-            "periods_suspension": store?.periods_suspension ?? [],
-            "periods_inpatient": store?.periods_inpatient ?? []
+            // "document_on_full_time_OOP_education": true,
+            // "type_of_social_payment": "string",
+            "is_there_a_registration_in_moscow": store.is_there_a_registration_in_moscow ?? false,
+            "is_there_a_registration_in_moscow_of_the_breadwinner": store.is_there_a_registration_in_moscow_of_the_breadwinner ?? false,
+            "is_there_a_registration_in_moscow_of_the_legal_representative": store.is_there_a_registration_in_moscow_of_the_legal_representative ?? false,
+            "periods_reg_moscow": store.periods_reg_moscow ?? [],
+            "periods_reg_representative_moscow": store.periods_reg_representative_moscow ?? [],
+            "periods_reg_breadwinner_moscow": store.periods_reg_breadwinner_moscow ?? [],
+            "date_of_death_of_the_breadwinner": store.date_of_death_of_the_breadwinner,
+            "there_is_a_breadwinner": store.date_of_death_of_the_breadwinner ? true : false,
+            "payments": store.payments ?? [],
+            "periods_suspension": store.periods_suspension ?? [],
+            "periods_inpatient": store.periods_inpatient ?? [],
+            "periods_employment": store.periods_employment ?? [],
+            "is_order": store.is_order ?? false, 
+            "orders_date": store.orders_date ?? [],
+            "change_last_date": store.change_last_date
         };
+
+        // Удаляем все поля с undefined значениями
+        return Object.fromEntries(
+            Object.entries(data).filter(([_, value]) => value !== undefined)
+        ) as ResultsRequestData;
+
     }, [store]);
 
     const validateRequiredFields = useCallback((data: ResultsRequestData) => {
-        const requiredFields: Array<keyof ResultsRequestData> = ['is_adult', 'date_of_birth', 'type_of_social_payment'];
+        const requiredFields: Array<keyof ResultsRequestData> = ['is_adult', 'date_of_birth',];
         return requiredFields.every(field =>
             data[field] !== undefined && data[field] !== null && data[field] !== ''
         );
@@ -116,7 +126,7 @@ export const useResults = () => {
 
     const calculate = useCallback(async () => {
         const jsonData = getJsonData();
-
+        console.log(jsonData)
         const startTime = Date.now();
 
         setIsLoading(true);

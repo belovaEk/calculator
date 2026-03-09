@@ -24,28 +24,35 @@ export interface GlobalStoreParameterInterface {
     is_there_a_registration_in_moscow_of_the_breadwinner: boolean,
     is_there_a_registration_in_moscow_of_the_legal_representative: boolean,
 
+    // Периоды регистрации
     periods_reg_moscow?: Array<DatePeriod>,
     periods_reg_breadwinner_moscow?: Array<DatePeriod>,
     periods_reg_representative_moscow?: Array<DatePeriod>,
 
     // Кормилец
+    is_breadwinner: boolean,
     date_of_death_of_the_breadwinner?: DateString,
 
-    is_inpatient: boolean,
-    is_suspension: boolean,
 
+    // Стационаризация
+    is_inpatient: boolean,
     periods_inpatient?: Array<DatePeriod>,
 
-
+    // трудоустройство
     is_employment: boolean,
     periods_employment?: Array<DatePeriod>,
     
-    is_breadwinner: boolean,
-
+    // Выплаты
     payments: Array<PaymentInterface>,
+    
+    // приостановки
+    is_suspension: boolean,
     periods_suspension?: Array<DatePeriod>,
 
+    // дата последнего изменения вида пенсии
     change_last_date?: DateString,
+
+    // заявления на ГСС
     is_order: boolean,
     orders_date?: Array<OrderType>
 

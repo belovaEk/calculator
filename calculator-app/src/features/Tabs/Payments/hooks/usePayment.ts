@@ -83,7 +83,7 @@ export const usePayment = ({ id, paymentData, onUpdate, onRemove }: usePaymentPa
         field: keyof RecalculationData,
         value: any
     ) => {
-        // Проверяем, что это тот же payment
+        // Проверяем, что это тот же payment (paymentId теперь равен индексу)
         if (paymentId !== id) return;
 
         const currentRecalculations = paymentData.recalculation || [];

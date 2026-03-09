@@ -166,7 +166,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                         <div className="checkbox-group">
                                             <label >Выерите категорию инвалидности, если гражданин инвалид *</label>
                                             <select className="invalidType" required onChange={(e) => updatePayment('invalid_categoria', e.target.value)} value={paymentData.invalid_categoria}>
-                                                <option value="">Граждинин не инвалид</option>
+                                                <option value="">Гражданин не инвалид</option>
                                                 <option value="1">Инвалид 1 категории</option>
                                                 <option value="2">Инвалид 2 категории</option>
                                                 <option value="3">Инвалид 3 категории</option>
@@ -210,7 +210,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                     checked={paymentData.is_fix_amoumt}
                                     onChange={(e) => updatePayment('is_fix_amoumt', e.target.checked)}
                                 />
-                                <label className="dop_check" htmlFor="fixAmountCheck">Есть фиксированная выплат</label>
+                                <label className="dop_check" htmlFor="fixAmountCheck">Есть фиксированная выплата</label>
                             </div>
                         )}
                     </div>
