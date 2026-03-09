@@ -112,7 +112,7 @@ async def process_payment_periods(
 
     SP_STANDART = await calculate_sp_standart(data)
 
-    logging.info(f"SP_STANDART: {SP_STANDART}")
+    # logging.info(f"SP_STANDART: {SP_STANDART}")
     result = {}
 
     for pension_id, period_lists in periods_data.items():

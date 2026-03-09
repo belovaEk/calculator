@@ -38,11 +38,14 @@ async def pmp_gss_payment_amount(
     """
     Функция преобразования индексированных периодов ПМП и ГСС с расчетом amount
     """
-    suspension_periods = data.periods_suspension
-    suspension_dks = [p.DK for p in suspension_periods]
+    try: 
+        suspension_periods = data.periods_suspension
+        suspension_dks = [p.DK for p in suspension_periods]
+    except:
+        suspension_periods = []
 
     SP_STANDART: PaymentsByPeriods = await calculate_sp_standart(data)
-    logging.info(f"Весь SP_STANDART: {SP_STANDART}")
+    # logging.info(f"Весь SP_STANDART: {SP_STANDART}")
     
     # Инициализируем результирующие словари
     result_pmp_periods: Dict[int, List] = {}
@@ -53,7 +56,6 @@ async def pmp_gss_payment_amount(
             result = await social_disability(
                 sp_standart_item=SP_STANDART[l], 
                 gss_periods=gss_periods[l],
-                pension_id=l,
             )
             # social_disability возвращает {"pmp_periods": [], "gss_periods": [...]}
             result_pmp_periods[l] = result["pmp_periods"]
@@ -69,7 +71,6 @@ async def pmp_gss_payment_amount(
                 gss_periods=gss_periods[l],
                 pmp_periods=pmp_periods[l],
                 suspension_dks=suspension_dks,
-                pension_id=l,
             )
             # social_SPK_insurance_SPK_departmental возвращает {"pmp_periods": [...], "gss_periods": [...]}
             result_pmp_periods[l] = result["pmp_periods"]
@@ -88,7 +89,6 @@ async def pmp_gss_payment_amount(
 async def social_disability(
     sp_standart_item: PaymentsByPeriodsItem, 
     gss_periods: GssPmpIndexType,
-    pension_id,
 ):
 
     gss_standart = GSS_STANDART
@@ -134,9 +134,10 @@ async def social_disability(
                     elif (
                         sp_standart_item.periods[d].DN
                         <= current_date
-                        < sp_standart_item.periods[d].DK
+                        <= sp_standart_item.periods[d].DK
                     ):
                         sp_year = sp_standart_item.periods[d].amount
+                        break
 
             year = current_date.year
             if current_date.month == 12:
@@ -169,7 +170,6 @@ async def recalculation_gss_amount(
     sp_standart_item,
     gss_periods,
     gss_standart,
-    pension_id
     ):
     
     # SP_STANDART = {
@@ -199,24 +199,23 @@ async def recalculation_gss_amount(
             current_date = gss_periods[i][j]
             for d in range(len(sp_standart_item.periods)):
                 m = len(sp_standart_item.periods)
-                logging.info(f"Начало: {sp_standart_item.periods[d].DN}")
-                logging.info(f"Дата: {current_date}")
-                logging.info(f"Конец: {sp_standart_item.periods[d].DK}")
-                if d == m - 1:
-                    sp_year = 0
-                elif (
+                if (
                     sp_standart_item.periods[d].DN
                     <= current_date
                     < sp_standart_item.periods[d].DK
                 ):
-                    logging.info(f"Попали в блок 2")
-                    sp_year = sp_standart_item.periods[d].amount
-                    sp_year_plus_one = sp_standart_item.periods[d+1].amount
-                else: 
-                    #current_date < sp_standart_item.periods[d].DN
-                    logging.error(f"Ошибка: current_date < sp_standart_item.periods[d].DN")
-                    return
-
+                    # Дата попала в период d
+                    if d < m - 1:  # если есть следующий период
+                        sp_year = sp_standart_item.periods[d].amount
+                        sp_year_plus_one = sp_standart_item.periods[d+1].amount
+                        break
+                    else:  # последний период
+                        sp_year = 0
+                        sp_year_plus_one = 0
+                        break
+                else:
+                    sp_year = 0
+                    sp_year_plus_one = 0
 
             year = current_date.year
             if current_date.month == 12:
@@ -243,7 +242,6 @@ async def recalculation_pmp_amount(
     pmp_periods,
     pmp_standart,
     suspension_dks,
-    pension_id
     ):
     # SP_STANDART = {
     # 0: {
@@ -282,13 +280,15 @@ async def recalculation_pmp_amount(
                     m = len(sp_standart_item.periods)
                     if d == m - 1:
                         sp_year = 0
+                        sp_year_minus_one = 0
                     elif (
                         sp_standart_item.periods[d].DN
                         <= current_date
-                        < sp_standart_item.periods[d].DK
+                        <= sp_standart_item.periods[d].DK
                     ):
                         sp_year = sp_standart_item.periods[d].amount
                         sp_year_minus_one = sp_standart_item.periods[d-1].amount
+                    
 
             year = current_date.year
             if current_date.month == 12:
@@ -321,7 +321,6 @@ async def social_SPK_insurance_SPK_departmental(
     gss_periods: GssPmpIndexType,
     pmp_periods: GssPmpIndexType,
     suspension_dks,
-    pension_id,
     ):
 
     gss_standart = GSS_STANDART
@@ -332,14 +331,12 @@ async def social_SPK_insurance_SPK_departmental(
         pmp_periods=pmp_periods,
         pmp_standart=pmp_standart,
         suspension_dks=suspension_dks,
-        pension_id=pension_id,
         )
     
     gss_periods_amount = await recalculation_gss_amount(
         sp_standart_item=sp_standart_item,
         gss_periods=gss_periods,
         gss_standart=gss_standart,
-        pension_id=pension_id,
         ) 
 
     return {

@@ -12,40 +12,32 @@ from src.utils.payments.types.paymentType import PeriodAmount
 from src.utils.pmp_gss_calculate.type import GssPmpIndexType
 from src.constants.gss_pmp_const import PMP_STANDART
 
+import logging
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,  # Уровень: DEBUG, INFO, WARNING, ERROR, CRITICAL
+    format="%(asctime)s - %(levelname)s - %(message)s",  # Формат: время - уровень - сообщение
+    handlers=[logging.StreamHandler()],  # Вывод в консоль
+)
 
 async def pmp_payment_amount(
     pmp_periods: GssPmpIndexType,
     data: JsonQuerySchema,
 ) -> dict:
     """
-    Функция преобразования индексированных периодов ПМП и ГСС с расчетом amount
+    Функция преобразования индексированных периодов ПМП с расчетом amount
     """
-    suspension_periods = data.periods_suspension
-
-    suspension_dks = [p.DK for p in suspension_periods]
+    try: 
+        suspension_periods = data.periods_suspension
+        suspension_dks = [p.DK for p in suspension_periods]
+    except:
+        suspension_dks = []
 
     SP_STANDART: PaymentsByPeriods = await calculate_sp_standart(data)
-
-    print(SP_STANDART)
     
-    # SP_STANDART =
-    #     0: {
-    #       is_payment_transferred: bool
-    # 	    type: PensionCategoryRaw;
-    # 	    periods: [
-    #                   {DN, DK, amount};
-    #                   {DN, DK, amount}
-    #                 ]
-    #     };
-    #     1: {
-    #       is_payment_transferred: bool
-    # 	    type: PensionCategoryRaw;
-    # 	    periods: [
-    #                   {DN, DK, amount};
-    #                   {DN, DK, amount}
-    #                 ]
-    #     }
-    # }
+    # Инициализируем результирующий словарь
+    result_pmp_periods: Dict[int, List] = {}
 
     for l in range(len(SP_STANDART)):
         if (
@@ -58,11 +50,14 @@ async def pmp_payment_amount(
                 pmp_periods=pmp_periods[l],
                 suspension_dks=suspension_dks,
             )
+            result_pmp_periods[l] = result["pmp_periods"]
         else:
             print("Некорректно выбран тип пенсии")
-            pass
+            result_pmp_periods[l] = []
 
-    return result
+    return {
+        "pmp_periods": result_pmp_periods
+    }
 
 
 
@@ -92,8 +87,7 @@ async def recalculation_pmp_amount(
     # }
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
-    pmp_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
-    pmp_periods_with_amount= []
+    pmp_periods_with_amount: List[PeriodAmount] = [] 
 
     for i in range(len(pmp_periods)):
         for j in range(len(pmp_periods[i])-1):
@@ -110,13 +104,15 @@ async def recalculation_pmp_amount(
                     m = len(sp_standart_item.periods)
                     if d == m - 1:
                         sp_year = 0
+                        sp_year_minus_one = 0
                     elif (
                         sp_standart_item.periods[d].DN
                         <= current_date
-                        < sp_standart_item.periods[d].DK
+                        <= sp_standart_item.periods[d].DK
                     ):
                         sp_year = sp_standart_item.periods[d].amount
                         sp_year_minus_one = sp_standart_item.periods[d-1].amount
+                    
 
             year = current_date.year
             if current_date.month == 12:

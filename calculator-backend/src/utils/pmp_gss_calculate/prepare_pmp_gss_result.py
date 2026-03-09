@@ -64,15 +64,15 @@ async def prepare_pmp_gss_reg_result(
         pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
         gss_periods=pmp_gss_inpatient_result["gss_periods"],
     )
-    logging.info(f"Периоды gss_pension_result: {pmp_gss_pension_result['gss_periods']}")
+    # logging.info(f"Периоды gss_pension_result: {pmp_gss_pension_result['gss_periods']}")
     
     pmp_gss_index_result = await pmp_gss_index(
         pmp_periods=pmp_gss_pension_result["pmp_periods"],
         gss_periods=pmp_gss_pension_result["gss_periods"],
     )
 
-    logging.info(f"Периоды ГСС с индексацией: {pmp_gss_index_result['gss_periods']}")
-    logging.info(f"Периоды ПМП с индексацией: {pmp_gss_index_result['pmp_periods']}")
+    # logging.info(f"Периоды ГСС с индексацией: {pmp_gss_index_result['gss_periods']}")
+    # logging.info(f"Периоды ПМП с индексацией: {pmp_gss_index_result['pmp_periods']}")
 
     pmp_gss_payment_amount_result = await pmp_gss_payment_amount(
         pmp_periods=pmp_gss_index_result["pmp_periods"],
@@ -80,16 +80,15 @@ async def prepare_pmp_gss_reg_result(
         data=data,
     )
     
-    # pmp_gss_sorted_result = await pmp_gss_sorted(
-    #     pmp_periods=pmp_gss_payment_amount_result["pmp_periods"],
-    #     gss_periods=pmp_gss_payment_amount_result["gss_periods"],
-    # )
+    pmp_gss_sorted_result = await pmp_gss_sorted(
+        pmp_periods=pmp_gss_payment_amount_result["pmp_periods"],
+        gss_periods=pmp_gss_payment_amount_result["gss_periods"],
+    )
 
     return {
         "pmp_periods": pmp_gss_pension_result["pmp_periods"],
         "gss_periods": pmp_gss_pension_result["gss_periods"],
-        "pmp_rsd": pmp_gss_payment_amount_result["pmp_periods"],
-        "gss_rsd": pmp_gss_payment_amount_result["gss_periods"],
+        "sorted_pensions": pmp_gss_sorted_result,
     }
 
 
@@ -127,7 +126,11 @@ async def prepare_pmp_gss_NoReg_result(
         data=data,
     )
 
+    pmp_sorted_result = await pmp_sorted(
+        pmp_periods=pmp_payment_amount_result["pmp_periods"]
+    )
+
     return {
         "pmp_periods": pmp_pension_result["pmp_periods"],
-        "pmp_rsd": pmp_payment_amount_result["pmp_periods"],
+        "sorted_pensions": pmp_sorted_result
     }
