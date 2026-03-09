@@ -21,6 +21,15 @@ from src.utils.pmp_gss_calculate.type import GssPmpIndexType
 from src.constants.gss_pmp_const import PMP_STANDART, GSS_STANDART
 
 
+import logging
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,  # Уровень: DEBUG, INFO, WARNING, ERROR, CRITICAL
+    format="%(asctime)s - %(levelname)s - %(message)s",  # Формат: время - уровень - сообщение
+    handlers=[logging.StreamHandler()],  # Вывод в консоль
+)
+
 async def pmp_gss_payment_amount(
     pmp_periods: GssPmpIndexType,
     gss_periods: GssPmpIndexType,
@@ -30,35 +39,26 @@ async def pmp_gss_payment_amount(
     Функция преобразования индексированных периодов ПМП и ГСС с расчетом amount
     """
     suspension_periods = data.periods_suspension
-
     suspension_dks = [p.DK for p in suspension_periods]
 
     SP_STANDART: PaymentsByPeriods = await calculate_sp_standart(data)
+    logging.info(f"Весь SP_STANDART: {SP_STANDART}")
     
-    # SP_STANDART =
-    #     0: {
-    #       is_payment_transferred: bool
-    # 	    type: PensionCategoryRaw;
-    # 	    periods: [
-    #                   {DN, DK, amount};
-    #                   {DN, DK, amount}
-    #                 ]
-    #     };
-    #     1: {
-    #       is_payment_transferred: bool
-    # 	    type: PensionCategoryRaw;
-    # 	    periods: [
-    #                   {DN, DK, amount};
-    #                   {DN, DK, amount}
-    #                 ]
-    #     }
-    # }
+    # Инициализируем результирующие словари
+    result_pmp_periods: Dict[int, List] = {}
+    result_gss_periods: Dict[int, List] = {}
 
     for l in range(len(SP_STANDART)):
         if SP_STANDART[l].type == "social_disability":
             result = await social_disability(
-                sp_standart_item=SP_STANDART[l], gss_periods=gss_periods[l]
+                sp_standart_item=SP_STANDART[l], 
+                gss_periods=gss_periods[l],
+                pension_id=l,
             )
+            # social_disability возвращает {"pmp_periods": [], "gss_periods": [...]}
+            result_pmp_periods[l] = result["pmp_periods"]
+            result_gss_periods[l] = result["gss_periods"]
+            
         elif (
             SP_STANDART[l].type == "social_SPK"
             or SP_STANDART[l].type == "departmental"
@@ -69,16 +69,26 @@ async def pmp_gss_payment_amount(
                 gss_periods=gss_periods[l],
                 pmp_periods=pmp_periods[l],
                 suspension_dks=suspension_dks,
+                pension_id=l,
             )
+            # social_SPK_insurance_SPK_departmental возвращает {"pmp_periods": [...], "gss_periods": [...]}
+            result_pmp_periods[l] = result["pmp_periods"]
+            result_gss_periods[l] = result["gss_periods"]
         else:
             print("Некорректно выбран тип пенсии")
-            pass
+            # Инициализируем пустыми списками для некорректных типов
+            result_pmp_periods[l] = []
+            result_gss_periods[l] = []
 
-    return result
-
+    return {
+        "pmp_periods": result_pmp_periods,
+        "gss_periods": result_gss_periods
+    }
 
 async def social_disability(
-    sp_standart_item: PaymentsByPeriodsItem, gss_periods: GssPmpIndexType
+    sp_standart_item: PaymentsByPeriodsItem, 
+    gss_periods: GssPmpIndexType,
+    pension_id,
 ):
 
     gss_standart = GSS_STANDART
@@ -103,8 +113,9 @@ async def social_disability(
     # }
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
-    gss_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
-    gss_periods_with_amount = []
+    gss_periods_with_amount: List[PeriodAmount] = []
+
+
     for i in range(len(gss_periods)):
         for j in range(len(gss_periods[i])-1):
             current_date = gss_periods[i][j]
@@ -157,7 +168,8 @@ async def social_disability(
 async def recalculation_gss_amount(
     sp_standart_item,
     gss_periods,
-    gss_standart
+    gss_standart,
+    pension_id
     ):
     
     # SP_STANDART = {
@@ -180,14 +192,16 @@ async def recalculation_gss_amount(
     # }
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
-    gss_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
-    gss_periods_with_amount = []
+    gss_periods_with_amount: List[PeriodAmount] = []
 
     for i in range(len(gss_periods)):
         for j in range(len(gss_periods[i])-1):
             current_date = gss_periods[i][j]
             for d in range(len(sp_standart_item.periods)):
                 m = len(sp_standart_item.periods)
+                logging.info(f"Начало: {sp_standart_item.periods[d].DN}")
+                logging.info(f"Дата: {current_date}")
+                logging.info(f"Конец: {sp_standart_item.periods[d].DK}")
                 if d == m - 1:
                     sp_year = 0
                 elif (
@@ -195,8 +209,14 @@ async def recalculation_gss_amount(
                     <= current_date
                     < sp_standart_item.periods[d].DK
                 ):
+                    logging.info(f"Попали в блок 2")
                     sp_year = sp_standart_item.periods[d].amount
                     sp_year_plus_one = sp_standart_item.periods[d+1].amount
+                else: 
+                    #current_date < sp_standart_item.periods[d].DN
+                    logging.error(f"Ошибка: current_date < sp_standart_item.periods[d].DN")
+                    return
+
 
             year = current_date.year
             if current_date.month == 12:
@@ -222,7 +242,8 @@ async def recalculation_pmp_amount(
     sp_standart_item,
     pmp_periods,
     pmp_standart,
-    suspension_dks
+    suspension_dks,
+    pension_id
     ):
     # SP_STANDART = {
     # 0: {
@@ -244,8 +265,7 @@ async def recalculation_pmp_amount(
     # }
 
     # словарь вида {0: [{"DN": date, "DK": date, "amount": float}, ...]}
-    pmp_periods_with_amount: Dict[int, List[PeriodAmount]] = {}
-    pmp_periods_with_amount = []
+    pmp_periods_with_amount: List[PeriodAmount] = [] 
 
     for i in range(len(pmp_periods)):
         for j in range(len(pmp_periods[i])-1):
@@ -300,7 +320,8 @@ async def social_SPK_insurance_SPK_departmental(
     sp_standart_item: PaymentsByPeriodsItem,
     gss_periods: GssPmpIndexType,
     pmp_periods: GssPmpIndexType,
-    suspension_dks
+    suspension_dks,
+    pension_id,
     ):
 
     gss_standart = GSS_STANDART
@@ -311,12 +332,14 @@ async def social_SPK_insurance_SPK_departmental(
         pmp_periods=pmp_periods,
         pmp_standart=pmp_standart,
         suspension_dks=suspension_dks,
+        pension_id=pension_id,
         )
     
     gss_periods_amount = await recalculation_gss_amount(
-        sp_standart_item,
-        gss_periods,
-        gss_standart,
+        sp_standart_item=sp_standart_item,
+        gss_periods=gss_periods,
+        gss_standart=gss_standart,
+        pension_id=pension_id,
         ) 
 
     return {
