@@ -28,10 +28,12 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
     Returns:
         PaymentsByYear: {   
             0: {
-                type: PensionCategoryRaw;
+                is_payment_transferred: true
+                type: PensionCategoryRaw
                 periods:[{DN, DK, amount}, {DN, DK, amount}]
             };
             1: {
+                is_payment_transferred: false
                 type: PensionCategoryRaw;
                 periods: [{DN, DK, amount},{DN, DK, amount}]
         }
