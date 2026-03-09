@@ -5,7 +5,8 @@ export type PaymentTypeRaw = 'pension' | 'edv' | 'egdv' | 'housing' | 'custom';
 export type PaymentTypeDisplay = 'Пенсия' | 'ЕДВ' | 'ЕГДВ' | 'ЖКУ' | 'Другая выплата';
 
 export type PensionCategoryRaw = 'insurance_SPK' | 'social_SPK' | 'social_disability' | 'departmental';
-export type PensionCategoryDisplay = 'Страховая по СПК' | 'Социальная по СПК' | 'Социальная по инвалидности' | 'Ведомственная';
+
+export type PensionCategoryAdultRaw = 'insurance' | 'social' | 'departmental' | 'gosudarstvennaya' | 'other' | 'monthPay';
 
 
 export interface RecalculationData {
@@ -16,7 +17,7 @@ export interface RecalculationData {
 export interface PaymentInterface {
     id: number,
     type: PaymentTypeRaw,
-    categoria: PensionCategoryRaw | '',
+    categoria: PensionCategoryRaw | PensionCategoryAdultRaw | '',
     DN: DateString,
     DK: DateString,
     amount: Rubles,
@@ -25,9 +26,14 @@ export interface PaymentInterface {
     recalculation?: RecalculationData[]
 
     is_payment_transferred: boolean,
-    is_get_PSD_FSD_last_mounth_payment_trasferred: boolean,
-    is_get_PSD_FSD_last_year_payment_trasferred: boolean,
-    is_Not_get_PSD_FSD_now_payment_trasferred: boolean,
+    is_get_PSD_FSD_last_mounth_payment_trasferred?: boolean,
+    is_get_PSD_FSD_last_year_payment_trasferred?: boolean,
+    is_Not_get_PSD_FSD_now_payment_trasferred?: boolean,
+
+    invalid_categoria?: '' | '1' | '2' | '3',
+    num_dependents?: number
+
+    is_fix_amoumt: boolean
 }
 
 export interface PaymentProps  {

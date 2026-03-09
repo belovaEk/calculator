@@ -1,6 +1,8 @@
-import { PAYMENT_TYPE, PENSION_CATEGORIES } from "../constants/payment";
+import { PENSION_CATEGORIES_CHILDREN } from "../constants/children/paymentCategories";
+import { PENSION_CATEGORIES_ADULT } from "../constants/adult/paymentCategories";
 import { PaymentInterface, RecalculationData } from "../components/types/paymentType";
-
+import { PAYMENT_TYPE } from "../constants/payments"
+import { useGlobalStore } from "../../../../store";
 
 interface usePaymentParams {
     id: number,
@@ -12,12 +14,41 @@ interface usePaymentParams {
 
 export const usePayment = ({ id, paymentData, onUpdate, onRemove }: usePaymentParams) => {
 
+
+    const { store } = useGlobalStore();
+
     const updatePayment = (field: keyof PaymentInterface, value: any) => {
-        const updated = {
-            ...paymentData,
-            [field]: value
-        };
-        onUpdate(id, updated);
+        // Если изменяется поле categoria
+        if (field === 'categoria') {
+            // Сохраняем поля, которые не должны сбрасываться
+            const preservedFields = {
+                id: paymentData.id,
+                type: paymentData.type,
+                DN: paymentData.DN,
+                DK: paymentData.DK,
+                is_Moscow: paymentData.is_Moscow,
+            };
+
+            // Создаем новый объект с сохраненными полями и новой категорией
+            const updated = {
+                ...preservedFields,
+                categoria: value,
+
+                // Сбрасываем все остальные поля в значения по умолчанию
+                amount: 0,
+                is_payment_transferred: false,
+                is_fix_amoumt: false,
+            };
+
+            onUpdate(id, updated);
+        } else {
+            // Для всех остальных полей - обычное обновление
+            const updated = {
+                ...paymentData,
+                [field]: value
+            };
+            onUpdate(id, updated);
+        }
     };
 
 
@@ -87,8 +118,10 @@ export const usePayment = ({ id, paymentData, onUpdate, onRemove }: usePaymentPa
 
 
     return {
+        store,
         PAYMENT_TYPE,
-        PENSION_CATEGORIES,
+        PENSION_CATEGORIES_CHILDREN,
+        PENSION_CATEGORIES_ADULT,
         updatePayment,
         handleRemove,
         handleCurrentDate,

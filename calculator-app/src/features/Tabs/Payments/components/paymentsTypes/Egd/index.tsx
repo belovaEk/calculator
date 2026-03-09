@@ -1,1 +1,0 @@
-export { EgdPayment as default } from "./components/Egd";

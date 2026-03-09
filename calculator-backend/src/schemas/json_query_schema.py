@@ -40,14 +40,14 @@ class PaymentInterface(BaseModel):
     recalculation: Optional[List[RecalculationData]] = None
 
     is_payment_transferred: bool
-    is_get_PSD_FSD_last_mounth_payment_trasferred: bool
-    is_get_PSD_FSD_last_year_payment_trasferred: bool
-    is_Not_get_PSD_FSD_now_payment_trasferred: bool
+    is_get_PSD_FSD_last_mounth_payment_trasferred: Optional[bool]
+    is_get_PSD_FSD_last_year_payment_trasferred: Optional[bool]
+    is_Not_get_PSD_FSD_now_payment_trasferred: Optional[bool]
 
     is_fix_amoumt: Optional[bool] = None
     invalid_categoria: Optional[int] = None
     num_dependents: Optional[int] = None
-    change_last_date: Optional[date] = None
+    
 
 class JsonQuerySchema(BaseModel):
     is_adult: bool = None
@@ -69,6 +69,7 @@ class JsonQuerySchema(BaseModel):
     periods_employment: Optional[List[PeriodWithIdType]] = None
     is_order: Optional[bool] = None
     orders_date: Optional[List[OrderType]] = None
+    change_last_date: Optional[date] = None
 
 class PeriodDuration(BaseModel):
     years: int = 0

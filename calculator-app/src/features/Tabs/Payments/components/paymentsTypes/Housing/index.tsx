@@ -1,1 +1,0 @@
-export { HousingPayment as default} from "./components/Housing";

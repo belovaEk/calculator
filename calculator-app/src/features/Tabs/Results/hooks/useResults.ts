@@ -4,7 +4,7 @@ import { useGlobalStore } from "../../../../store";
 import { useState, useEffect, useCallback } from "react";
 import { DatePeriod, DateRange } from "../../../../shared";
 import { RowType, ResultsRequestData, PromiseI, RsdItem } from "../types/resultType";
-import { PENSION_CATEGORIES } from "../../Payments/constants/payment";
+import { PENSION_CATEGORIES_CHILDREN } from "../../Payments/constants/children/paymentCategories";
 
 
 
@@ -57,7 +57,7 @@ export const useResults = () => {
                     const categoriaValue = store.payments[Number(id)].categoria;
                     rowsPmpGss.push({
                         paymentType: 'ГСС',
-                        pensionType: PENSION_CATEGORIES[categoriaValue as keyof typeof PENSION_CATEGORIES].display,
+                        pensionType: PENSION_CATEGORIES_CHILDREN[categoriaValue as keyof typeof PENSION_CATEGORIES_CHILDREN].display,
                         startDate: period.DN,
                         endDate: period.DK
                     });
@@ -72,7 +72,7 @@ export const useResults = () => {
                     const categoriaValue = store.payments[Number(id)].categoria;
                     rowsPmpGss.push({
                         paymentType: 'ПМП',
-                        pensionType: PENSION_CATEGORIES[categoriaValue as keyof typeof PENSION_CATEGORIES].display,
+                        pensionType: PENSION_CATEGORIES_CHILDREN[categoriaValue as keyof typeof PENSION_CATEGORIES_CHILDREN].display,
                         startDate: period.DN,
                         endDate: period.DK
                     });

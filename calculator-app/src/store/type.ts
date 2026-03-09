@@ -8,6 +8,11 @@ export interface GlobalStoreContextInterface {
     resetStore: () => void;
 }
 
+export interface OrderType {
+    id: number,
+    date: DateString
+}
+
 export interface GlobalStoreParameterInterface {
     is_adult: boolean,
     date_of_birth: DateString,
@@ -31,10 +36,19 @@ export interface GlobalStoreParameterInterface {
 
     periods_inpatient?: Array<DatePeriod>,
 
+
+    is_employment: boolean,
+    periods_employment?: Array<DatePeriod>,
     
     is_breadwinner: boolean,
 
     payments: Array<PaymentInterface>,
     periods_suspension?: Array<DatePeriod>,
+
+    change_last_date?: DateString,
+    is_order: boolean,
+    orders_date?: Array<OrderType>
+
 }
+
 

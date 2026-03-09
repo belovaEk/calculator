@@ -1,1 +1,0 @@
-export { EdvPayment as default } from "./components/Edv";

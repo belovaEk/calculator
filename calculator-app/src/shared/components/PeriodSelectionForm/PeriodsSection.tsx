@@ -38,6 +38,10 @@ export const PeriodsSection = ({ persona, typePeriod }: PeriodsSectionProps) => 
                     <h3>Периоды приостановки выплат</h3>
                 )}
 
+                {typePeriod === PERIOD_TYPE.employment && (
+                    <h3>Периоды трудоустройства</h3>
+                )}
+
 
                 <div id="periodsContainer" className="periods-container">
                     {periods.map((period, index) => (

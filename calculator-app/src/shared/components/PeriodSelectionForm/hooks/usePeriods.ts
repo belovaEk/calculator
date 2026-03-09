@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { DatePeriod } from "../../..";
 import { useGlobalStore } from "../../../../store";
-import { PERSONA, personaType } from "../../../constants/people";
-import { PeriodType, PERIOD_TYPE } from "../../../constants/periodsName";
+import { PERSONA, personaType } from "../../../constants";
+import { PeriodType, PERIOD_TYPE } from "../../../constants";
 
 export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
 
@@ -27,6 +27,9 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
         if (typePeriod === PERIOD_TYPE.stop_payment) {
             return store.periods_suspension || [];
         }
+        if (typePeriod === PERIOD_TYPE.employment) {
+            return store.periods_employment || [];
+        }
         return [];
     };
     
@@ -34,7 +37,6 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
         const storedPeriods = getPeriodsFromStore();
         return storedPeriods;
     });
-
     
 
     const [nextId, setNextId] = useState<number>(() => {
@@ -86,6 +88,10 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
         updateStore('periods_suspension', periods)
     }
 
+     const updateGlobalPeriodEmployment = () => {
+        updateStore('periods_employment', periods)
+    }
+
     useEffect(() => {
         if (typePeriod === PERIOD_TYPE.registration) {
             updatePeriodRegistration();
@@ -97,6 +103,10 @@ export const usePeriods = (persona: personaType, typePeriod: PeriodType) => {
         }
         if (typePeriod === PERIOD_TYPE.stop_payment) {
             updateGlobalPeriodSuspension();
+            return;
+        }
+        if (typePeriod === PERIOD_TYPE.employment) {
+            updateGlobalPeriodEmployment();
             return;
         }
 

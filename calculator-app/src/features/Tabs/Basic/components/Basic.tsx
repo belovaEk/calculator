@@ -78,22 +78,18 @@ export const Basic = () => {
 
                         </div>
 
-                        {!store.is_adult && (
-                            <>
-                                <div className="checkbox-group">
-                                    <input
-                                        type="checkbox"
-                                        id="registrationPeriodChildrenCheck"
-                                        checked={store.is_there_a_registration_in_moscow}
-                                        onChange={(e) => updateStore('is_there_a_registration_in_moscow', e.target.checked)}
-                                    />
-                                    <label htmlFor="registrationPeriodChildrenCheck">Есть периоды регистрации в Москве</label>
-                                </div>
+                        <div className="checkbox-group">
+                            <input
+                                type="checkbox"
+                                id="registrationPeriodChildrenCheck"
+                                checked={store.is_there_a_registration_in_moscow}
+                                onChange={(e) => updateStore('is_there_a_registration_in_moscow', e.target.checked)}
+                            />
+                            <label htmlFor="registrationPeriodChildrenCheck">Есть периоды регистрации в Москве</label>
+                        </div>
 
-                                {store.is_there_a_registration_in_moscow && (
-                                    <PeriodsSection persona={PERSONA.children} typePeriod={PERIOD_TYPE.registration} />
-                                )}
-                            </>
+                        {store.is_there_a_registration_in_moscow && (
+                            <PeriodsSection persona={PERSONA.children} typePeriod={PERIOD_TYPE.registration} />
                         )}
                     </div>
 

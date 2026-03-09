@@ -13,7 +13,7 @@ export const Inpatient = () => {
     return (
 
         <div id="inpatient" className="tab-content">
-            <h2>Периоды пребывания в стационарх учреждениях</h2>
+            <h2>Периоды пребывания в стационарных учреждениях</h2>
 
             <div className="simplified-section">
                 <div className="checkbox-group">

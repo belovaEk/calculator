@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { PaymentInterface } from "../components/types/paymentType";
 import { PaymentTypeRaw } from "../components/types/paymentType";
 import { useGlobalStore } from "../../../../store";
-import { PAYMENT_TYPE } from "../constants/payment";
+import {PAYMENT_TYPE} from "../constants/payments"
 
 export const usePayments = () => {
     const navigate = useNavigate();
@@ -37,9 +37,8 @@ export const usePayments = () => {
             amount: 0,
             is_Moscow: false,
             is_payment_transferred: false,
-            is_get_PSD_FSD_last_mounth_payment_trasferred: false,
-            is_get_PSD_FSD_last_year_payment_trasferred: false,
-            is_Not_get_PSD_FSD_now_payment_trasferred: false,
+            is_fix_amoumt: false,
+
         };
 
         setPayments(prev => [...prev, newPayment]);
@@ -70,6 +69,8 @@ export const usePayments = () => {
     }
 
     return {
+        store,
+        updateStore,
         navigate,
         payments,
         addPaymet,

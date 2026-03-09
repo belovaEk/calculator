@@ -8,8 +8,10 @@ import { RecalculationData } from "./types/paymentType";
 export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentProps) => {
 
     const {
+        store,
         PAYMENT_TYPE,
-        PENSION_CATEGORIES,
+        PENSION_CATEGORIES_CHILDREN,
+        PENSION_CATEGORIES_ADULT,
         updatePayment,
         handleRemove,
         handleCurrentDate,
@@ -81,15 +83,49 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                 <label htmlFor="MoscowCheck">Назначена в Москве</label>
                             </div>
 
-                            <div className="checkbox-group">
-                                <input
-                                    type="checkbox"
-                                    id="transferredCheck"
-                                    checked={paymentData.is_payment_transferred}
-                                    onChange={(e) => updatePayment('is_payment_transferred', e.target.checked)}
-                                />
-                                <label htmlFor="transferredCheck">Пенсия была переведена из другого региона</label>
-                            </div>
+
+                            {!store.is_adult && (
+                                <div className="form-group">
+                                    <label>Вид пенсии *</label>
+                                    <select className="pensionType" required onChange={(e) => updatePayment('categoria', e.target.value)} value={paymentData.categoria}>
+                                        <option value="">Выберите вид пенсии</option>
+                                        ({Object.entries(PENSION_CATEGORIES_CHILDREN).map(([key, category]) => (
+                                            <option key={key} value={category.raw}>{category.display}</option>
+                                        ))})
+                                    </select>
+                                </div>
+                            )}
+
+                            {store.is_adult && (
+                                <div className="form-group">
+                                    <label>Вид пенсии *</label>
+                                    <select className="pensionType" required onChange={(e) => updatePayment('categoria', e.target.value)} value={paymentData.categoria}>
+                                        <option value="">Выберите вид пенсии</option>
+                                        ({Object.entries(PENSION_CATEGORIES_ADULT).map(([key, category]) => (
+                                            <option key={key} value={category.raw}>{category.display}</option>
+                                        ))})
+                                    </select>
+                                </div>
+                            )}
+
+                            {(paymentData.categoria === 'insurance'
+                                || paymentData.categoria === 'social'
+                                || paymentData.categoria === 'gosudarstvennaya'
+                                || paymentData.categoria === 'insurance_SPK'
+                                || paymentData.categoria === 'social_SPK'
+                                || paymentData.categoria === 'social_disability') &&
+                                (
+                                    <div className="checkbox-group">
+                                        <input
+                                            type="checkbox"
+                                            id="transferredCheck"
+                                            checked={paymentData.is_payment_transferred}
+                                            onChange={(e) => updatePayment('is_payment_transferred', e.target.checked)}
+                                        />
+                                        <label className="dop_check" htmlFor="transferredCheck">Пенсия была переведена из другого региона</label>
+                                    </div>
+                                )}
+
 
                             {paymentData.is_payment_transferred && (
                                 <div className="info-box">
@@ -105,11 +141,11 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                     <div className="checkbox-group">
                                         <input
                                             type="checkbox"
-                                            id="transferredCheckGetPSDFSDLM"
+                                            id="transferredCheckGetPSDFSDLY"
                                             checked={paymentData.is_get_PSD_FSD_last_year_payment_trasferred}
                                             onChange={(e) => updatePayment('is_get_PSD_FSD_last_year_payment_trasferred', e.target.checked)}
                                         />
-                                        <label htmlFor="transferredCheckGetPSDFSDLM">Получал РСД или ФСД в прошлом году</label>
+                                        <label htmlFor="transferredCheckGetPSDFSDLY">Получал РСД или ФСД в прошлом году</label>
                                     </div>
                                     <div className="checkbox-group">
                                         <input
@@ -123,70 +159,152 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                 </div>
                             )}
 
-                            <div className="form-group">
-                                <label>Вид пенсии *</label>
-                                <select className="pensionType" required onChange={(e) => updatePayment('categoria', e.target.value)} value={paymentData.categoria}>
-                                    <option value="">Выберите вид пенсии</option>
-                                    ({Object.entries(PENSION_CATEGORIES).map(([key, category]) => (
-                                        <option key={key} value={category.raw}>{category.display}</option>
-                                    ))})
-                                </select>
-                            </div>
+
+                            {paymentData.categoria === 'insurance' &&
+                                (
+                                    <>
+                                        <div className="checkbox-group">
+                                            <label >Выерите категорию инвалидности, если гражданин инвалид *</label>
+                                            <select className="invalidType" required onChange={(e) => updatePayment('invalid_categoria', e.target.value)} value={paymentData.invalid_categoria}>
+                                                <option value="">Граждинин не инвалид</option>
+                                                <option value="1">Инвалид 1 категории</option>
+                                                <option value="2">Инвалид 2 категории</option>
+                                                <option value="3">Инвалид 3 категории</option>
+                                            </select>
+                                        </div>
+                                        <div className="grid">
+                                            <div className="form-group">
+                                                <label>Количесвто иждивенцев</label>
+                                                <input
+                                                    type="number"
+                                                    className="payment-amount"
+                                                    min={0} step="1" max={3}
+                                                    value={paymentData.num_dependents}
+                                                    onChange={(e) => updatePayment('num_dependents', e.target.value)}
+                                                    required />
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
                         </>
                     )}
 
-                    <div className="form-group">
-                        <label>Размер назначенной выплаты*</label>
-                        <input
-                            type="number"
-                            className="payment-amount"
-                            min="0" step="0.01"
-                            value={paymentData.amount}
-                            onChange={(e) => updatePayment('amount', e.target.value)}
-                            required />
-                    </div>
+                    <div className="grid">
+                        <div className="form-group">
+                            <label>Размер назначенной выплаты*</label>
+                            <input
+                                type="number"
+                                className="payment-amount"
+                                min="0" step="0.01"
+                                value={paymentData.amount}
+                                onChange={(e) => updatePayment('amount', e.target.value)}
+                                required />
+                        </div>
 
-                    {(paymentData.categoria === PENSION_CATEGORIES.departmental.raw || paymentData.categoria === PENSION_CATEGORIES.social_SPK.raw || paymentData.categoria === PENSION_CATEGORIES.social_disability.raw )&& (
-
-                        <>
+                        {paymentData.categoria == "insurance" && (
                             <div className="checkbox-group">
                                 <input
                                     type="checkbox"
-                                    id="recalculationCheck"
-                                    checked={paymentData.is_recalculation}
-                                    onChange={(e) => updatePayment('is_recalculation', e.target.checked)}
+                                    id="fixAmountCheck"
+                                    checked={paymentData.is_fix_amoumt}
+                                    onChange={(e) => updatePayment('is_fix_amoumt', e.target.checked)}
                                 />
-                                <label htmlFor="recalculationCheck">Есть перерасчет</label>
+                                <label className="dop_check" htmlFor="fixAmountCheck">Есть фиксированная выплат</label>
                             </div>
+                        )}
+                    </div>
 
-                            {paymentData.is_recalculation && (
-                                <div id="recalculatiionContainer" className="recalculatiion-container">
-                                    {paymentData.recalculation?.map((recal, idx) => (
-                                        <>
-                                            <DepartmentalRecalculationForm
-                                                key={idx}
-                                                paymentId={id}
-                                                recalIndex={idx}
-                                                index={idx + 1}
-                                                recalData={recal}
-                                                onUpdateRecalculation={updateRecalculation}
-                                                onRemoveRecalculation={removeRecalculation}
-                                            />
 
-                                        </>
-                                    ))}
+                    {!store.is_adult && (paymentData.categoria === PENSION_CATEGORIES_CHILDREN.departmental.raw
+                        || paymentData.categoria === PENSION_CATEGORIES_CHILDREN.social_SPK.raw
+                        || paymentData.categoria === PENSION_CATEGORIES_CHILDREN.social_disability.raw) && (
 
-                                    <button
-                                        type="button"
-                                        className="btn btn-small"
-                                        onClick={addRecalculation}
-                                    >
-                                        + Добавить перерасчет
-                                    </button>
+                            <>
+                                <div className="checkbox-group">
+                                    <input
+                                        type="checkbox"
+                                        id="recalculationCheck"
+                                        checked={paymentData.is_recalculation}
+                                        onChange={(e) => updatePayment('is_recalculation', e.target.checked)}
+                                    />
+                                    <label htmlFor="recalculationCheck">Есть перерасчет</label>
                                 </div>
-                            )}
-                        </>
-                    )}
+
+                                {paymentData.is_recalculation && (
+                                    <div id="recalculatiionContainer" className="recalculatiion-container">
+                                        {paymentData.recalculation?.map((recal, idx) => (
+                                            <>
+                                                <RecalculationForm
+                                                    key={idx}
+                                                    paymentId={id}
+                                                    recalIndex={idx}
+                                                    index={idx + 1}
+                                                    recalData={recal}
+                                                    onUpdateRecalculation={updateRecalculation}
+                                                    onRemoveRecalculation={removeRecalculation}
+                                                />
+
+                                            </>
+                                        ))}
+
+                                        <button
+                                            type="button"
+                                            className="btn btn-small"
+                                            onClick={addRecalculation}
+                                        >
+                                            + Добавить перерасчет
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        )}
+
+
+                    {store.is_adult && (paymentData.categoria === 'insurance'
+                        || paymentData.categoria === 'social'
+                        || paymentData.categoria === 'departmental'
+                        || paymentData.categoria === 'other') && (
+
+                            <>
+                                <div className="checkbox-group">
+                                    <input
+                                        type="checkbox"
+                                        id="recalculationCheck"
+                                        checked={paymentData.is_recalculation}
+                                        onChange={(e) => updatePayment('is_recalculation', e.target.checked)}
+                                    />
+                                    <label htmlFor="recalculationCheck">Есть перерасчет</label>
+                                </div>
+
+                                {paymentData.is_recalculation && (
+                                    <div id="recalculatiionContainer" className="recalculatiion-container">
+                                        {paymentData.recalculation?.map((recal, idx) => (
+                                            <>
+                                                <RecalculationForm
+                                                    key={idx}
+                                                    paymentId={id}
+                                                    recalIndex={idx}
+                                                    index={idx + 1}
+                                                    recalData={recal}
+                                                    onUpdateRecalculation={updateRecalculation}
+                                                    onRemoveRecalculation={removeRecalculation}
+                                                />
+
+                                            </>
+                                        ))}
+
+                                        <button
+                                            type="button"
+                                            className="btn btn-small"
+                                            onClick={addRecalculation}
+                                        >
+                                            + Добавить перерасчет
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        )}
 
                 </div>
             </div>
@@ -195,7 +313,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
 }
 
 
-const DepartmentalRecalculationForm = ({
+const RecalculationForm = ({
     paymentId,
     recalIndex,
     index,
@@ -217,7 +335,7 @@ const DepartmentalRecalculationForm = ({
                 <h4>{index} перерасчет</h4>
                 <button
                     type="button"
-                    className="remove-payment"
+                    className="remove-period"
                     onClick={() => onRemoveRecalculation(paymentId, recalIndex)}
                 >Удалить перерасчет</button>
             </div>

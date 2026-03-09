@@ -1,1 +1,0 @@
-export { CustomPayment as default } from "./components/Custom";

@@ -493,3 +493,8 @@ tr:nth-child(even) {
 .recalculation-header button {
   max-height: 33px;
 }
+
+
+.dop_check{
+  color: #3498db;
+}
