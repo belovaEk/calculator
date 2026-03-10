@@ -29,11 +29,17 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
         PaymentsByYear: {   
             0: {
                 is_payment_transferred: true
+                is_get_PSD_FSD_last_mounth_payment_trasferred: bool
+                is_get_PSD_FSD_last_year_payment_trasferred: bool
+                is_Not_get_PSD_FSD_now_payment_trasferred: bool
                 type: PensionCategoryRaw
                 periods:[{DN, DK, amount}, {DN, DK, amount}]
             };
             1: {
                 is_payment_transferred: false
+                is_get_PSD_FSD_last_mounth_payment_trasferred: bool
+                is_get_PSD_FSD_last_year_payment_trasferred: bool
+                is_Not_get_PSD_FSD_now_payment_trasferred: bool
                 type: PensionCategoryRaw;
                 periods: [{DN, DK, amount},{DN, DK, amount}]
         }
@@ -74,6 +80,9 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
 
     sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
         is_payment_transferred=pension.is_payment_transferred,
+        is_get_PSD_FSD_last_mounth_payment_trasferred=pension.is_get_PSD_FSD_last_mounth_payment_trasferred,
+        is_get_PSD_FSD_last_year_payment_trasferred=pension.is_get_PSD_FSD_last_year_payment_trasferred,
+        is_Not_get_PSD_FSD_now_payment_trasferred=pension.is_Not_get_PSD_FSD_now_payment_trasferred,
         type=pension.categoria, 
         periods=[]
     )
@@ -143,6 +152,9 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
 
     sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
         is_payment_transferred=pension.is_payment_transferred,
+        is_get_PSD_FSD_last_mounth_payment_trasferred=pension.is_get_PSD_FSD_last_mounth_payment_trasferred,
+        is_get_PSD_FSD_last_year_payment_trasferred=pension.is_get_PSD_FSD_last_year_payment_trasferred,
+        is_Not_get_PSD_FSD_now_payment_trasferred=pension.is_Not_get_PSD_FSD_now_payment_trasferred,
         type=pension.categoria, 
         periods=[]
     )
@@ -211,6 +223,9 @@ async def pension_departmental_calculate(pension: PaymentInterface, sp_standart_
 
     sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
         is_payment_transferred=pension.is_payment_transferred,
+        is_get_PSD_FSD_last_mounth_payment_trasferred=pension.is_get_PSD_FSD_last_mounth_payment_trasferred,
+        is_get_PSD_FSD_last_year_payment_trasferred=pension.is_get_PSD_FSD_last_year_payment_trasferred,
+        is_Not_get_PSD_FSD_now_payment_trasferred=pension.is_Not_get_PSD_FSD_now_payment_trasferred,
         type=pension.categoria, 
         periods=[]
     )
