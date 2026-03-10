@@ -30,7 +30,7 @@ export const PeriodsSection = ({ persona, typePeriod }: PeriodsSectionProps) => 
 
                 {typePeriod === PERIOD_TYPE.inpatient && (
                     <>
-                        <h3>Периоды пребывания в стационарных учреждения</h3>
+                        <h3>Периоды пребывания в стационарных учреждениях</h3>
                     </>
                 )}
 

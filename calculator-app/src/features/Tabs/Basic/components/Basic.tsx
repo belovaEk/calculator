@@ -89,7 +89,7 @@ export const Basic = () => {
                         </div>
 
                         {store.is_there_a_registration_in_moscow && (
-                            <PeriodsSection persona={PERSONA.children} typePeriod={PERIOD_TYPE.registration} />
+                            <PeriodsSection persona={!store.is_adult ? PERSONA.children : PERSONA.adult} typePeriod={PERIOD_TYPE.registration} />
                         )}
                     </div>
 
