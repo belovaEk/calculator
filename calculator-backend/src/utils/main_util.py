@@ -98,7 +98,12 @@ async def main_util(data: JsonQuerySchema) -> dict:
             first_moscow_payment=first_moscow_payment
         )
     # Если ни одно условие не выполнилось
-    return {
-        "message": "Положено РСД до ПМП с даты назначения пенсии до окончания срока выплаты"
-    }
+    return await prepare_pmp_gss_NoReg_result(
+        data=data,  
+        spv_init_date=spv_init_date,
+        pmp_periods=pmp_periods,
+        gss_periods=gss_periods,
+        first_moscow_payment=first_moscow_payment
+    )
+
 

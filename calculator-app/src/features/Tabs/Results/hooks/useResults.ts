@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { getResults } from "../services/getResults";
 import { useGlobalStore } from "../../../../store";
 import { useState, useEffect, useCallback } from "react";
-import { DatePeriod, DateRange } from "../../../../shared";
+import { DatePeriod, DateRange, DateString } from "../../../../shared";
 import { RowType, ResultsRequestData, PromiseI, RsdItem } from "../types/resultType";
 import { PENSION_CATEGORIES_CHILDREN } from "../../Payments/constants/children/paymentCategories";
 
@@ -36,7 +36,7 @@ export const useResults = () => {
             "periods_suspension": store.periods_suspension ?? [],
             "periods_inpatient": store.periods_inpatient ?? [],
             "periods_employment": store.periods_employment ?? [],
-            "is_order": store.is_order ?? false, 
+            "is_order": store.is_order ?? false,
             "orders_date": store.orders_date ?? [],
             "change_last_date": store.change_last_date
         };
@@ -60,6 +60,12 @@ export const useResults = () => {
         const rowsPmpGss: Array<RowType> = [];
         const rowsPmpGssRsd: Array<RowType> = [];
 
+        const formatDate = (dateStr: DateString): string => {
+            if (!dateStr) return dateStr;
+            const [year, month, day] = dateStr.split('-');
+            return `${day}.${month}.${year}`;
+        };
+
         // Обрабатываем ГСС
         if (data.gss_periods) {
             Object.entries(data.gss_periods).forEach(([id, periods]) => {
@@ -68,8 +74,8 @@ export const useResults = () => {
                     rowsPmpGss.push({
                         paymentType: 'ГСС',
                         pensionType: PENSION_CATEGORIES_CHILDREN[categoriaValue as keyof typeof PENSION_CATEGORIES_CHILDREN].display,
-                        startDate: period.DN,
-                        endDate: period.DK
+                        startDate: formatDate(period.DN),
+                        endDate: formatDate(period.DK)
                     });
                 });
             });
@@ -83,40 +89,27 @@ export const useResults = () => {
                     rowsPmpGss.push({
                         paymentType: 'ПМП',
                         pensionType: PENSION_CATEGORIES_CHILDREN[categoriaValue as keyof typeof PENSION_CATEGORIES_CHILDREN].display,
-                        startDate: period.DN,
-                        endDate: period.DK
+                        startDate: formatDate(period.DN),
+                        endDate: formatDate(period.DK)
                     });
                 });
             });
         }
 
-        // Обрабатываем ГСС РСД
-        if (data.gss_rsd && data.gss_rsd.length > 0) {
-            console.log(data.gss_rsd);
-
-            // Для каждого элемента РСД добавляем запись
-            data.gss_rsd.forEach((item: RsdItem) => {
-                rowsPmpGssRsd.push({
-                    paymentType: 'ГСС',
-                    startDate: item.DN,
-                    endDate: item.DK,
-                    amount: item.amount
+        // Обрабатываем ГСС и ПМП РСД
+        if (data.sorted_pensions) {
+            // Проходим по всем ID в объекте sorted_pensions
+            Object.values(data.sorted_pensions).forEach((itemsArray: RsdItem[]) => {
+                itemsArray.forEach((item: RsdItem) => {
+                    rowsPmpGssRsd.push({
+                        paymentType: item.pmp_or_gss,
+                        startDate: formatDate(item.DN),
+                        endDate: formatDate(item.DK),
+                        amount: item.amount
+                    });
                 });
             });
         }
-
-        // Обрабатываем ПМП РСД
-        if (data.pmp_rsd && data.pmp_rsd.length > 0) {
-            data.pmp_rsd.forEach((item: RsdItem) => {
-                rowsPmpGssRsd.push({
-                    paymentType: 'ПМП',
-                    startDate: item.DN,
-                    endDate: item.DK,
-                    amount: item.amount
-                });
-            });
-        }
-
 
 
         setTableDataPmpGss(rowsPmpGss);
