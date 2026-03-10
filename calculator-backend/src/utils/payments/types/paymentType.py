@@ -8,6 +8,10 @@ AmountByYear: TypeAlias = Dict[int, float]
 class PeriodAmount(PeriodType):
     amount: float
 
+class PeriodAmountWithSP(PeriodAmount):
+    sp_amount: float
+    pmp_gss_amount: float
+
 
 class PaymentsByPeriodsItem(BaseModel):
     is_payment_transferred: bool
