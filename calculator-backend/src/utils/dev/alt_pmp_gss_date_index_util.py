@@ -8,7 +8,7 @@ from typing import Dict, List
 from datetime import date
 from dateutil.relativedelta import relativedelta
 
-async def pmp_gss_index (pmp_periods: GssPmpPensionType, gss_periods: GssPmpPensionType):
+async def pmp_gss_index (pmp_periods: GssPmpPensionType, gss_periods: GssPmpPensionType, reg: bool):
 
     """ Функция пересчета ПМП и ГСС на периоды индексации и нахождение принадлежащим к этим периодам стандратам выплат
 
@@ -20,14 +20,23 @@ async def pmp_gss_index (pmp_periods: GssPmpPensionType, gss_periods: GssPmpPens
             [DN: 2020-02-02, DK: 2021-01-01, amount: pmp_standart для этого периода]
             }
     """    
-    
-    new_pmp_periods = recalculation_date_index(pensions=pmp_periods)
-    new_gss_periods = recalculation_date_index(pensions=gss_periods) 
 
-    return {
-        'pmp_periods': new_pmp_periods,
-        'gss_periods': new_gss_periods
-    }
+    new_pmp_periods = await period_index_calculate(periods=pmp_periods, period_standards=PMP_STANDART)
+
+    if reg:
+        
+        new_gss_periods = await period_index_calculate(periods=gss_periods, period_standards=GSS_STANDART) 
+
+        return {
+            'pmp_periods': new_pmp_periods,
+            'gss_periods': new_gss_periods
+        }
+    
+    else:
+        return {
+            'pmp_periods': new_pmp_periods,
+        }
+
 
 
 async def period_index_calculate (periods: GssPmpPensionType, period_standards: Dict[date, float]) -> Dict[int, List[PeriodAmount]]:
@@ -53,7 +62,7 @@ async def period_index_calculate (periods: GssPmpPensionType, period_standards: 
         result_periods[pension_idx] = []
         
         for period in pension_periods:
-            
+
             # Находим все даты индексации, попадающие в период
             relevant_standards = [
                 (idx, date, amount) 
