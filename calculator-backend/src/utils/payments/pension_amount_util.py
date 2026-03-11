@@ -85,10 +85,10 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
     fix_amount = score_fix['fix_amount']
 
     sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
-        is_payment_transferred=pension.is_payment_transferred,
-        is_get_PSD_FSD_last_mounth_payment_trasferred=pension.is_get_PSD_FSD_last_mounth_payment_trasferred,
-        is_get_PSD_FSD_last_year_payment_trasferred=pension.is_get_PSD_FSD_last_year_payment_trasferred,
-        is_Not_get_PSD_FSD_now_payment_trasferred=pension.is_Not_get_PSD_FSD_now_payment_trasferred,
+        is_payment_transferred=False,
+        is_get_PSD_FSD_last_mounth_payment_trasferred=False,
+        is_get_PSD_FSD_last_year_payment_trasferred=False,
+        is_Not_get_PSD_FSD_now_payment_trasferred=False,
         type=pension.categoria, 
         periods=[]
     )
@@ -157,10 +157,10 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
     summa = pension.amount
 
     sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
-        is_payment_transferred=pension.is_payment_transferred,
-        is_get_PSD_FSD_last_mounth_payment_trasferred=pension.is_get_PSD_FSD_last_mounth_payment_trasferred,
-        is_get_PSD_FSD_last_year_payment_trasferred=pension.is_get_PSD_FSD_last_year_payment_trasferred,
-        is_Not_get_PSD_FSD_now_payment_trasferred=pension.is_Not_get_PSD_FSD_now_payment_trasferred,
+        is_payment_transferred=False,
+        is_get_PSD_FSD_last_mounth_payment_trasferred=False,
+        is_get_PSD_FSD_last_year_payment_trasferred=False,
+        is_Not_get_PSD_FSD_now_payment_trasferred=False,
         type=pension.categoria, 
         periods=[]
     )
@@ -276,10 +276,10 @@ async def pension_departmental_calculate(pension: PaymentInterface, sp_standart_
     DKpen = pension.DK
 
     sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
-        is_payment_transferred=pension.is_payment_transferred,
-        is_get_PSD_FSD_last_mounth_payment_trasferred=pension.is_get_PSD_FSD_last_mounth_payment_trasferred,
-        is_get_PSD_FSD_last_year_payment_trasferred=pension.is_get_PSD_FSD_last_year_payment_trasferred,
-        is_Not_get_PSD_FSD_now_payment_trasferred=pension.is_Not_get_PSD_FSD_now_payment_trasferred,
+        is_payment_transferred=False,
+        is_get_PSD_FSD_last_mounth_payment_trasferred=False,
+        is_get_PSD_FSD_last_year_payment_trasferred=False,
+        is_Not_get_PSD_FSD_now_payment_trasferred=False,
         type=pension.categoria, 
         periods=[]
     )
