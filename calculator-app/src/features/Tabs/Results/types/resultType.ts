@@ -46,6 +46,8 @@ export interface RsdItem {
   DK: DateString;     
   amount: Rubles;
   pmp_or_gss: string;  
+  sp_amount: Rubles;
+  pmp_gss_amount: Rubles
 }
 
 export type RsdList = RsdItem[];
