@@ -23,6 +23,13 @@ async def alt_pmp_gss_payment_amount(
 
     sp_standart: PaymentsByPeriods = await calculate_sp_standart(data)
 
+    print("--------------------------------")
+    print(f"sp_standart: {sp_standart}")
+    print(f"pmp_periods: {pmp_periods}")
+    print(f"gss_periods: {gss_periods}")
+    print("--------------------------------")
+    print("A" * 100)
+
     result_pmp: Dict[int, List[PeriodAmountWithSP]] = {}
     result_gss: Dict[int, List[PeriodAmountWithSP]] = {}
 
@@ -66,7 +73,9 @@ async def alt_pmp_gss_payment_amount(
                 for k in range(len(suspension_periods)):
                     if pmp_periods[l][j].DN == suspension_periods[k].DK and k >= 1:
                         # дата поиска = дата приостановки (k-1) - 1 месяц
-                        data_poiska_pensii = suspension_periods[k-1].DK - relativedelta(months=1)
+                        data_poiska_pensii = suspension_periods[
+                            k - 1
+                        ].DK - relativedelta(months=1)
                         break
 
             # Поиск подходящего sp_standart периода
@@ -76,22 +85,33 @@ async def alt_pmp_gss_payment_amount(
                     break
 
             amount = round(pmp_periods[l][j].amount - sp_amount, 2)
-            result_pmp[l].append(
-                PeriodAmountWithSP(
-                    DN=pmp_periods[l][j].DN,
-                    DK=pmp_periods[l][j].DK,
-                    amount=amount,
-                    sp_amount=sp_amount,
-                    pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
+
+            if j != 0 and amount > pmp_periods[l][j - 1].amount:
+                result_pmp[l].append(
+                    PeriodAmountWithSP(
+                        DN=pmp_periods[l][j].DN,
+                        DK=pmp_periods[l][j].DK,
+                        amount=amount,
+                        sp_amount=sp_amount,
+                        pmp_gss_amount=round(pmp_periods[l][j - 1].amount, 2),
+                    )
                 )
-            )
+            else:
+                result_pmp[l].append(
+                    PeriodAmountWithSP(
+                        DN=pmp_periods[l][j].DN,
+                        DK=pmp_periods[l][j].DK,
+                        amount=amount,
+                        sp_amount=sp_amount,
+                        pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
+                    )
+                )
 
         # Для ГСС
         result_gss.setdefault(l, [])
         for j in range(len(gss_periods[l])):
             sp_amount = 0  # Инициализация по умолчанию
-            data_poiska_pensii = gss_periods[l][j].DN - relativedelta(months=1)
-
+            data_poiska_pensii = gss_periods[l][j].DN
             # Поиск подходящего sp_standart периода
             for period in sp_standart[l].periods:
                 if period.DN <= data_poiska_pensii < period.DK:
@@ -99,14 +119,27 @@ async def alt_pmp_gss_payment_amount(
                     break
 
             amount = round(gss_periods[l][j].amount - sp_amount, 2)
-            result_gss[l].append(
-                PeriodAmountWithSP(
-                    DN=gss_periods[l][j].DN,
-                    DK=gss_periods[l][j].DK,
-                    amount=amount,
-                    sp_amount=sp_amount,
-                    pmp_gss_amount=round(gss_periods[l][j].amount, 2),
+
+            if j != 0 and amount > gss_periods[l][j - 1].amount:
+                result_gss[l].append(
+                    PeriodAmountWithSP(
+                        DN=gss_periods[l][j].DN,
+                        DK=gss_periods[l][j].DK,
+                        amount=amount,
+                        sp_amount=sp_amount,
+                        pmp_gss_amount=round(gss_periods[l][j - 1].amount, 2),
+                    )
                 )
-            )
+
+            else:
+                result_gss[l].append(
+                    PeriodAmountWithSP(
+                        DN=gss_periods[l][j].DN,
+                        DK=gss_periods[l][j].DK,
+                        amount=amount,
+                        sp_amount=sp_amount,
+                        pmp_gss_amount=round(gss_periods[l][j].amount, 2),
+                    )
+                )
 
     return {"pmp_periods": result_pmp, "gss_periods": result_gss}

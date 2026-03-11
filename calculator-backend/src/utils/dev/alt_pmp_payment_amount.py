@@ -74,15 +74,27 @@ async def alt_pmp_payment_amount(
                     break
 
             amount = round(pmp_periods[l][j].amount - sp_amount, 2)
-            result_pmp[l].append(
-                PeriodAmountWithSP(
-                    DN=pmp_periods[l][j].DN,
-                    DK=pmp_periods[l][j].DK,
-                    amount=amount,
-                    sp_amount=sp_amount,
-                    pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
+            
+            if j != 0 and amount > pmp_periods[l][j - 1].amount:
+                result_pmp[l].append(
+                    PeriodAmountWithSP(
+                        DN=pmp_periods[l][j].DN,
+                        DK=pmp_periods[l][j].DK,
+                        amount=amount,
+                        sp_amount=sp_amount,
+                        pmp_gss_amount=round(pmp_periods[l][j - 1].amount, 2),
+                    )
                 )
-            )
+            else:
+                result_pmp[l].append(
+                    PeriodAmountWithSP(
+                        DN=pmp_periods[l][j].DN,
+                        DK=pmp_periods[l][j].DK,
+                        amount=amount,
+                        sp_amount=sp_amount,
+                        pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
+                    )
+                )
 
     return {
         "pmp_periods": result_pmp
