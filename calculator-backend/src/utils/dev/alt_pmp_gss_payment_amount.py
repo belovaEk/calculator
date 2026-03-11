@@ -16,9 +16,8 @@ async def alt_pmp_gss_payment_amount(
     data: JsonQuerySchema,
 ) -> Dict[str, Dict[int, List[PeriodAmountWithSP]]]:
 
-    try: 
+    try:
         suspension_periods = data.periods_suspension
-        suspension_dks = [p.DK for p in suspension_periods]
     except:
         suspension_periods = []
 
@@ -32,92 +31,82 @@ async def alt_pmp_gss_payment_amount(
 
         # Для ПМП
         for j in range(len(pmp_periods[l])):
+            sp_amount = 0  # Инициализация по умолчанию
+            # По блок-схеме для j==0 базовая дата поиска = дата начала периода,
+            # для остальных периодов (j>0) — дата начала периода минус 1 месяц (если не найдено возобновление).
             if j == 0:
+                data_poiska_pensii = pmp_periods[l][j].DN
                 if sp_standart[l].is_payment_transferred:
                     if (
                         sp_standart[l].is_get_PSD_FSD_last_mounth_payment_trasferred
                         and sp_standart[l].is_get_PSD_FSD_last_year_payment_trasferred
                     ):
                         if sp_standart[l].is_Not_get_PSD_FSD_now_payment_trasferred:
-                            data_poiska_pensii = pmp_periods[l][j].DN - relativedelta(months=1)
-                            
+                            data_poiska_pensii = pmp_periods[l][j].DN - relativedelta(
+                                months=1
+                            )
                         else:
-                            amount = 0
+                            # Ветка "РСД до ПМП = 0": создаём запись с amount = 0 и переходим к следующему периоду
+                            result_pmp[l].append(
+                                PeriodAmountWithSP(
+                                    DN=pmp_periods[l][j].DN,
+                                    DK=pmp_periods[l][j].DK,
+                                    amount=0.0,
+                                    sp_amount=0.0,
+                                    pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
+                                )
+                            )
+                            continue
                     else:
                         data_poiska_pensii = pmp_periods[l][j].DN
 
-            # j == 0 = False
+            # j != 0
             else:
+                data_poiska_pensii = pmp_periods[l][j].DN - relativedelta(months=1)
                 for k in range(len(suspension_periods)):
-
-                    if k == len(suspension_periods) - 1:
-                        data_poiska_pensii = pmp_periods[l][j].DN - relativedelta(months=1)
+                    if pmp_periods[l][j].DN == suspension_periods[k].DK and k >= 1:
+                        # дата поиска = дата приостановки (k-1) - 1 месяц
+                        data_poiska_pensii = suspension_periods[k-1].DK - relativedelta(months=1)
                         break
-                        
-                    else: 
-                        if pmp_periods[l][j].DN == suspension_periods[k].DK and k >= 1:
-                            data_poiska_pensii = suspension_periods[k-1].DK
-                            break
 
-            for d in range(len(sp_standart[l].periods)):
-
-                if d == len(sp_standart[l].periods) - 1:
-                    sp_amount = 0
+            # Поиск подходящего sp_standart периода
+            for period in sp_standart[l].periods:
+                if period.DN <= data_poiska_pensii < period.DK:
+                    sp_amount = round(period.amount, 2)
                     break
 
-                # Возможно, два нестрогих неравенства здесь в условии ниже:
-                if (
-                    pmp_periods[l][j].DN
-                    <= data_poiska_pensii
-                    < pmp_periods[l][j].DK
-                ):
-                    sp_amount = sp_standart[l].periods[d].amount
-                    break
-
-            amount = pmp_periods[l][j].amount - sp_amount
+            amount = round(pmp_periods[l][j].amount - sp_amount, 2)
             result_pmp[l].append(
-                {
-                    "DN": pmp_periods[l][j].DN,
-                    "DK": pmp_periods[l][j].DK,
-                    "amount": amount,
-                    "sp_amount": sp_amount,
-                    "pmp_gss_amount": pmp_periods[l][j].amount
-                }
+                PeriodAmountWithSP(
+                    DN=pmp_periods[l][j].DN,
+                    DK=pmp_periods[l][j].DK,
+                    amount=amount,
+                    sp_amount=sp_amount,
+                    pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
+                )
             )
 
         # Для ГСС
         result_gss.setdefault(l, [])
-        for j in range(len(pmp_periods[l])):
-            data_poiska_pensii = pmp_periods[l][j].DN - relativedelta(months=1)
+        for j in range(len(gss_periods[l])):
+            sp_amount = 0  # Инициализация по умолчанию
+            data_poiska_pensii = gss_periods[l][j].DN - relativedelta(months=1)
 
-            for d in range(len(sp_standart[l].periods)):
-
-                if d == len(sp_standart[l].periods) - 1:
-                    sp_amount = 0
+            # Поиск подходящего sp_standart периода
+            for period in sp_standart[l].periods:
+                if period.DN <= data_poiska_pensii < period.DK:
+                    sp_amount = round(period.amount, 2)
                     break
 
-                # Возможно, два нестрогих неравенства здесь в условии ниже:
-                if (
-                    gss_periods[l][j].DN
-                    <= data_poiska_pensii
-                    < gss_periods[l][j].DK
-                ):
-                    sp_amount = sp_standart[l].periods[d].amount
-                    break
-
-            amount = gss_periods[l][j].amount - sp_amount
+            amount = round(gss_periods[l][j].amount - sp_amount, 2)
             result_gss[l].append(
-                {
-                    "DN": pmp_periods[l][j].DN,
-                    "DK": pmp_periods[l][j].DK,
-                    "amount": amount,
-                    "sp_amount": sp_amount,
-                    "pmp_gss_amount": pmp_periods[l][j].amount
-                }
+                PeriodAmountWithSP(
+                    DN=gss_periods[l][j].DN,
+                    DK=gss_periods[l][j].DK,
+                    amount=amount,
+                    sp_amount=sp_amount,
+                    pmp_gss_amount=round(gss_periods[l][j].amount, 2),
+                )
             )
-                    
-                
-        
-
 
     return {"pmp_periods": result_pmp, "gss_periods": result_gss}
