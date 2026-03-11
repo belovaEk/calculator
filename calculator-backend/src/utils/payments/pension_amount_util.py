@@ -228,7 +228,9 @@ async def pension_departmental_calculate(pension: PaymentInterface, sp_standart_
 
     Returns:
         PaymentsByYear: Возвращает словаь с индексом пенсии, которому принадлежит словарь с периодами и соотвествующими стандартными выплатами
-    """ 
+    """
+
+    # Начальный период
     DNpen = pension.DN
     DKpen = pension.DK
 
@@ -243,18 +245,29 @@ async def pension_departmental_calculate(pension: PaymentInterface, sp_standart_
 
     if (pension.is_recalculation and pension.recalculation != None):
         n = len(pension.recalculation)
+        # Сортируем пересчеты по дате для надежности
+        recalculations = sorted(pension.recalculation, key=lambda x: x.date)
+        
         for i in range(n):
-            date_rec = pension.recalculation[i].date
-            date_rec_prev = pension.recalculation[i-1].date
-            amount_rec_prev = pension.recalculation[i-1].amount
+            date_rec = recalculations[i].date
             if DNpen < date_rec <= DKpen:
                 if i == 0:
-                    sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=DNpen, DK=date_rec, amount=pension.amount))
-                elif i == n - 1:
-                    sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_rec_prev, DK=DKpen, amount=amount_rec_prev))
+                    # Первый пересчет: период от начала до первой даты пересчета
+                    sp_standart_by_year[pension.id].periods.append(
+                        PeriodAmount(DN=DNpen, DK=date_rec, amount=pension.amount)
+                    )
                 else:
-                    sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_rec_prev, DK=date_rec, amount=amount_rec_prev))
-    else:
-        sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=DNpen, DK=DKpen, amount=pension.amount))
+                    # Период от предыдущей даты пересчета до текущей
+                    date_rec_prev = recalculations[i-1].date
+                    amount_rec_prev = recalculations[i-1].amount
+                    sp_standart_by_year[pension.id].periods.append(
+                        PeriodAmount(DN=date_rec_prev, DK=date_rec, amount=amount_rec_prev)
+                    )
+                
+                # Если это последний пересчет, добавляем период до конца
+                if i == n - 1:
+                    sp_standart_by_year[pension.id].periods.append(
+                        PeriodAmount(DN=date_rec, DK=DKpen, amount=recalculations[i].amount)
+                    )
     
     return sp_standart_by_year
