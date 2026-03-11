@@ -15,6 +15,7 @@ from src.utils.registration.registration_util import (
 
 from src.utils.auxiliary_util import sort_periods_in_data, is_adult
 from src.utils.pmp_gss_calculate.prepare_pmp_gss_result import prepare_pmp_gss_reg_result, prepare_pmp_gss_NoReg_result
+from src.utils.main_util_adult import main_util_adult
 
 
 # Главная функция для расчета
@@ -40,7 +41,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
     # Проверка возраста
     # Алгоритм работает только с несовершеннолетними (дети)
     if await is_adult(today=today, date_of_birth=data.date_of_birth):
-        return {"message": "Взрослые не обрабатываются"}
+        return await main_util_adult(data=data)
 
     # Проверка, что с даты первичного назначения СПВ прошло больше 1 месяца
     spv_delta = relativedelta(today, spv_init_date)
