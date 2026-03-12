@@ -40,11 +40,11 @@ class PaymentInterface(BaseModel):
     recalculation: Optional[List[RecalculationData]] = None
 
     is_payment_transferred: bool
-    is_get_PSD_FSD_last_mounth_payment_trasferred: Optional[bool] = None
-    is_get_PSD_FSD_last_year_payment_trasferred: Optional[bool] = None
-    is_Not_get_PSD_FSD_now_payment_trasferred: Optional[bool] = None
+    is_get_PSD_FSD_last_mounth_payment_trasferred: Optional[bool] = False
+    is_get_PSD_FSD_last_year_payment_trasferred: Optional[bool] = False
+    is_Not_get_PSD_FSD_now_payment_trasferred: Optional[bool] = False
 
-    is_fix_amoumt: Optional[bool] = None
+    is_fix_amoumt: Optional[bool] = False
     invalid_categoria: Optional[int] = None
     num_dependents: Optional[int] = None
     

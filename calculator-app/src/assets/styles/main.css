@@ -498,3 +498,7 @@ tr:nth-child(even) {
 .dop_check{
   color: #3498db;
 }
+
+.addPayment-btn {
+  background-color: #216da0;
+}

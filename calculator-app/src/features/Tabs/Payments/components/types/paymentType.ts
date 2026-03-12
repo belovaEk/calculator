@@ -1,13 +1,13 @@
 import { Rubles } from "../../../../../shared";
 import { DateString } from "../../../../../shared";
 
-export type PaymentTypeRaw = 'pension' | 'edv' | 'egdv' | 'housing' | 'custom';
+export type PaymentTypeRaw = 'pension' | 'edv' | 'egdv' | 'housing' | 'edk';
 export type PaymentTypeDisplay = 'Пенсия' | 'ЕДВ' | 'ЕГДВ' | 'ЖКУ' | 'Другая выплата';
 
 export type PensionCategoryRaw = 'insurance_SPK' | 'social_SPK' | 'social_disability' | 'departmental';
 
 export type PensionCategoryAdultRaw = 'insurance' | 'social' | 'departmental' | 'gosudarstvennaya' | 'other' | 'monthPay';
-
+export type PersonCategoryRaw = 'reabilitirovan' | 'truzhennik' | 'war_child' | 'labor_veteran' | 'labor_veteran_55_60'
 
 export interface RecalculationData {
     date: DateString,
@@ -30,10 +30,14 @@ export interface PaymentInterface {
     is_get_PSD_FSD_last_year_payment_trasferred?: boolean,
     is_Not_get_PSD_FSD_now_payment_trasferred?: boolean,
 
-    invalid_categoria?: '' | '1' | '2' | '3',
-    num_dependents?: number
+    // invalid_categoria?: '' | '1' | '2' | '3',
+    // num_dependents?: number
 
     is_fix_amoumt: boolean
+    amount_fix?: Rubles,
+    is_recalculation_fix_amount?: boolean,
+    recalculation_fix_amount?: RecalculationData[]
+    categoria_person?: PersonCategoryRaw
 }
 
 export interface PaymentProps  {

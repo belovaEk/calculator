@@ -35,11 +35,11 @@ export const Payments = () => {
                                     onChange={(e) => updateStore('change_last_date', e.target.value)}
                                     required
                                 />
-                            </div>  
+                            </div>
                         </div>
                     )}
 
-                    
+
 
                     <div id="paymentsContainer">
                         {payments.map((payment, index) => (
@@ -55,15 +55,38 @@ export const Payments = () => {
 
                     <div className="form-group">
                         <button
-                            className="btn"
+                            className="btn addPayment-btn"
                             id="addPension"
                             onClick={() => addPaymet(PAYMENT_TYPE.pension.raw)}
                         >+ Добавить пенсию</button>
 
-                        {/* <button className="btn" id="addEdv">+ Добавить ЕДВ</button>
-                        <button className="btn" id="addEgdv">+ Добавить ЕГДВ</button>
-                        <button className="btn" id="addHousing">+ Добавить ЖКУ</button>
-                        <button className="btn btn-secondary" id="addCustom">+ Добавить другую выплату</button> */}
+                        {store.is_adult && (
+                            <div style={{display: "inline-block"}}>
+                                <button
+                                    className="btn addPayment-btn"
+                                    id="addEdv"
+                                    onClick={() => addPaymet(PAYMENT_TYPE.edv.raw)}
+                                >+ Добавить ЕДВ+НСУ</button>
+
+                                <button
+                                    className="btn addPayment-btn"
+                                    id="addPension"
+                                    onClick={() => addPaymet(PAYMENT_TYPE.egdv.raw)}
+                                >+ Добавить ЕГДВ</button>
+
+                                <button
+                                    className="btn addPayment-btn"
+                                    id="addPension"
+                                    onClick={() => addPaymet(PAYMENT_TYPE.edk.raw)}
+                                >+ Добавить ЕДК</button>
+
+                                <button
+                                    className="btn addPayment-btn"
+                                    id="addPension"
+                                    onClick={() => addPaymet(PAYMENT_TYPE.housing.raw)}
+                                >+ Добавить ЖКУ</button>
+                            </div>
+                        )}
 
                     </div>
 

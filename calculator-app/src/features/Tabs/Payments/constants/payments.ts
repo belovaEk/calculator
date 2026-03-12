@@ -15,8 +15,8 @@ export const PAYMENT_TYPE = {
         raw: 'housing',
         display: 'ЖКУ'
     },
-    custom: {
-        raw: 'custom',
-        display: 'Другая выплата'
+    edk: {
+        raw: 'edk',
+        display: 'ЕДК'
     }
 } as const
