@@ -3,7 +3,7 @@ from typing import List
 
 from src.schemas.json_query_schema import JsonQuerySchema, PeriodType
 from src.utils.pmp_gss_calculate.reg.pmp_gss_reg_util import pmp_gss_registration
-from utils.pmp_gss_calculate.common.cut_off_periods_util import (
+from src.utils.pmp_gss_calculate.common.cut_off_periods_util import (
     cut_off_periods_before_change_date,
 )
 from src.utils.pmp_gss_calculate.reg.pmp_gss_inpatient_util import pmp_gss_inpatient
@@ -60,19 +60,29 @@ async def prepare_pmp_gss_adult_result(
             "gss_periods": base_result["gss_periods"],
         }
 
-    filtered_inpatient = await cut_off_periods_before_change_date(
+
+    filtered_inpatient_periods = await cut_off_periods_before_change_date(
         periods_inpatient=data.periods_inpatient,
         change_last_date=data.change_last_date,
     )
 
+    filtered_employment_periods = await cut_off_periods_before_change_date(
+        periods_inpatient=data.periods_employment,
+        change_last_date=data.change_last_date,
+    )
+
+    filtered_suspension_periods = await cut_off_periods_before_change_date(
+        periods_inpatient=data.periods_suspension,
+        change_last_date=data.change_last_date,
+    )   
+
     pmp_gss_inpatient_result = await pmp_gss_inpatient(
         pmp_periods=base_result["pmp_periods"],
         gss_periods=base_result["gss_periods"],
-        periods_inpatient=filtered_inpatient
+        periods_inpatient=filtered_inpatient_periods
     )
 
     return {
         "pmp_periods": pmp_gss_inpatient_result["pmp_periods"],
         "gss_periods": pmp_gss_inpatient_result["gss_periods"],
-        "periods_inpatient": filtered_inpatient,
     }
