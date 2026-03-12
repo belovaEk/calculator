@@ -65,14 +65,14 @@ async def prepare_pmp_gss_adult_result(
         change_last_date=data.change_last_date,
     )
 
-    pmp_gss_inpatient_result = pmp_gss_inpatient(
+    pmp_gss_inpatient_result = await pmp_gss_inpatient(
         pmp_periods=base_result["pmp_periods"],
         gss_periods=base_result["gss_periods"],
         periods_inpatient=filtered_inpatient
     )
 
     return {
-        "pmp_periods": base_result["pmp_periods"],
-        "gss_periods": base_result["gss_periods"],
+        "pmp_periods": pmp_gss_inpatient_result["pmp_periods"],
+        "gss_periods": pmp_gss_inpatient_result["gss_periods"],
         "periods_inpatient": filtered_inpatient,
     }
