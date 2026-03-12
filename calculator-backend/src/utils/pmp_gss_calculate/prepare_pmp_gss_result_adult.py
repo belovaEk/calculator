@@ -7,6 +7,8 @@ from src.utils.pmp_gss_calculate.common.cut_off_periods_util import (
     cut_off_periods_before_change_date,
 )
 from src.utils.pmp_gss_calculate.reg.pmp_gss_inpatient_util import pmp_gss_inpatient
+from src.utils.pmp_gss_calculate.adult.employment_to_suspensions_periods import employment_to_suspensions_periods
+from src.utils.pmp_gss_calculate.reg.pmp_gss_suspension_util import pmp_gss_suspension
 
 
 async def prepare_pmp_gss_reg_result_adult(
@@ -54,35 +56,57 @@ async def prepare_pmp_gss_adult_result(
         list_of_periods_reg=list_of_periods_reg,
     )
 
-    if not data.periods_inpatient or len(data.periods_inpatient) == 0:
-        return {
-            "pmp_periods": base_result["pmp_periods"],
-            "gss_periods": base_result["gss_periods"],
-        }
+    if data.periods_inpatient and len(data.periods_inpatient) > 0:
 
-
-    filtered_inpatient_periods = await cut_off_periods_before_change_date(
+        filtered_inpatient_periods = await cut_off_periods_before_change_date(
         periods_inpatient=data.periods_inpatient,
         change_last_date=data.change_last_date,
+        )
+        
+        pmp_gss_inpatient_result = await pmp_gss_inpatient(
+            pmp_periods=base_result["pmp_periods"],
+            gss_periods=base_result["gss_periods"],
+            periods_inpatient=filtered_inpatient_periods,
+        )
+
+    
+    # if data.is_employment and data.periods_employment and len(data.periods_employment) > 0:
+    if data.periods_employment and len(data.periods_employment) > 0:
+
+        filtered_employment_periods = await cut_off_periods_before_change_date(
+            periods_inpatient=data.periods_employment,
+            change_last_date=data.change_last_date,
+        )
+
+    if data.periods_suspension and len(data.periods_suspension) > 0:
+
+
+        filtered_suspension_periods = await cut_off_periods_before_change_date(
+            periods_inpatient=data.periods_suspension,
+            change_last_date=data.change_last_date,
+        )   
+
+        employment_to_suspensions_periods_result = await employment_to_suspensions_periods(
+            employment_periods=filtered_employment_periods,
+            suspension_periods=filtered_suspension_periods,
+        )
+    
+    else: 
+        employment_to_suspensions_periods_result = filtered_employment_periods
+
+    pmp_gss_suspension_result = await pmp_gss_suspension(
+        periods_suspension=employment_to_suspensions_periods_result,
+        pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
+        gss_periods=pmp_gss_inpatient_result["gss_periods"],
     )
 
-    filtered_employment_periods = await cut_off_periods_before_change_date(
-        periods_inpatient=data.periods_employment,
-        change_last_date=data.change_last_date,
-    )
+    # Следующая_функция_результат = следующая_функция(
+        # pmp_periods=pmp_gss_suspension_result["pmp_periods"],
+        # gss_periods=pmp_gss_suspension_result["gss_periods"],
+        # )
 
-    filtered_suspension_periods = await cut_off_periods_before_change_date(
-        periods_inpatient=data.periods_suspension,
-        change_last_date=data.change_last_date,
-    )   
-
-    pmp_gss_inpatient_result = await pmp_gss_inpatient(
-        pmp_periods=base_result["pmp_periods"],
-        gss_periods=base_result["gss_periods"],
-        periods_inpatient=filtered_inpatient_periods
-    )
-
+        
     return {
-        "pmp_periods": pmp_gss_inpatient_result["pmp_periods"],
-        "gss_periods": pmp_gss_inpatient_result["gss_periods"],
+        "pmp_periods": pmp_gss_suspension_result["pmp_periods"],
+        "gss_periods": pmp_gss_suspension_result["gss_periods"],
     }

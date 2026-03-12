@@ -5,7 +5,7 @@ from src.utils.pmp_gss_calculate.common.recalculation_suspension_util import rec
 
 
 async def pmp_suspension(
-    data: JsonQuerySchema, pmp_periods: List[PeriodType]
+    periods_suspension: List[PeriodWithIdType], data: JsonQuerySchema, pmp_periods: List[PeriodType]
 ):
     """Функция для пересчета ПМП с учетом периодов прерываний
 

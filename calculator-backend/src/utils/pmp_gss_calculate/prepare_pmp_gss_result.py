@@ -53,8 +53,10 @@ async def prepare_pmp_gss_reg_result(
         gss_periods=gss_periods,
     )
 
+    periods_suspension = data.periods_suspension or None
+
     pmp_gss_suspension_result = await pmp_gss_suspension(
-        data=data,
+        periods_suspension=periods_suspension,
         pmp_periods=pmp_gss_registration_result["pmp_periods"],
         gss_periods=pmp_gss_registration_result["gss_periods"],
     )
@@ -111,8 +113,9 @@ async def prepare_pmp_gss_NoReg_result(
         pmp_periods=pmp_periods,
     )
 
+    periods_suspension = data.periods_suspension or None
     pmp_suspension_result = await pmp_suspension(
-        data=data,
+        periods_suspension=periods_suspension,
         pmp_periods=pmp_init_result["pmp_periods"],
     )
 
