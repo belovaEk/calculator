@@ -3,8 +3,8 @@ from typing import List
 
 from src.schemas.json_query_schema import JsonQuerySchema, PeriodType
 from src.utils.pmp_gss_calculate.reg.pmp_gss_reg_util import pmp_gss_registration
-from src.utils.pmp_gss_calculate.pmp_gss_inpation_util import (
-    filter_inpatient_periods_after_change_date,
+from utils.pmp_gss_calculate.common.cut_off_periods_util import (
+    cut_off_periods_before_change_date,
 )
 from src.utils.pmp_gss_calculate.reg.pmp_gss_inpatient_util import pmp_gss_inpatient
 
@@ -60,7 +60,7 @@ async def prepare_pmp_gss_adult_result(
             "gss_periods": base_result["gss_periods"],
         }
 
-    filtered_inpatient = await filter_inpatient_periods_after_change_date(
+    filtered_inpatient = await cut_off_periods_before_change_date(
         periods_inpatient=data.periods_inpatient,
         change_last_date=data.change_last_date,
     )

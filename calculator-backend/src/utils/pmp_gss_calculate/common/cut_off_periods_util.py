@@ -4,8 +4,8 @@ from typing import List
 from src.schemas.json_query_schema import PeriodType, PeriodWithIdType
 
 
-async def filter_inpatient_periods_after_change_date(
-    periods_inpatient: List[PeriodWithIdType],
+async def cut_off_periods_before_change_date(
+    periods: List[PeriodWithIdType],
     change_last_date: date,
 ) -> List[PeriodWithIdType]:
     """
@@ -17,20 +17,20 @@ async def filter_inpatient_periods_after_change_date(
     нахождения в стационарном учреждении, которая идет после
     даты последнего изменения данных в выплате.
     """
-    if not periods_inpatient:
+    if not periods:
         return []
 
     new_periods_inpatient: List[PeriodWithIdType] = []
     
-    for period in periods_inpatient:
+    for period in periods:
 
-        DNin = period.DN
-        DKin = period.DK
+        DN = period.DN
+        DK = period.DK
 
-        if change_last_date <= DNin < DKin:
-            new_periods_inpatient.append(PeriodWithIdType(id=period.id, DN=DNin, DK=DKin))
-        elif DNin <= change_last_date < DKin:
-            new_periods_inpatient.append(PeriodWithIdType(id=period.id, DN=change_last_date, DK=DKin))
+        if change_last_date <= DN < DK:
+            new_periods_inpatient.append(PeriodWithIdType(id=period.id, DN=DN, DK=DK))
+        elif DN <= change_last_date < DK:
+            new_periods_inpatient.append(PeriodWithIdType(id=period.id, DN=change_last_date, DK=DK))
 
 
         # # Если стационар закончился до или в дату изменения выплаты — пропускаем
