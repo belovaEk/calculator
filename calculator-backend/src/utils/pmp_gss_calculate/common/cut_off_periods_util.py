@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List
 
-from src.schemas.json_query_schema import PeriodType, PeriodWithIdType
+from src.schemas.json_query_schema import OrderType, PeriodWithIdType
 
 
 async def cut_off_periods_before_change_date(
@@ -46,3 +46,24 @@ async def cut_off_periods_before_change_date(
         #     result.append(PeriodType(DN=new_dn, DK=new_dk))
 
     return new_periods_inpatient
+
+
+
+async def cut_of_order_date(order_date: List[OrderType],  change_last_date: date) -> List[OrderType]:
+    """ Отсекает все даты подачи заявлений на ГСС до даты внесения изменений в данные выплаты
+
+    Args:
+        order_date (List[OrderType]): даты подачи заявления
+
+    Returns:
+        List[OrderType]: даты подачи заявления до даты внесения изменений в данные выплаты
+    """    
+
+    new_order_date: List[OrderType] = []
+
+    for order in order_date:
+        date = order.date 
+        if date > change_last_date:
+            new_order_date.append(OrderType(id=order.id, date=order.date))
+
+    return new_order_date
