@@ -58,7 +58,9 @@ async def cut_of_order_date(order_date: List[OrderType],  change_last_date: date
     Returns:
         List[OrderType]: даты подачи заявления до даты внесения изменений в данные выплаты
     """    
-
+    if not order_date:
+        return []
+    
     new_order_date: List[OrderType] = []
 
     for order in order_date:
