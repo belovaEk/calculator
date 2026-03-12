@@ -6,6 +6,7 @@ from src.utils.pmp_gss_calculate.reg.pmp_gss_reg_util import pmp_gss_registratio
 from src.utils.pmp_gss_calculate.pmp_gss_inpation_util import (
     filter_inpatient_periods_after_change_date,
 )
+from src.utils.pmp_gss_calculate.reg.pmp_gss_inpatient_util import pmp_gss_inpatient
 
 
 async def prepare_pmp_gss_reg_result_adult(
@@ -62,6 +63,12 @@ async def prepare_pmp_gss_adult_result(
     filtered_inpatient = await filter_inpatient_periods_after_change_date(
         periods_inpatient=data.periods_inpatient,
         change_last_date=data.change_last_date,
+    )
+
+    pmp_gss_inpatient_result = pmp_gss_inpatient(
+        pmp_periods=base_result["pmp_periods"],
+        gss_periods=base_result["gss_periods"],
+        periods_inpatient=filtered_inpatient
     )
 
     return {
