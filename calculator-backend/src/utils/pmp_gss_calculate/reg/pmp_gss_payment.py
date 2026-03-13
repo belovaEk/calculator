@@ -1,7 +1,6 @@
 from src.schemas.json_query_schema import (
     JsonQuerySchema,
     PeriodType,
-    PeriodType,
     PaymentInterface,
 )
 from typing import List, Dict, TypeAlias

@@ -107,7 +107,8 @@ async def prepare_pmp_gss_adult_result(
 
     if data.is_order:
         new_orders_date = await cut_of_order_date(
-            data.orders_date
+            orders_date=data.orders_date,
+            change_last_date=data.change_last_date
         )
     else:
         gss_to_pmp_result = await transformation_gss_to_pmp(
