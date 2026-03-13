@@ -3,7 +3,7 @@ from typing import List, Dict, TypeAlias
 GssPmpPensionType: TypeAlias = Dict[int, List[PeriodType]]
 
 
-def recalculation_payment (pensions: List[PaymentInterface], n: int, periods: List[PeriodType]):
+def recalculation_payment (pensions: List[PaymentInterface], n: int, periods: List[PeriodType])  -> GssPmpPensionType:
 
     new_periods: GssPmpPensionType = {}
     for i in range(n):
