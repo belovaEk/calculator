@@ -4,12 +4,12 @@ from typing import List
 from src.schemas.json_query_schema import JsonQuerySchema, PeriodType
 from src.utils.pmp_gss_calculate.reg.pmp_gss_reg_util import pmp_gss_registration
 from src.utils.pmp_gss_calculate.common.cut_off_periods_util import (
-    cut_off_periods_before_change_date,
+    cut_off_periods_before_change_date, cut_of_order_date
 )
 from src.utils.pmp_gss_calculate.reg.pmp_gss_inpatient_util import pmp_gss_inpatient
 from src.utils.pmp_gss_calculate.adult.employment_to_suspensions_periods import employment_to_suspensions_periods
 from src.utils.pmp_gss_calculate.reg.pmp_gss_suspension_util import pmp_gss_suspension
-
+from src.utils.pmp_gss_calculate.adult.transformation_gss_to_pmp_util import transformation_gss_to_pmp
 
 async def prepare_pmp_gss_reg_result_adult(
     data: JsonQuerySchema,
@@ -59,7 +59,7 @@ async def prepare_pmp_gss_adult_result(
     if data.periods_inpatient and len(data.periods_inpatient) > 0:
 
         filtered_inpatient_periods = await cut_off_periods_before_change_date(
-        periods_inpatient=data.periods_inpatient,
+        periods=data.periods_inpatient,
         change_last_date=data.change_last_date,
         )
         
@@ -74,7 +74,7 @@ async def prepare_pmp_gss_adult_result(
     if data.periods_employment and len(data.periods_employment) > 0:
 
         filtered_employment_periods = await cut_off_periods_before_change_date(
-            periods_inpatient=data.periods_employment,
+            periods=data.periods_employment,
             change_last_date=data.change_last_date,
         )
 
@@ -82,7 +82,7 @@ async def prepare_pmp_gss_adult_result(
 
 
         filtered_suspension_periods = await cut_off_periods_before_change_date(
-            periods_inpatient=data.periods_suspension,
+            periods=data.periods_suspension,
             change_last_date=data.change_last_date,
         )   
 
@@ -105,8 +105,19 @@ async def prepare_pmp_gss_adult_result(
         # gss_periods=pmp_gss_suspension_result["gss_periods"],
         # )
 
+    if data.is_order:
+        new_orders_date = await cut_of_order_date(
+            data.orders_date
+        )
+    else:
+        gss_to_pmp_result = await transformation_gss_to_pmp(
+            pmp_periods=pmp_gss_suspension_result["pmp_periods"],
+            gss_periods=pmp_gss_suspension_result["gss_periods"],
+        )
+
         
     return {
         "pmp_periods": pmp_gss_suspension_result["pmp_periods"],
         "gss_periods": pmp_gss_suspension_result["gss_periods"],
+
     }
