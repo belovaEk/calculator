@@ -27,6 +27,8 @@ from src.utils.pmp_gss_calculate.reg.pmp_gss_sorted import pmp_gss_sorted
 from src.utils.pmp_gss_calculate.adult.build_pensii_itog_res import _build_pensii_itog_res
 from src.utils.pmp_gss_calculate.adult.start_OMO import pensii_devochki
 from src.utils.dev.alt_pmp_gss_date_index_util import pmp_gss_index
+from src.utils.pmp_gss_calculate.adult.pmp_gss_payment_amount_adult import pmp_gss_payment_amount_adult
+
 
 async def prepare_pmp_gss_reg_result_adult(
     data: JsonQuerySchema,
@@ -134,7 +136,7 @@ async def prepare_pmp_gss_adult_result(
             gss_periods=pmp_gss_suspension_result["gss_periods"],
         )
 
-    pmp_gss_periods = await pmp_gss_index(
+    pmp_gss_index_result = await pmp_gss_index(
         gss_periods= base_result["gss_periods"],
         pmp_periods= base_result["pmp_periods"],
         reg=True
@@ -156,26 +158,39 @@ async def prepare_pmp_gss_adult_result(
         egdv=egdv_result,
         housin=housin_result,
     )
-    # pensii_itog_res - для pmp_periods
+    # payments_for_pmp - для pmp_periods
 
     payments_for_gss = _build_pensii_itog_res(
-        sorted_pensions=pensions_result,
+        sorted_pensions=pensions_result
     )
-    # pensii_itog_gss - для gss_periods
+    # payments_for_gss - для gss_periods
 
     omo_pmp = calculate_pension_itog(payments_for_pmp)
     omo_gss = calculate_pension_itog(payments_for_gss)
     # Передаем в функицю по аналогии с sp_standart
+    # return {
+    #     'payments_for_gss': payments_for_gss,
+    #     "omo_pmp": omo_pmp,
+    # }
 
+
+    alt_pmp_gss_payment_amount_result = await pmp_gss_payment_amount_adult(
+        pmp_periods=pmp_gss_index_result["pmp_periods"],
+        gss_periods=pmp_gss_index_result["gss_periods"],
+        omo_pmp=omo_pmp,
+        omo_gss=omo_gss,
+        data=data
+    )
+
+    pmp_gss_sorted_result = await pmp_gss_sorted(
+        pmp_periods=alt_pmp_gss_payment_amount_result["pmp_periods"],
+        gss_periods=alt_pmp_gss_payment_amount_result["gss_periods"],
+    )
+
+    
     return {
-        "pensions_result": pensions_result,
-    }
-    return {
-        "pmp_periods": base_result["pmp_periods"],
-        "gss_periods": base_result["gss_periods"],
-        "edk": edk_result,
-        "edv_nsu": edv_result,
-        "egdv": egdv_result,
-        "housin": housin_result,
-        "pension_itog": pensions_result,
+        "to_chto_devochki_otpravili": pensions_result,
+        "pmp_periods": pmp_gss_index_result["pmp_periods"],
+        "gss_periods": pmp_gss_index_result["gss_periods"],
+        "sorted_pensions": pmp_gss_sorted_result,
     }

@@ -33,7 +33,10 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
                 is_get_PSD_FSD_last_year_payment_trasferred: bool
                 is_Not_get_PSD_FSD_now_payment_trasferred: bool
                 type: PensionCategoryRaw
-                periods:[{DN, DK, amount}, {DN, DK, amount}]
+                periods:[
+                    {DN, DK, amount}, 
+                    {DN, DK, amount}
+                ]
             };
             1: {
                 is_payment_transferred: false
@@ -41,7 +44,10 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
                 is_get_PSD_FSD_last_year_payment_trasferred: bool
                 is_Not_get_PSD_FSD_now_payment_trasferred: bool
                 type: PensionCategoryRaw;
-                periods: [{DN, DK, amount},{DN, DK, amount}]
+                periods: [
+                    {DN, DK, amount},
+                    {DN, DK, amount}
+                ]
         }
         }
     """    
