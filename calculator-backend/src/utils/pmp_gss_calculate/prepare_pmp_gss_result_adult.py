@@ -189,7 +189,6 @@ async def prepare_pmp_gss_adult_result(
 
     
     return {
-        "to_chto_devochki_otpravili": pensions_result,
         "pmp_periods": pmp_gss_index_result["pmp_periods"],
         "gss_periods": pmp_gss_index_result["gss_periods"],
         "sorted_pensions": pmp_gss_sorted_result,
