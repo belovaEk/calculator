@@ -26,7 +26,7 @@ from src.utils.payments.pension_summary import calculate_pension_itog
 from src.utils.pmp_gss_calculate.reg.pmp_gss_sorted import pmp_gss_sorted
 from src.utils.pmp_gss_calculate.adult.build_pensii_itog_res import _build_pensii_itog_res
 from src.utils.pmp_gss_calculate.adult.start_OMO import pensii_devochki
-
+from src.utils.dev.alt_pmp_gss_date_index_util import pmp_gss_index
 
 async def prepare_pmp_gss_reg_result_adult(
     data: JsonQuerySchema,
@@ -134,6 +134,11 @@ async def prepare_pmp_gss_adult_result(
             gss_periods=pmp_gss_suspension_result["gss_periods"],
         )
 
+    pmp_gss_periods = await pmp_gss_index(
+        gss_periods= base_result["gss_periods"],
+        pmp_periods= base_result["pmp_periods"],
+        reg=True
+    )
 
 
     # Расчёт дополнительных федеральных/региональных выплат
@@ -144,19 +149,26 @@ async def prepare_pmp_gss_adult_result(
     pensions_result = pensii_devochki(query=data)
 
     # # Итоговая агрегация всех выплат в единую хронологию
-    pensii_itog_res = _build_pensii_itog_res(
+    payments_for_pmp = _build_pensii_itog_res(
         sorted_pensions=pensions_result,
         edk=edk_result,
         edv=edv_result,
         egdv=egdv_result,
         housin=housin_result,
     )
+    # pensii_itog_res - для pmp_periods
 
-    pension_itog = calculate_pension_itog(pensii_itog_res)
+    payments_for_gss = _build_pensii_itog_res(
+        sorted_pensions=pensions_result,
+    )
+    # pensii_itog_gss - для gss_periods
+
+    omo_pmp = calculate_pension_itog(payments_for_pmp)
+    omo_gss = calculate_pension_itog(payments_for_gss)
+    # Передаем в функицю по аналогии с sp_standart
 
     return {
-        "pensii_itog_res": pensii_itog_res,
-        "pension_itog": pension_itog,
+        "pensions_result": pensions_result,
     }
     return {
         "pmp_periods": base_result["pmp_periods"],
