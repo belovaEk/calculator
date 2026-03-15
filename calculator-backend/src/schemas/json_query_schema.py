@@ -24,6 +24,7 @@ PersonCategoryRaw = Literal['reabilitirovan', 'truzhennik', 'war_child','labor_v
 
 
 
+
 class RecalculationData(BaseModel):
     date: date
     amount: float
@@ -32,7 +33,7 @@ class RecalculationData(BaseModel):
 class PaymentInterface(BaseModel):
     id: int
     type: PaymentTypeRaw
-    categoria: PensionCategoryRaw | PensionCategoryAdultRaw
+    categoria: PensionCategoryRaw | PensionCategoryAdultRaw | PersonCategoryRaw
     DN: date 
     DK: date 
     amount: float  
@@ -46,7 +47,7 @@ class PaymentInterface(BaseModel):
     is_get_PSD_FSD_last_year_payment_trasferred: Optional[bool] = False
     is_Not_get_PSD_FSD_now_payment_trasferred: Optional[bool] = False
 
-    is_fix_amoumt: Optional[bool] = False
+    is_fix_amount: Optional[bool] = False
     amount_fix: Optional[float] = None,
     is_recalculation_fix_amount: Optional[bool] = False,
     recalculation_fix_amount: Optional[List[RecalculationData]] = None

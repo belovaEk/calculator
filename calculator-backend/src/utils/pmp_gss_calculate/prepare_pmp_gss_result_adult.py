@@ -2,14 +2,31 @@ from datetime import date
 from typing import List
 
 from src.schemas.json_query_schema import JsonQuerySchema, PeriodType
+from src.schemas.json_query_schema import OrderType, PeriodWithIdType
 from src.utils.pmp_gss_calculate.reg.pmp_gss_reg_util import pmp_gss_registration
 from src.utils.pmp_gss_calculate.common.cut_off_periods_util import (
-    cut_off_periods_before_change_date, cut_of_order_date
+    cut_of_gss_no_have_order,
+    cut_off_periods_before_change_date,
+    cut_of_order_date,
 )
 from src.utils.pmp_gss_calculate.reg.pmp_gss_inpatient_util import pmp_gss_inpatient
-from src.utils.pmp_gss_calculate.adult.employment_to_suspensions_periods import employment_to_suspensions_periods
+from src.utils.pmp_gss_calculate.adult.employment_to_suspensions_periods import (
+    employment_to_suspensions_periods,
+)
 from src.utils.pmp_gss_calculate.reg.pmp_gss_suspension_util import pmp_gss_suspension
-from src.utils.pmp_gss_calculate.adult.transformation_gss_to_pmp_util import transformation_gss_to_pmp
+from src.utils.pmp_gss_calculate.adult.transformation_gss_to_pmp_util import (
+    transformation_gss_to_pmp,
+)
+
+from src.utils.payments.edk_calculate import calculate_edk
+from src.utils.payments.edv_nsu_calculate import calculate_edv_nsu
+from src.utils.payments.egdv_calculate import calculate_egdv
+from src.utils.payments.housin_calculate import calculate_housin
+from src.utils.payments.pension_summary import calculate_pension_itog
+from src.utils.pmp_gss_calculate.reg.pmp_gss_sorted import pmp_gss_sorted
+from src.utils.pmp_gss_calculate.adult.build_pensii_itog_res import _build_pensii_itog_res
+from src.utils.pmp_gss_calculate.adult.start_OMO import pensii_devochki
+
 
 async def prepare_pmp_gss_reg_result_adult(
     data: JsonQuerySchema,
@@ -59,18 +76,17 @@ async def prepare_pmp_gss_adult_result(
     if data.periods_inpatient and len(data.periods_inpatient) > 0:
 
         filtered_inpatient_periods = await cut_off_periods_before_change_date(
-        periods=data.periods_inpatient,
-        change_last_date=data.change_last_date,
+            periods=data.periods_inpatient,
+            change_last_date=data.change_last_date,
         )
-        
-        pmp_gss_inpatient_result = await pmp_gss_inpatient(
+
+        base_result = await pmp_gss_inpatient(
             pmp_periods=base_result["pmp_periods"],
             gss_periods=base_result["gss_periods"],
             periods_inpatient=filtered_inpatient_periods,
         )
 
-    
-    # if data.is_employment and data.periods_employment and len(data.periods_employment) > 0:
+    filtered_employment_periods: List[PeriodWithIdType] = []
     if data.periods_employment and len(data.periods_employment) > 0:
 
         filtered_employment_periods = await cut_off_periods_before_change_date(
@@ -80,45 +96,74 @@ async def prepare_pmp_gss_adult_result(
 
     if data.periods_suspension and len(data.periods_suspension) > 0:
 
-
         filtered_suspension_periods = await cut_off_periods_before_change_date(
             periods=data.periods_suspension,
             change_last_date=data.change_last_date,
-        )   
-
-        employment_to_suspensions_periods_result = await employment_to_suspensions_periods(
-            employment_periods=filtered_employment_periods,
-            suspension_periods=filtered_suspension_periods,
         )
-    
-    else: 
-        employment_to_suspensions_periods_result = filtered_employment_periods
+
+        suspensions_w_emploument_periods = (
+            await employment_to_suspensions_periods(
+                employment_periods=filtered_employment_periods,
+                suspension_periods=filtered_suspension_periods,
+            )
+        )
+
+    else:
+        suspensions_w_emploument_periods = filtered_employment_periods
 
     pmp_gss_suspension_result = await pmp_gss_suspension(
-        periods_suspension=employment_to_suspensions_periods_result,
-        pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
-        gss_periods=pmp_gss_inpatient_result["gss_periods"],
+        periods_suspension=suspensions_w_emploument_periods,
+        pmp_periods=base_result["pmp_periods"],
+        gss_periods=base_result["gss_periods"],
     )
 
-    # Следующая_функция_результат = следующая_функция(
-        # pmp_periods=pmp_gss_suspension_result["pmp_periods"],
-        # gss_periods=pmp_gss_suspension_result["gss_periods"],
-        # )
+
 
     if data.is_order:
         new_orders_date = await cut_of_order_date(
-            orders_date=data.orders_date,
-            change_last_date=data.change_last_date
+            orders_date=data.orders_date, change_last_date=data.change_last_date
+        )
+        base_result = await cut_of_gss_no_have_order(
+            pmp_periods=base_result["pmp_periods"],
+            gss_period=base_result["gss_periods"],
+            orders_date=new_orders_date,
         )
     else:
-        gss_to_pmp_result = await transformation_gss_to_pmp(
+        base_result = await transformation_gss_to_pmp(
             pmp_periods=pmp_gss_suspension_result["pmp_periods"],
             gss_periods=pmp_gss_suspension_result["gss_periods"],
         )
 
-        
-    return {
-        "pmp_periods": pmp_gss_suspension_result["pmp_periods"],
-        "gss_periods": pmp_gss_suspension_result["gss_periods"],
 
+
+    # Расчёт дополнительных федеральных/региональных выплат
+    edk_result = calculate_edk(data)
+    edv_result = calculate_edv_nsu(data)
+    egdv_result = calculate_egdv(data)
+    housin_result = calculate_housin(data)
+    pensions_result = pensii_devochki(query=data)
+
+    # # Итоговая агрегация всех выплат в единую хронологию
+    pensii_itog_res = _build_pensii_itog_res(
+        sorted_pensions=pensions_result,
+        edk=edk_result,
+        edv=edv_result,
+        egdv=egdv_result,
+        housin=housin_result,
+    )
+
+    pension_itog = calculate_pension_itog(pensii_itog_res)
+
+    return {
+        "pensii_itog_res": pensii_itog_res,
+        "pension_itog": pension_itog,
+    }
+    return {
+        "pmp_periods": base_result["pmp_periods"],
+        "gss_periods": base_result["gss_periods"],
+        "edk": edk_result,
+        "edv_nsu": edv_result,
+        "egdv": egdv_result,
+        "housin": housin_result,
+        "pension_itog": pensions_result,
     }
