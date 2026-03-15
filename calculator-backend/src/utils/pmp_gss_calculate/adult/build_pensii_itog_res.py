@@ -9,10 +9,10 @@ from src.utils.payments.types.paymentType import PeriodAmount
 
 def _build_pensii_itog_res(
     sorted_pensions: dict,
-    edk: dict,
-    edv: dict,
-    egdv: dict,
-    housin: dict,
+    edk: dict = None,
+    edv: dict = None,
+    egdv: dict = None,
+    housin: dict = None,
 ) -> dict:
     """
     Собирает pensii_itog_res из всех потоков выплат для передачи в calculate_pension_itog.
@@ -56,42 +56,45 @@ def _build_pensii_itog_res(
             print(f"Неожиданная структура для pension_id {pension_id}: {type(pension_data)}")
             continue
 
-    
+    if edk != None:
     # ЕДК (edk)
-    for payment_id, periods in edk.items():
-        pensii_itog_res[f"{payment_id}"] = {
-            "periods": {
-                i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
-                for i, p in enumerate(periods)
+        for payment_id, periods in edk.items():
+            pensii_itog_res[f"{payment_id}"] = {
+                "periods": {
+                    i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
+                    for i, p in enumerate(periods)
+                }
             }
-        }
 
     # ЕДВ / НСУ
-    for payment_id, periods in edv.items():
-        pensii_itog_res[f"{payment_id}"] = {
-            "periods": {
-                i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
-                for i, p in enumerate(periods)
+    if edv != None:
+        for payment_id, periods in edv.items():
+            pensii_itog_res[f"{payment_id}"] = {
+                "periods": {
+                    i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
+                    for i, p in enumerate(periods)
+                }
             }
-        }
 
     # ЕГДВ
-    for payment_id, periods in egdv.items():
-        pensii_itog_res[f"{payment_id}"] = {
-            "periods": {
-                i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
-                for i, p in enumerate(periods)
+    if egdv != None:
+        for payment_id, periods in egdv.items():
+            pensii_itog_res[f"{payment_id}"] = {
+                "periods": {
+                    i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
+                    for i, p in enumerate(periods)
+                }
             }
-        }
 
     # ЖКУ (housin)
-    for payment_id, periods in housin.items():
-        pensii_itog_res[f"{payment_id}"] = {
-            "periods": {
-                i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
-                for i, p in enumerate(periods)
+    if housin != None:
+        for payment_id, periods in housin.items():
+            pensii_itog_res[f"{payment_id}"] = {
+                "periods": {
+                    i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
+                    for i, p in enumerate(periods)
+                }
             }
-        }
 
     return pensii_itog_res
 
