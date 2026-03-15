@@ -43,38 +43,25 @@ export const Results = () => {
                                 <p id="resultGssStartDateInfo"><strong>Дата начала ГСС (1 число месяца, следующего за заявлением на ГСС):</strong> <span id="resultGssStartDate"></span></p>
                             </div> */}
 
-                            <div id="calculationErrors" className="info-box error hidden">
-                                <h3>Ошибки в данных</h3>
-                                <div id="errorsList"></div>
-                            </div>
 
-                            {message && (
-                                <div id="calculationWarnings" className="info-box warning">
-                                    <h3>Предупреждения</h3>
-                                    <div id="warningsList">{message}</div>
-                                </div>
-                            )}
-
-                            {tableDataPmpGss && tableDataPmpGss.length > 0 ? (
+                            {true && (
                                 <>
                                     <h3>Сводная таблица периодов ПМП и ГСС</h3>
                                     <div id="consolidatedResults_GssPmp">
                                         <table className="params-table">
                                             <thead>
-                                                <tr className="grid-header">
+                                                <tr className="grid-table-3">
                                                     <th className="highlighting-header">Вид выплаты</th>
-                                                    <th>Вид пенсии</th>
                                                     <th>Дата начала</th>
                                                     <th>Дата конца</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {tableDataPmpGss.map((row, index) => (
-                                                    <tr className="grid-header" key={index}>
+                                                    <tr className="grid-table-3" key={index}>
                                                         <td>
-                                                            {row.paymentType}
+                                                            {row.pmpOrGss}
                                                         </td>
-                                                        <td>{row.pensionType}</td>
                                                         <td>{row.startDate}</td>
                                                         <td>{row.endDate}</td>
                                                     </tr>
@@ -83,11 +70,7 @@ export const Results = () => {
                                         </table>
                                     </div>
                                 </>
-                            ) : !message && (
-                                <div className="info-box warning">
-                                    <p>Нет данных для отображения. Возможно, не все обязательные поля заполнены или <b>выбраны года раньше 2020</b></p>
-                                </div>
-                            )}
+                            ) }
 
                             {tableDataPmpGssRsd && tableDataPmpGssRsd.length > 0 ? (
                                 <>
@@ -95,20 +78,24 @@ export const Results = () => {
                                     <div id="consolidatedResults_Rsd">
                                         <table className="params-table">
                                             <thead>
-                                                <tr className="grid-header">
+                                                <tr className="grid-grid-table-5">
                                                     <th className="highlighting-header">Вид выплаты</th>
                                                     <th>Дата начала</th>
                                                     <th>Дата конца</th>
+                                                    <th>Сумма ПМП / ГСС</th>
+                                                    <th>Сумма ОМО / пенсии</th>
                                                     <th>Сумма рсд ежемесячно руб/мес</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {tableDataPmpGssRsd.map((row, index) => (
-                                                    <tr className="grid-header" key={index}>
-                                                        <td>{row.paymentType}</td>
+                                                    <tr className="grid-grid-table-5" key={index}>
+                                                        <td>{row.pmpOrGss}</td>
                                                         <td>{row.startDate}</td>
                                                         <td>{row.endDate}</td>
-                                                        <td>{row.amount}</td>
+                                                        <td>{row.pmpGssAmount}</td>
+                                                        <td>{row.spAmount}</td>
+                                                        <td>{row.rsdAmount}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>

@@ -486,6 +486,16 @@ tr:nth-child(even) {
   grid-template-columns: 0.5fr 1fr 1fr 1fr;
 }
 
+.grid-table-5 {
+  display: grid;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr;
+}
+.grid-table-3 {
+  max-width: 80%;
+  display: grid;
+  grid-template-columns: 0.5fr 1fr 1fr;
+}
+
 .recalculation-header {
   display: flex;
   justify-content: space-between;

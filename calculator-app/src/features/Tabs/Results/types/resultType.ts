@@ -3,11 +3,12 @@ import { PaymentInterface } from "../../Payments/components/types/paymentType";
 import { OrderType } from "../../../../store/type";
 
 export type RowType = {
-    paymentType: string;
-    pensionType?: string;
-    startDate: string;
-    endDate: string;
-    amount?: number
+    pmpOrGss: string;
+    startDate: DateString;
+    endDate: DateString;
+    spAmount?: Rubles;
+    pmpGssAmount?: Rubles
+    rsdAmount?: Rubles
 };
 
 

@@ -70,10 +70,8 @@ export const useResults = () => {
         if (data.gss_periods) {
             Object.entries(data.gss_periods).forEach(([id, periods]) => {
                 periods.forEach((period: DateRange) => {
-                    const categoriaValue = store.payments[Number(id)].categoria;
                     rowsPmpGss.push({
-                        paymentType: 'ГСС',
-                        pensionType: PENSION_CATEGORIES_CHILDREN[categoriaValue as keyof typeof PENSION_CATEGORIES_CHILDREN].display,
+                        pmpOrGss: 'ГСС',
                         startDate: formatDate(period.DN),
                         endDate: formatDate(period.DK)
                     });
@@ -85,10 +83,8 @@ export const useResults = () => {
         if (data.pmp_periods) {
             Object.entries(data.pmp_periods).forEach(([id, periods]) => {
                 periods.forEach((period: DateRange) => {
-                    const categoriaValue = store.payments[Number(id)].categoria;
                     rowsPmpGss.push({
-                        paymentType: 'ПМП',
-                        pensionType: PENSION_CATEGORIES_CHILDREN[categoriaValue as keyof typeof PENSION_CATEGORIES_CHILDREN].display,
+                        pmpOrGss: 'ПМП',
                         startDate: formatDate(period.DN),
                         endDate: formatDate(period.DK)
                     });
@@ -102,10 +98,13 @@ export const useResults = () => {
             Object.values(data.sorted_pensions).forEach((itemsArray: RsdItem[]) => {
                 itemsArray.forEach((item: RsdItem) => {
                     rowsPmpGssRsd.push({
-                        paymentType: item.pmp_or_gss,
+                        pmpOrGss: item.pmp_or_gss,
                         startDate: formatDate(item.DN),
                         endDate: formatDate(item.DK),
-                        amount: item.amount
+                        spAmount: item.sp_amount,
+                        rsdAmount: item.amount,
+                        pmpGssAmount: item.pmp_gss_amount
+
                     });
                 });
             });
