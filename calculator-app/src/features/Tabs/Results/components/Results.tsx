@@ -44,7 +44,7 @@ export const Results = () => {
                             </div> */}
 
 
-                            {true && (
+                            {tableDataPmpGss && tableDataPmpGss.length > 0 ? (
                                 <>
                                     <h3>Сводная таблица периодов ПМП и ГСС</h3>
                                     <div id="consolidatedResults_GssPmp">
@@ -70,7 +70,11 @@ export const Results = () => {
                                         </table>
                                     </div>
                                 </>
-                            ) }
+                            ) : !message && (
+                                <div className="info-box warning">
+                                    <p>Нет данных для отображения. Возможно, не все обязательные поля заполнены или <b>выбраны года раньше 2018</b></p>
+                                </div>
+                            )}
 
                             {tableDataPmpGssRsd && tableDataPmpGssRsd.length > 0 ? (
                                 <>
