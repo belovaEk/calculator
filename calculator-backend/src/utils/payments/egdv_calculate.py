@@ -61,7 +61,7 @@ def calculate_egdv(
             dn=payment.DN,
             dk=payment.DK,
             amount=payment.amount,
-            categoria=payment.categoria,
+            categoria=payment.categoria_person,
         )
 
     return result_egdv

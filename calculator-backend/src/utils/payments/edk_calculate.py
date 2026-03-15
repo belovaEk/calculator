@@ -48,7 +48,7 @@ def calculate_edk(
     result_edk: Dict[int, List[PeriodAmount]] = {}
 
     edk_payments: List[PaymentInterface] = sorted(
-        (p for p in data.payments if p.type == "custom"),
+        (p for p in data.payments if p.type == "edk"),
         key=lambda p: p.DN,
     )
 
@@ -65,7 +65,7 @@ def calculate_edk(
 if __name__ == "__main__":
     payment = PaymentInterface(
         id=0,
-        type="custom",
+        type="edk",
         categoria="insurance",
         DN=date(2024, 7, 1),
         DK=date(2025, 7, 1),
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     )
     payment1 = PaymentInterface(
         id=1,
-        type="custom",
+        type="edk",
         categoria="insurance",
         DN=date(2025, 7, 1),
         DK=date(2026, 3, 1),

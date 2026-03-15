@@ -183,7 +183,7 @@ def get_period_pensii_other_categories(payment: PaymentInterface) -> dict:
     period_pensii = {}
 
     # Ветка для vedomostvennaya / other
-    if payment.categoria in ("vedomstvennaya", "other"):
+    if payment.categoria in ("departmental", "other"):
         DN = payment.DN if payment.DN is not None else payment.periods[0]
         DK = payment.DK if payment.DK is not None else payment.periods[1]
 
@@ -866,7 +866,7 @@ def pensii_devochki(query: JsonQuerySchema):
                     'periods': a2
                 }
 
-            elif i.categoria == "other" or i.categoria == "monthPay" or i.categoria == "vedomstvennaya":
+            elif i.categoria == "other" or i.categoria == "monthPay" or i.categoria == "departmental":
                 result[pensiya_key] = {
                     'type': i.categoria,  # Добавляем тип
                     'periods': get_period_pensii_other_categories(i)

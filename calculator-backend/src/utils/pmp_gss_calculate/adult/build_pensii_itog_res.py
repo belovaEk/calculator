@@ -50,7 +50,7 @@ def _build_pensii_itog_res(
             continue
 
     
-    # ЕДК (custom)
+    # ЕДК (edk)
     for payment_id, periods in edk.items():
         pensii_itog_res[f"edk_{payment_id}"] = {
             "periods": {

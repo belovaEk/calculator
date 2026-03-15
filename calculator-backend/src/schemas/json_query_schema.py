@@ -16,12 +16,11 @@ class OrderType(BaseModel):
     id: int
     date: date
 
-PaymentTypeRaw = Literal["pension", "edv", "egdv", "housin", "custom"]
+PaymentTypeRaw = Literal["pension", "edv", "egdv", "housin", "edk"]
 PensionCategoryRaw = Literal["insurance_SPK", "social_SPK", "social_disability", "departmental"]
 
 PensionCategoryAdultRaw = Literal["insurance", "social", "departmental", "gosudarstvennaya", "other", "monthPay"]
 PersonCategoryRaw = Literal['reabilitirovan', 'truzhennik', 'war_child','labor_veteran','labor_veteran_55_60']
-
 
 
 
@@ -33,7 +32,7 @@ class RecalculationData(BaseModel):
 class PaymentInterface(BaseModel):
     id: int
     type: PaymentTypeRaw
-    categoria: PensionCategoryRaw | PensionCategoryAdultRaw | PersonCategoryRaw
+    categoria: PensionCategoryRaw | PensionCategoryAdultRaw
     DN: date 
     DK: date 
     amount: float  
