@@ -813,6 +813,10 @@ def pensii_devochki(query: JsonQuerySchema):
         {
             0: {
                 'type': 'insurance', 
+                'is_payment_transferred': bool,
+                'is_get_PSD_FSD_last_mounth_payment_trasferred': bool,
+                'is_get_PSD_FSD_last_year_payment_trasferred': bool,
+                'is_Not_get_PSD_FSD_now_payment_trasferred': bool,
                 'periods': {
                     0: {'DN': datetime.date(2022, 2, 1), 'DK': datetime.date(2023, 1, 1), 'amount': 4000.0}, 
                     1: {'DN': datetime.date(2023, 1, 1), 'DK': datetime.date(2024, 1, 1), 'amount': 4611.4}, 
@@ -840,11 +844,19 @@ def pensii_devochki(query: JsonQuerySchema):
                 if i.is_recalculation:
                     result[pensiya_key] = {
                         'type': i.categoria,  # Добавляем тип
+                        'is_payment_transferred': i.is_payment_transferred,
+                        'is_get_PSD_FSD_last_mounth_payment_trasferred': i.is_get_PSD_FSD_last_mounth_payment_trasferred,
+                        'is_get_PSD_FSD_last_year_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
+                        'is_Not_get_PSD_FSD_now_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
                         'periods': get_pensii_yes_recalculation(pensii_in_Moscow, query)
                     }
                 else:
                     result[pensiya_key] = {
                         'type': i.categoria,  # Добавляем тип
+                        'is_payment_transferred': i.is_payment_transferred,
+                        'is_get_PSD_FSD_last_mounth_payment_trasferred': i.is_get_PSD_FSD_last_mounth_payment_trasferred,
+                        'is_get_PSD_FSD_last_year_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
+                        'is_Not_get_PSD_FSD_now_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
                         'periods': get_pensii_no_recalculation(pensii_in_Moscow, query)
                     }
 
@@ -854,6 +866,10 @@ def pensii_devochki(query: JsonQuerySchema):
                     result_fix_indexation = fix_insurance_indexation(result_fix)
                     result[pensiya_key] = {
                         'type': i.categoria,  # Добавляем тип
+                        'is_payment_transferred': i.is_payment_transferred,
+                        'is_get_PSD_FSD_last_mounth_payment_trasferred': i.is_get_PSD_FSD_last_mounth_payment_trasferred,
+                        'is_get_PSD_FSD_last_year_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
+                        'is_Not_get_PSD_FSD_now_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
                         'periods': fixed_payment_and_insurance_pension(result_fix.periods_pereraschet,
                                                                        result_fix_indexation)
                     }
@@ -863,12 +879,20 @@ def pensii_devochki(query: JsonQuerySchema):
                 a2 = social_or_gosudarstvennaya_indexation(a1)
                 result[pensiya_key] = {
                     'type': i.categoria,  # Добавляем тип
+                    'is_payment_transferred': i.is_payment_transferred,
+                    'is_get_PSD_FSD_last_mounth_payment_trasferred': i.is_get_PSD_FSD_last_mounth_payment_trasferred,
+                    'is_get_PSD_FSD_last_year_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
+                    'is_Not_get_PSD_FSD_now_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
                     'periods': a2
                 }
 
             elif i.categoria == "other" or i.categoria == "monthPay" or i.categoria == "departmental":
                 result[pensiya_key] = {
                     'type': i.categoria,  # Добавляем тип
+                    'is_payment_transferred': i.is_payment_transferred,
+                    'is_get_PSD_FSD_last_mounth_payment_trasferred': i.is_get_PSD_FSD_last_mounth_payment_trasferred,
+                    'is_get_PSD_FSD_last_year_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
+                    'is_Not_get_PSD_FSD_now_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
                     'periods': get_period_pensii_other_categories(i)
                 }
 

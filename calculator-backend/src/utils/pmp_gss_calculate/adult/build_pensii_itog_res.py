@@ -34,7 +34,7 @@ def _build_pensii_itog_res(
         # Проверяем, есть ли ключ 'periods' и это словарь
         if isinstance(pension_data, dict) and 'periods' in pension_data:
             periods_dict = pension_data['periods']
-            pensii_itog_res[f"pmp_gss_{pension_id}"] = {
+            pensii_itog_res[f"{pension_id}"] = {
                 "periods": {
                     i: {
                         "date_start": period['DN'], 
@@ -42,8 +42,15 @@ def _build_pensii_itog_res(
                         "summa": period['amount']
                     }
                     for i, period in periods_dict.items()
+                },
+                "transferred": {
+                    "is_payment_transferred": pension_data.get('is_payment_transferred'),
+                    "is_get_PSD_FSD_last_mounth_payment_trasferred": pension_data.get('is_get_PSD_FSD_last_mounth_payment_trasferred'),
+                    "is_get_PSD_FSD_last_year_payment_trasferred": pension_data.get('is_get_PSD_FSD_last_year_payment_trasferred'),
+                    "is_Not_get_PSD_FSD_now_payment_trasferred": pension_data.get('is_Not_get_PSD_FSD_now_payment_trasferred')
                 }
             }
+
         else:
             # Если структура другая - пропускаем или обрабатываем по-старому
             print(f"Неожиданная структура для pension_id {pension_id}: {type(pension_data)}")
@@ -52,7 +59,7 @@ def _build_pensii_itog_res(
     
     # ЕДК (edk)
     for payment_id, periods in edk.items():
-        pensii_itog_res[f"edk_{payment_id}"] = {
+        pensii_itog_res[f"{payment_id}"] = {
             "periods": {
                 i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
                 for i, p in enumerate(periods)
@@ -61,7 +68,7 @@ def _build_pensii_itog_res(
 
     # ЕДВ / НСУ
     for payment_id, periods in edv.items():
-        pensii_itog_res[f"edv_{payment_id}"] = {
+        pensii_itog_res[f"{payment_id}"] = {
             "periods": {
                 i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
                 for i, p in enumerate(periods)
@@ -70,7 +77,7 @@ def _build_pensii_itog_res(
 
     # ЕГДВ
     for payment_id, periods in egdv.items():
-        pensii_itog_res[f"egdv_{payment_id}"] = {
+        pensii_itog_res[f"{payment_id}"] = {
             "periods": {
                 i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
                 for i, p in enumerate(periods)
@@ -79,7 +86,7 @@ def _build_pensii_itog_res(
 
     # ЖКУ (housin)
     for payment_id, periods in housin.items():
-        pensii_itog_res[f"housin_{payment_id}"] = {
+        pensii_itog_res[f"{payment_id}"] = {
             "periods": {
                 i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
                 for i, p in enumerate(periods)
