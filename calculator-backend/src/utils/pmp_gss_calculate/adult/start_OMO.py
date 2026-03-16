@@ -1,10 +1,7 @@
-from src.schemas.json_query_schema import (
-    JsonQuerySchema,PaymentInterface,PaymentTypeRaw,RecalculationData
-)
+from src.schemas.json_query_schema import JsonQuerySchema,PaymentInterface
 from src.constants.payment_const import (
-    INSURANCE_PENSION_SCORE, INSURANCE_PENSION_FIX_AMOUNT, SOCIAL_PENSION_INDEX, INSURANCE_PENSION_INDEX
+    INSURANCE_PENSION_SCORE, SOCIAL_PENSION_INDEX, INSURANCE_PENSION_INDEX
 )
-
 from datetime import date, timedelta
 
 #ищет пенсии
@@ -44,8 +41,8 @@ def get_pensions_in_Moscow(penssii: dict, query: JsonQuerySchema):
 
 #счётчик дат перерасчёта дат социальной или государственной пенсии
 def social_or_gosudarstvennaya_pereraschet(pension: PaymentInterface):
-    DN = pension.DN if pension.DN is not None else pension.periods[0]
-    DK = pension.DK if pension.DK is not None else pension.periods[1]
+    DN = pension.DN
+    DK = pension.DK
 
     current_amount = pension.amount
     current_start = DN
@@ -59,8 +56,8 @@ def social_or_gosudarstvennaya_pereraschet(pension: PaymentInterface):
             "DK": DK,
             "amount": current_amount
         }
-        pension.periods_pereraschet = periods_pereraschet
-        return pension
+        # pension.periods_pereraschet = periods_pereraschet
+        return periods_pereraschet
 
     recalculation_sorted = sorted(pension.recalculation, key=lambda x: x.date)
 
@@ -88,14 +85,15 @@ def social_or_gosudarstvennaya_pereraschet(pension: PaymentInterface):
             "amount": current_amount
         }
 
-    pension.periods_pereraschet = periods_pereraschet
-    return pension
+    # pension.periods_pereraschet = periods_pereraschet
+    return periods_pereraschet
 
 #индексация по периодам социальной или государственной пенсии
 def social_or_gosudarstvennaya_indexation(pension: PaymentInterface):
     periods_indexation = {}
     flag = 0
-    for index, period in pension.periods_pereraschet.items():
+    periods_pereraschet = social_or_gosudarstvennaya_pereraschet(pension)
+    for index, period in periods_pereraschet.items():
         dn = period["DN"]
         dk = period["DK"]
         amount = period["amount"]
@@ -111,7 +109,6 @@ def social_or_gosudarstvennaya_indexation(pension: PaymentInterface):
                     if pension.is_get_PSD_FSD_last_mounth_payment_trasferred and pension.is_get_PSD_FSD_last_year_payment_trasferred:
                         #проверяем прекращена ли РСД
                         if not pension.is_Not_get_PSD_FSD_now_payment_trasferred:
-                            pension.RSD = False
                             periods_indexation[flag] = {
                                 "DN": None,
                                 "DK": None,
@@ -175,7 +172,7 @@ def social_or_gosudarstvennaya_indexation(pension: PaymentInterface):
             }
             flag += 1
 
-    pension.period_pensii = periods_indexation
+    # pension.period_pensii = periods_indexation
     return periods_indexation
 
 #ветка ведомственная или другая или месячная выплата
@@ -183,7 +180,7 @@ def get_period_pensii_other_categories(payment: PaymentInterface) -> dict:
     period_pensii = {}
 
     # Ветка для vedomostvennaya / other
-    if payment.categoria in ("departmental", "other"):
+    if payment.categoria in ("vedomstvennaya", "other"):
         DN = payment.DN if payment.DN is not None else payment.periods[0]
         DK = payment.DK if payment.DK is not None else payment.periods[1]
 
@@ -250,8 +247,8 @@ def fix_insurance_recalculation(pension: PaymentInterface):
 
     if pension.is_fix_amount:
         if pension.is_recalculation_fix_amount:
-            DN = pension.DN if pension.DN is not None else pension.periods[0]
-            DK = pension.DK if pension.DK is not None else pension.periods[1]
+            DN = pension.DN
+            DK = pension.DK
 
             final_DK = DK
             current_start = DN
@@ -290,25 +287,26 @@ def fix_insurance_recalculation(pension: PaymentInterface):
                 "amount": pension.amount_fix
             }
 
-        pension.periods_pereraschet = periods_pereraschet
-        return pension
+        # pension.periods_pereraschet = periods_pereraschet
+        return periods_pereraschet
 
     else:
-        return pension
+        return periods_pereraschet
 
 #индексация по периодам страховой с фиксированной выплатой
 def fix_insurance_indexation(pension: PaymentInterface):
     items = list(INSURANCE_PENSION_INDEX.items())
     j = 0
     periods_indexation = {}
+    periods_pereraschet = fix_insurance_recalculation(pension)
     date_indexation = None
 
-    if not pension.periods_pereraschet or 0 not in pension.periods_pereraschet:
-        pension.result_fix = {}
-        return pension.periods_pereraschet
+    if not periods_pereraschet or 0 not in periods_pereraschet:
+        result_fix = {}
+        return result_fix
 
     # 1. спецобработка только нулевого периода
-    dn0 = pension.periods_pereraschet[0]["DN"]
+    dn0 = periods_pereraschet[0]["DN"]
 
     if dn0 != date(dn0.year, 12, 31):
         if pension.is_payment_transferred:
@@ -317,13 +315,12 @@ def fix_insurance_indexation(pension: PaymentInterface):
                 and pension.is_get_PSD_FSD_last_year_payment_trasferred
             ):
                 if not pension.is_Not_get_PSD_FSD_now_payment_trasferred:
-                    pension.RSD = False
                     periods_indexation[j] = {
                         "DN": None,
                         "DK": None,
                         "amount": None
                     }
-                    pension.result_fix = periods_indexation
+                    # pension.result_fix = periods_indexation
                     return periods_indexation
                 else:
                     found = False
@@ -337,7 +334,7 @@ def fix_insurance_indexation(pension: PaymentInterface):
                         if d1 <= dn0 < d2:
                             d_last, value_last = items[i - 1]
                             fix_amount = (
-                                pension.periods_pereraschet[0]["amount"]
+                                periods_pereraschet[0]["amount"]
                                 / INSURANCE_PENSION_INDEX[d_last]
                             )
                             date_indexation = d_last
@@ -356,7 +353,7 @@ def fix_insurance_indexation(pension: PaymentInterface):
                     j += 1
 
     # 2. дальше идем по всем периодам перерасчета
-    for period in pension.periods_pereraschet.values():
+    for period in periods_pereraschet.values():
         dn = period["DN"]
         dk = period["DK"]
         summa = period["amount"]
@@ -398,7 +395,7 @@ def fix_insurance_indexation(pension: PaymentInterface):
         }
         j += 1
 
-    pension.result_fix = periods_indexation
+    # pension.result_fix = periods_indexation
     return periods_indexation
 
 #ветка страховая с перерасчётом
@@ -806,6 +803,9 @@ def fixed_payment_and_insurance_pension(
     result_pensii_sorted = {i: period for i, period in enumerate(sorted_periods)}
 
     return result_pensii_sorted
+
+
+
 
 def pensii_devochki(query: JsonQuerySchema):
         '''
