@@ -16,10 +16,10 @@ class OrderType(BaseModel):
     id: int
     date: date
 
-PaymentTypeRaw = Literal["pension", "edv", "egdv", "housin", "edk"]
+PaymentTypeRaw = Literal["pension", "edv", "egdv", "housing", "edk"]
 PensionCategoryRaw = Literal["insurance_SPK", "social_SPK", "social_disability", "departmental"]
 
-PensionCategoryAdultRaw = Literal["insurance", "social", "departmental", "gosudarstvennaya", "other", "monthPay"]
+PensionCategoryAdultRaw = Literal["insurance", "social", "departmental", "gosudarstvennaya", "other", "monthPay", ""]
 PersonCategoryRaw = Literal['reabilitirovan', 'truzhennik', 'war_child','labor_veteran','labor_veteran_55_60']
 
 
@@ -32,7 +32,7 @@ class RecalculationData(BaseModel):
 class PaymentInterface(BaseModel):
     id: int
     type: PaymentTypeRaw
-    categoria: PensionCategoryRaw | PensionCategoryAdultRaw
+    categoria: PensionCategoryRaw | PensionCategoryAdultRaw 
     DN: date 
     DK: date 
     amount: float  
@@ -63,13 +63,13 @@ class JsonQuerySchema(BaseModel):
     date_of_birth: date = None
     document_on_full_time_OOP_education: Optional[bool] = None
     is_there_a_registration_in_moscow: bool
-    is_there_a_registration_in_moscow_of_the_breadwinner: bool
-    is_there_a_registration_in_moscow_of_the_legal_representative: bool
+    is_there_a_registration_in_moscow_of_the_breadwinner: Optional[bool] = None
+    is_there_a_registration_in_moscow_of_the_legal_representative: Optional[bool] = None
     periods_reg_moscow: Optional[List[PeriodType]] = None
     periods_reg_representative_moscow: Optional[List[PeriodType]] = None
     periods_reg_breadwinner_moscow: Optional[List[PeriodType]] = None
     date_of_death_of_the_breadwinner: Optional[date] = None
-    there_is_a_breadwinner: bool
+    there_is_a_breadwinner: Optional[bool] = None
 
     payments: Optional[List[PaymentInterface]] = None
     

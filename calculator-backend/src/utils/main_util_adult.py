@@ -58,13 +58,7 @@ async def main_util_adult(data: JsonQuerySchema) -> dict:
     # Если 10 лет есть — считаем периоды ПМП и ГСС через prepare_pmp_gss_reg_result_adult
     dr10 = registration_result["date_of_10_years"]
 
-    first_moscow_payment: PaymentInterface | None = await get_first_moscow_pension(
-        data.payments
-    )
-    if not first_moscow_payment:
-        return {"message": "Ни одна пенсия не назначена в Москве"}
-
-    spv_init_date = first_moscow_payment.DN
+    spv_init_date = data.change_last_date
 
     return await prepare_pmp_gss_adult_result(
         data=data,

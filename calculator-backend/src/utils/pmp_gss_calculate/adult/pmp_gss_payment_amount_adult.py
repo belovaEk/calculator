@@ -18,9 +18,9 @@ async def pmp_gss_payment_amount_adult(
     data: JsonQuerySchema
 ) -> Dict[str, Dict[int, List[PeriodAmountWithSP]]]:
 
-    try:
+    if data.periods_suspension:
         suspension_periods = data.periods_suspension
-    except:
+    else:
         suspension_periods = []
 
     result_pmp: Dict[int, List[PeriodAmountWithSP]] = {}

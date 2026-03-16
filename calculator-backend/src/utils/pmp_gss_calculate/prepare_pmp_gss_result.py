@@ -117,6 +117,7 @@ async def prepare_pmp_gss_NoReg_result(
     pmp_suspension_result = await pmp_suspension(
         periods_suspension=periods_suspension,
         pmp_periods=pmp_init_result["pmp_periods"],
+        data=data
     )
 
     pmp_pension_result = await pmp_pension(

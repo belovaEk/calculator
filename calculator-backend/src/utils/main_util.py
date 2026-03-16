@@ -27,10 +27,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
     # Инициализация основных переменных
     today = date.today()
     first_moscow_payment = await get_first_moscow_pension(data.payments) # Первая московская пенсия
-    try: 
-        spv_init_date = first_moscow_payment.DN  # Дата первой пенсии в Москве
-    except: 
-        return {"message: ни одна пенсия не назначена в Москве"}
+    
     sum_reg_10_date = None  # Дата наступления 10 лет суммарной регистрации в Москве
     pmp_periods: List[PeriodType] = []  # Периоды прожиточного минимума пенсионера
     gss_periods: List[PeriodType] = []  # Периоды городского социального стандарта
@@ -43,6 +40,11 @@ async def main_util(data: JsonQuerySchema) -> dict:
     if await is_adult(today=today, date_of_birth=data.date_of_birth):
         return await main_util_adult(data=data)
 
+    try: 
+        spv_init_date = first_moscow_payment.DN  # Дата первой пенсии в Москве
+    except: 
+        return {"message: ни одна пенсия не назначена в Москве"}
+    
     # Проверка, что с даты первичного назначения СПВ прошло больше 1 месяца
     spv_delta = relativedelta(today, spv_init_date)
     if spv_delta.years == 0 and spv_delta.months == 0:

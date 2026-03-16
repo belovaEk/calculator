@@ -1,10 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { getResults } from "../services/getResults";
 import { useGlobalStore } from "../../../../store";
-import { useState, useEffect, useCallback } from "react";
-import { DatePeriod, DateRange, DateString } from "../../../../shared";
+import { useState, useCallback } from "react";
+import { DateRange, DateString } from "../../../../shared";
 import { RowType, ResultsRequestData, PromiseI, RsdItem } from "../types/resultType";
-import { PENSION_CATEGORIES_CHILDREN } from "../../Payments/constants/children/paymentCategories";
 
 
 
@@ -25,20 +24,22 @@ export const useResults = () => {
             // "document_on_full_time_OOP_education": true,
             // "type_of_social_payment": "string",
             "is_there_a_registration_in_moscow": store.is_there_a_registration_in_moscow ?? false,
-            "is_there_a_registration_in_moscow_of_the_breadwinner": store.is_there_a_registration_in_moscow_of_the_breadwinner ?? false,
-            "is_there_a_registration_in_moscow_of_the_legal_representative": store.is_there_a_registration_in_moscow_of_the_legal_representative ?? false,
+            "is_there_a_registration_in_moscow_of_the_breadwinner": store.is_adult ? null : store.is_there_a_registration_in_moscow_of_the_breadwinner ?? false,
+            "is_there_a_registration_in_moscow_of_the_legal_representative": store.is_adult ? null : store.is_there_a_registration_in_moscow_of_the_legal_representative ?? false,
             "periods_reg_moscow": store.periods_reg_moscow ?? [],
-            "periods_reg_representative_moscow": store.periods_reg_representative_moscow ?? [],
-            "periods_reg_breadwinner_moscow": store.periods_reg_breadwinner_moscow ?? [],
-            "date_of_death_of_the_breadwinner": store.date_of_death_of_the_breadwinner,
-            "there_is_a_breadwinner": store.date_of_death_of_the_breadwinner ? true : false,
+
+            "periods_reg_representative_moscow": store.is_adult ? null : (store.is_there_a_registration_in_moscow_of_the_legal_representative ? store.periods_reg_representative_moscow : null) ,
+            "periods_reg_breadwinner_moscow": store.is_adult ? null : (store.is_there_a_registration_in_moscow_of_the_breadwinner ? store.periods_reg_breadwinner_moscow : null),
+
+            "date_of_death_of_the_breadwinner": store.is_adult ? (store.is_breadwinner ? store.date_of_death_of_the_breadwinner : null) : null,
+            "there_is_a_breadwinner": store.is_adult ? null : store.is_breadwinner,
             "payments": store.payments ?? [],
-            "periods_suspension": store.periods_suspension ?? [],
-            "periods_inpatient": store.periods_inpatient ?? [],
-            "periods_employment": store.periods_employment ?? [],
-            "is_order": store.is_order ?? false,
-            "orders_date": store.orders_date ?? [],
-            "change_last_date": store.change_last_date
+            "periods_suspension": store.periods_suspension ?? null,
+            "periods_inpatient": store.periods_inpatient ?? null,
+            "periods_employment": !(store.is_adult) ? null : store.periods_employment ?? null,
+            "is_order": !(store.is_adult) ? null : store.is_order ?? false,
+            "orders_date": !(store.is_adult) ? null : store.orders_date ?? null,
+            "change_last_date": !(store.is_adult) ? null : store.change_last_date
         };
 
         // Удаляем все поля с undefined значениями

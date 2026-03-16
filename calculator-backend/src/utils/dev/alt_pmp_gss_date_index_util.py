@@ -57,6 +57,9 @@ async def period_index_calculate (periods: GssPmpPensionType, period_standards: 
     
     # Сортируем стандарты по дате
     sorted_standards = sorted(period_standards.items())
+
+    if len(periods) == 0:
+        return result_periods
     
     for pension_idx, pension_periods in periods.items():
         result_periods[pension_idx] = []

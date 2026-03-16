@@ -16,10 +16,10 @@ async def alt_pmp_gss_payment_amount(
     data: JsonQuerySchema,
 ) -> Dict[str, Dict[int, List[PeriodAmountWithSP]]]:
 
-    try:
-        suspension_periods = data.periods_suspension
-    except:
+    if not (data.periods_suspension):
         suspension_periods = []
+    else:
+        suspension_periods = data.periods_suspension    
 
     sp_standart: PaymentsByPeriods = await calculate_sp_standart(data)
 

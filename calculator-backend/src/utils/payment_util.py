@@ -16,4 +16,6 @@ async def get_first_moscow_pension(payments: List[PaymentInterface]) -> Optional
     for payment in payments:
         if payment.is_Moscow and payment.type == "pension":
             return payment
+        elif payment.type in ["edv", "egdv", "housing", "edk"]:
+            return payment
     return None

@@ -3,42 +3,42 @@ from typing import List
 from src.schemas.json_query_schema import PeriodType
 
 
-def merge_periods(periods: List[PeriodType]) -> List[PeriodType]:
-    """
-    Объединяет пересекающиеся и соприкасающиеся периоды.
+# def merge_periods(periods: List[PeriodType]) -> List[PeriodType]:
+#     """
+#     Объединяет пересекающиеся и соприкасающиеся периоды.
 
-    Функция сортирует периоды по дате начала и последовательно объединяет их,
-    если текущий период пересекается или соприкасается со следующим.
+#     Функция сортирует периоды по дате начала и последовательно объединяет их,
+#     если текущий период пересекается или соприкасается со следующим.
 
-    Args:
-        periods: Список периодов для объединения
+#     Args:
+#         periods: Список периодов для объединения
 
-    Returns:
-        List[PeriodType]: Новый список с объединенными периодами
-    """
-    if not periods:
-        return []
+#     Returns:
+#         List[PeriodType]: Новый список с объединенными периодами
+#     """
+#     if not periods:
+#         return []
 
-    # Сортируем периоды по дате начала
-    sorted_periods = sorted(periods, key=lambda x: x.DN)
+#     # Сортируем периоды по дате начала
+#     sorted_periods = sorted(periods, key=lambda x: x.DN)
 
-    merged = []
-    current = sorted_periods[0]
+#     merged = []
+#     current = sorted_periods[0]
 
-    for next_period in sorted_periods[1:]:
-        # Проверяем пересечение или соприкосновение
-        if current.DK >= next_period.DN:
-            # Объединяем: берем максимальную дату окончания
-            current = PeriodType(DN=current.DN, DK=max(current.DK, next_period.DK))
-        else:
-            # Нет пересечения - добавляем текущий и переходим к следующему
-            merged.append(current)
-            current = next_period
+#     for next_period in sorted_periods[1:]:
+#         # Проверяем пересечение или соприкосновение
+#         if current.DK >= next_period.DN:
+#             # Объединяем: берем максимальную дату окончания
+#             current = PeriodType(DN=current.DN, DK=max(current.DK, next_period.DK))
+#         else:
+#             # Нет пересечения - добавляем текущий и переходим к следующему
+#             merged.append(current)
+#             current = next_period
 
-    # Добавляем последний период
-    merged.append(current)
+#     # Добавляем последний период
+#     merged.append(current)
 
-    return merged
+#     return merged
 
 
 async def pmp_gss_inpatient(

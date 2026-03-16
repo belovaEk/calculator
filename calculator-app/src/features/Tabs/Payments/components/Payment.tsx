@@ -332,7 +332,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                         {paymentData.recalculation_fix_amount?.map((recal, idx) => (
                                             <>
                                                 <RecalculationForm
-                                                    key={`fix-recalc-${idx}-${recal.date || 'new'}`}
+                                                    key={`fix-recalc-${idx}`}
                                                     paymentId={id}
                                                     recalIndex={idx}
                                                     index={idx + 1}
@@ -401,6 +401,7 @@ const RecalculationForm = ({
                 <div className="form-group">
                     <label>Дата перерасчета *</label>
                     <input
+                        key={`key-date-${paymentId*Math.random()}}`}
                         type="date"
                         className="recalculation-date"
                         required
@@ -411,6 +412,7 @@ const RecalculationForm = ({
                 <div className="form-group">
                     <label>Сумма *</label>
                     <input
+                        key={`key-summa-${paymentId*Math.random()}}`}
                         type="number"
                         className="recalculation-amount"
                         min="0"

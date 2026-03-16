@@ -113,7 +113,7 @@ async def prepare_pmp_gss_adult_result(
     else:
         suspensions_w_emploument_periods = filtered_employment_periods
 
-    pmp_gss_suspension_result = await pmp_gss_suspension(
+        base_result = await pmp_gss_suspension(
         periods_suspension=suspensions_w_emploument_periods,
         pmp_periods=base_result["pmp_periods"],
         gss_periods=base_result["gss_periods"],
@@ -132,16 +132,19 @@ async def prepare_pmp_gss_adult_result(
         )
     else:
         base_result = await transformation_gss_to_pmp(
-            pmp_periods=pmp_gss_suspension_result["pmp_periods"],
-            gss_periods=pmp_gss_suspension_result["gss_periods"],
+            pmp_periods=base_result["pmp_periods"],
+            gss_periods=base_result["gss_periods"],
         )
 
+
+        
+    
+
     pmp_gss_index_result = await pmp_gss_index(
-        gss_periods= base_result["gss_periods"],
-        pmp_periods= base_result["pmp_periods"],
+        gss_periods= {0: base_result["gss_periods"]},
+        pmp_periods= {0: base_result["pmp_periods"]},
         reg=True
     )
-
 
     # Расчёт дополнительных федеральных/региональных выплат
     edk_result = calculate_edk(data)
@@ -156,7 +159,7 @@ async def prepare_pmp_gss_adult_result(
         edk=edk_result,
         edv=edv_result,
         egdv=egdv_result,
-        housin=housin_result,
+        housing=housin_result,
     )
     # payments_for_pmp - для pmp_periods
 
@@ -189,6 +192,7 @@ async def prepare_pmp_gss_adult_result(
 
     
     return {
+        'devochki': pensions_result,
         "pmp_periods": pmp_gss_index_result["pmp_periods"],
         "gss_periods": pmp_gss_index_result["gss_periods"],
         "sorted_pensions": pmp_gss_sorted_result,

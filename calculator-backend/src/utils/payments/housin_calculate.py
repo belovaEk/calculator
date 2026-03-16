@@ -65,7 +65,7 @@ def calculate_housin(
     result_housin: Dict[int, List[PeriodAmount]] = {}
 
     housin_payments: List[PaymentInterface] = sorted(
-        (p for p in data.payments if p.type == "housin"),
+        (p for p in data.payments if p.type == "housing"),
         key=lambda p: p.DN,
     )
 
@@ -81,7 +81,7 @@ def calculate_housin(
 if __name__ == "__main__":
     payment = PaymentInterface(
         id=0,
-        type="housin",
+        type="housing",
         categoria="insurance",
         DN=date(2024, 7, 1),
         DK=date(2025, 7, 1),
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     )
     payment1 = PaymentInterface(
         id=1,
-        type="housin",
+        type="housing",
         categoria="insurance",
         DN=date(2025, 9, 1),
         DK=date(2026, 3, 1),

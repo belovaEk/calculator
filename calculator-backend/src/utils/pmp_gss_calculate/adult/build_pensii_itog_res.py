@@ -12,7 +12,7 @@ def _build_pensii_itog_res(
     edk: dict = None,
     edv: dict = None,
     egdv: dict = None,
-    housin: dict = None,
+    housing: dict = None,
 ) -> dict:
     """
     Собирает pensii_itog_res из всех потоков выплат для передачи в calculate_pension_itog.
@@ -86,9 +86,9 @@ def _build_pensii_itog_res(
                 }
             }
 
-    # ЖКУ (housin)
-    if housin != None:
-        for payment_id, periods in housin.items():
+    # ЖКУ (housing)
+    if housing != None:
+        for payment_id, periods in housing.items():
             pensii_itog_res[f"{payment_id}"] = {
                 "periods": {
                     i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
@@ -154,7 +154,7 @@ if __name__ == "__main__":
         edk=edk_result,
         edv=edv_result,
         egdv=egdv_result,
-        housin=housin_result,
+        housing=housin_result,
     )
 
     print(pensii_itog_res)

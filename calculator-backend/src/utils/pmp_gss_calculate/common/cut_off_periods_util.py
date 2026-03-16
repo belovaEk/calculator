@@ -2,7 +2,6 @@ from datetime import date
 from typing import List
 from src.utils.pmp_gss_calculate.type import GssPmpPensionType
 from src.schemas.json_query_schema import OrderType, PeriodWithIdType, PeriodType
-from src.utils.pmp_gss_calculate.common.merge_periods_util import merge_periods
 
 
 async def cut_off_periods_before_change_date(
@@ -84,8 +83,8 @@ async def cut_of_gss_no_have_order(gss_period: List[PeriodWithIdType], pmp_perio
     Returns:
         Возвращает словарь:
         {
-        "pmp_periods" (GssPmpPensionType),
-        "gss_periods" (GssPmpPensionType)
+        "pmp_periods" (List[PeriodType]),
+        "gss_periods" (List[PeriodType])
         }
           
     """   
@@ -95,8 +94,8 @@ async def cut_of_gss_no_have_order(gss_period: List[PeriodWithIdType], pmp_perio
     new_gss_periods: GssPmpPensionType = {}
     new_pmp_periods: GssPmpPensionType = {}
 
-    new_gss_periods[0] = [] # загулшка для типа индекс пенсии
-    new_pmp_periods[0] = pmp_periods 
+    new_gss_periods= []
+    new_pmp_periods = pmp_periods 
 
     for i in range(len(orders_date)):
         current_order = orders_date[i]
@@ -106,21 +105,21 @@ async def cut_of_gss_no_have_order(gss_period: List[PeriodWithIdType], pmp_perio
             current_period = gss_period[j]
             
             if j == 0 and len(pmp_periods) > 0:
-                if not(pmp_periods[0].DK < current_period.DK):
-                    new_gss_periods[0].append(PeriodType(DN=current_period.DN, DK=current_period.DK))
+                if not(pmp_periods.DK < current_period.DK):
+                    new_gss_periods.append(PeriodType(DN=current_period.DN, DK=current_period.DK))
                     break
 
             if current_period.DN <= date_order < current_period.DK:
-                new_gss_periods[0].append(PeriodType(DN=date_order, DK=current_period.DK))
+                new_gss_periods.append(PeriodType(DN=date_order, DK=current_period.DK))
 
                 if current_period.DN != date_order:
-                    new_pmp_periods[0].append(PeriodType(DN=current_period.DN, DK=date_order))
+                    new_pmp_periods.append(PeriodType(DN=current_period.DN, DK=date_order))
 
             elif date_order < current_period.DN:
-                new_gss_periods[0].append(PeriodType(DN=current_period.DN, DK=current_period.DK))
+                new_gss_periods.append(PeriodType(DN=current_period.DN, DK=current_period.DK))
             
             else:
-                new_pmp_periods[0].append(PeriodType(DN=current_period.DN, DK=current_period.DK))
+                new_pmp_periods.append(PeriodType(DN=current_period.DN, DK=current_period.DK))
 
     return {
         "pmp_periods": new_pmp_periods,
