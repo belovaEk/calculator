@@ -67,6 +67,10 @@ export const useResults = () => {
             return `${day}.${month}.${year}`;
         };
 
+        if (data.message){
+            setMessage(data.message)
+        }
+            
         // Обрабатываем ГСС
         if (data.gss_periods) {
             Object.entries(data.gss_periods).forEach(([id, periods]) => {

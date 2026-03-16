@@ -29,6 +29,7 @@ async def main_util_adult(data: JsonQuerySchema) -> dict:
 
     # Блок-схема: "текущая дата - дата последнего изменения вида пенсии > 1 месяца"
     spv_delta = relativedelta(today, data.change_last_date)
+    spv_init_date = data.change_last_date
 
     # Ветка "нет": считаем только будущие периоды
     if spv_delta.years == 0 and spv_delta.months == 0:
@@ -38,7 +39,7 @@ async def main_util_adult(data: JsonQuerySchema) -> dict:
 
     # Ветка "да": проверяем предыдущий период регистрации в Москве
     if not data.is_there_a_registration_in_moscow or not data.periods_reg_moscow:
-        return {"message": "Нет периодов регистрации в Москве для взрослого"}
+        return {"message": "Вывод: положено РСД до ПМП... в разработке"}
 
     # Берём последний период регистрации в Москве
     last_period: PeriodType = data.periods_reg_moscow[-1]
@@ -53,12 +54,10 @@ async def main_util_adult(data: JsonQuerySchema) -> dict:
 
     # Если 10 лет нет — по условию возвращаем вывод, что РСД до ГСС не положено
     if not registration_result["has_10_years"]:
-        return {"message": "Вывод: не положено РСД до ГСС"}
+        return {"message": "Вывод: положено РСД до ПМП... в разработке"}
 
     # Если 10 лет есть — считаем периоды ПМП и ГСС через prepare_pmp_gss_reg_result_adult
     dr10 = registration_result["date_of_10_years"]
-
-    spv_init_date = data.change_last_date
 
     return await prepare_pmp_gss_adult_result(
         data=data,

@@ -25,6 +25,10 @@ export const Results = () => {
                 <div className="section">
                     <h2>Результаты расчета</h2>
 
+                    {message && (
+                        <div className="info-box">{message}</div>
+                    )}
+
                     {isLoading ? (
                         <div className="loading-spinner">
                             <div className="spinner"></div>
