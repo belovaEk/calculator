@@ -5,7 +5,7 @@ async def merge_periods(periods: List[PeriodType]) -> List[PeriodType]:
 
     periods.sort(key=lambda x: x.DN)
 
-    merged_periods = []
+    new_periods = []
     i = 0   
 
     while i < len(periods):
@@ -24,7 +24,9 @@ async def merge_periods(periods: List[PeriodType]) -> List[PeriodType]:
             else:
                 break
         
-        merged_periods.append(current)
+        new_periods.append(current)
         i = j
 
-    return merge_periods
+    print(new_periods)
+
+    return new_periods
