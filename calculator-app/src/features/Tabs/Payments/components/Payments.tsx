@@ -27,13 +27,14 @@ export const Payments = () => {
                     {store.is_adult && (
                         <div className="grid">
                             <div className="form-group">
-                                <label htmlFor="paymentChangeDate">Дата последнего изменния вида пенсии *</label>
+                                <label htmlFor="paymentChangeDate" style={{color: 'red'}}>Дата последнего изменния вида пенсии *</label>
                                 <input
                                     id="paymentChangeDate"
                                     type="date"
                                     value={store.change_last_date}
                                     onChange={(e) => updateStore('change_last_date', e.target.value)}
                                     required
+                                    style={{border: 'solid 1px red'}}
                                 />
                             </div>
                         </div>
