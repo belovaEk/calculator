@@ -67,16 +67,16 @@ async def prepare_pmp_gss_reg_result(
         periods_inpatient=data.periods_inpatient,
     )
 
-    pmp_gss_pension_result = await pmp_gss_pension(
-        data=data,
-        pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
-        gss_periods=pmp_gss_inpatient_result["gss_periods"],
-    )
+    # pmp_gss_pension_result = await pmp_gss_pension(
+    #     data=data,
+    #     pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
+    #     gss_periods=pmp_gss_inpatient_result["gss_periods"],
+    # )
     # logging.info(f"Периоды gss_pension_result: {pmp_gss_pension_result['gss_periods']}")
 
     pmp_gss_index_result = await pmp_gss_index(
-        pmp_periods=pmp_gss_pension_result["pmp_periods"],
-        gss_periods=pmp_gss_pension_result["gss_periods"],
+        pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
+        gss_periods=pmp_gss_inpatient_result["gss_periods"],
         reg=True,
     )
 
@@ -92,8 +92,8 @@ async def prepare_pmp_gss_reg_result(
     )
 
     return {
-        "pmp_periods": pmp_gss_pension_result["pmp_periods"],
-        "gss_periods": pmp_gss_pension_result["gss_periods"],
+        "pmp_periods": pmp_gss_inpatient_result["pmp_periods"],
+        "gss_periods": pmp_gss_inpatient_result["gss_periods"],
         "sorted_pensions": pmp_gss_sorted_result,
     }
 
@@ -120,13 +120,13 @@ async def prepare_pmp_gss_NoReg_result(
         data=data
     )
 
-    pmp_pension_result = await pmp_pension(
-        data=data,
-        pmp_periods=pmp_suspension_result["pmp_periods"],
-    )
+    # pmp_pension_result = await pmp_pension(
+    #     data=data,
+    #     pmp_periods=pmp_suspension_result["pmp_periods"],
+    # )
 
     pmp_gss_index_result = await pmp_gss_index(
-        pmp_periods=pmp_pension_result["pmp_periods"],
+        pmp_periods=pmp_suspension_result["pmp_periods"],
         gss_periods={},
         reg=False,
     )
@@ -146,6 +146,6 @@ async def prepare_pmp_gss_NoReg_result(
     )
 
     return {
-        "pmp_periods": pmp_pension_result["pmp_periods"],
+        "pmp_periods": pmp_suspension_result["pmp_periods"],
         "sorted_pensions": pmp_sorted_result,
     }

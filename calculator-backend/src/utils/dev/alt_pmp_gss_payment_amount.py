@@ -23,13 +23,6 @@ async def alt_pmp_gss_payment_amount(
 
     sp_standart: PaymentsByPeriods = await calculate_sp_standart(data)
 
-    print("--------------------------------")
-    print(f"sp_standart: {sp_standart}")
-    print(f"pmp_periods: {pmp_periods}")
-    print(f"gss_periods: {gss_periods}")
-    print("--------------------------------")
-    print("A" * 100)
-
     result_pmp: Dict[int, List[PeriodAmountWithSP]] = {}
     result_gss: Dict[int, List[PeriodAmountWithSP]] = {}
 
@@ -118,9 +111,10 @@ async def alt_pmp_gss_payment_amount(
                     sp_amount = round(period.amount, 2)
                     break
 
-            amount = round(gss_periods[l][j].amount - sp_amount, 2)
+            unclamped = gss_periods[l][j].amount - sp_amount
+            amount = round(max(0.0, unclamped), 2)
 
-            if j != 0 and amount > gss_periods[l][j - 1].amount:
+            if j != 0 and unclamped > gss_periods[l][j - 1].amount:
                 result_gss[l].append(
                     PeriodAmountWithSP(
                         DN=gss_periods[l][j].DN,

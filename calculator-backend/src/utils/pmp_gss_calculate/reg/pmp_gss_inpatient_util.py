@@ -59,8 +59,8 @@ async def pmp_gss_inpatient(
 
     Returns:
         dict: Словарь с обновленными периодами:
-            - pmp_periods: List[PeriodType] - обновленные периоды ПМП
-            - gss_periods: List[PeriodType] - обновленные периоды ГСС
+            - pmp_periods: GssPmpPensionType - обновленные периоды ПМП
+            - gss_periods: GssPmpPensionType - обновленные периоды ГСС
     """
 
     # Создаем копии списков
@@ -125,4 +125,4 @@ async def pmp_gss_inpatient(
     result_pmp.sort(key=lambda x: x.DN)
     result_gss.sort(key=lambda x: x.DN)
 
-    return {"pmp_periods": result_pmp, "gss_periods": result_gss}
+    return {"pmp_periods": {0: result_pmp}, "gss_periods": {0: result_gss}}

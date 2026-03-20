@@ -23,4 +23,4 @@ async def pmp_suspension(
 
         pmp_periods = await recalculation_suspension(pmp_periods, periods_suspension)
 
-    return {"pmp_periods": pmp_periods}
+    return {"pmp_periods": {0: pmp_periods}}
