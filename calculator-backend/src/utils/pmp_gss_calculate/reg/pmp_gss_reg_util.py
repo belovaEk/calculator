@@ -1,5 +1,5 @@
 from src.schemas.json_query_schema import PeriodType
-from datetime import date
+from datetime import date, timedelta
 from typing import List
 
 
@@ -52,7 +52,7 @@ async def spv_init_date_earlier(
 
     currentDate = date.today()
 
-    pmp_periods.append(PeriodType(DN=spv_init_date, DK=dr10))
+    pmp_periods.append(PeriodType(DN=spv_init_date, DK=dr10 - timedelta(days=1)))
 
     while i <= n - 1:
 
@@ -63,22 +63,22 @@ async def spv_init_date_earlier(
             if i == n - 1:
                 gss_periods.append(PeriodType(DN=dr10, DK=DKreg))
                 if DKreg != currentDate:
-                    pmp_periods.append(PeriodType(DN=DKreg, DK=currentDate))
+                    pmp_periods.append(PeriodType(DN=DKreg + timedelta(days=1), DK=currentDate))
             else:
                 gss_periods.append(PeriodType(DN=dr10, DK=DKreg))
                 pmp_periods.append(
-                    PeriodType(DN=DKreg, DK=list_of_periods_reg[i + 1].DN)
+                    PeriodType(DN=DKreg + timedelta(days=1), DK=list_of_periods_reg[i + 1].DN - timedelta(days=1))
                 )
 
         elif DNreg > dr10 and DKreg > dr10:
             if i == n - 1:
                 gss_periods.append(PeriodType(DN=DNreg, DK=DKreg))
                 if DKreg != currentDate:
-                    pmp_periods.append(PeriodType(DN=DKreg, DK=currentDate))
+                    pmp_periods.append(PeriodType(DN=DKreg + timedelta(days=1), DK=currentDate))
             else:
                 gss_periods.append(PeriodType(DN=DNreg, DK=DKreg))
                 pmp_periods.append(
-                    PeriodType(DN=DKreg, DK=list_of_periods_reg[i + 1].DN)
+                    PeriodType(DN=DKreg + timedelta(days=1), DK=list_of_periods_reg[i + 1].DN - timedelta(days=1))
                 )
         i += 1
 
@@ -114,24 +114,27 @@ async def dr10_earlier(
             if i == n - 1:
                 gss_periods.append(PeriodType(DN=spv_init_date, DK=DKreg))
                 if DKreg != currentDate:
-                    pmp_periods.append(PeriodType(DN=DKreg, DK=currentDate))
+                    pmp_periods.append(PeriodType(DN=DKreg + timedelta(days=1), DK=currentDate))
             else:
                 gss_periods.append(PeriodType(DN=spv_init_date, DK=DKreg))
                 pmp_periods.append(
-                    PeriodType(DN=DKreg, DK=list_of_periods_reg[i + 1].DN)
+                    PeriodType(DN=DKreg + timedelta(days=1), DK=list_of_periods_reg[i + 1].DN - timedelta(days=1))
                 )
 
         # Если период регистрации больше даты назначения первой пенсии
         elif spv_init_date < DNreg < DKreg:
 
-            if i == n - 1:
+            if i == 0:
+                pmp_periods.append(PeriodType(DN=spv_init_date, DK=DNreg - timedelta(days=1)))
+
+            elif i == n - 1:
                 gss_periods.append(PeriodType(DN=DNreg, DK=DKreg))
                 if DKreg != currentDate:
-                    pmp_periods.append(PeriodType(DN=DKreg, DK=currentDate))
+                    pmp_periods.append(PeriodType(DN=DKreg + timedelta(days=1), DK=currentDate))
             else:
                 gss_periods.append(PeriodType(DN=DNreg, DK=DKreg))
                 pmp_periods.append(
-                    PeriodType(DN=DKreg, DK=list_of_periods_reg[i + 1].DN)
+                    PeriodType(DN=DKreg + timedelta(days=1), DK=list_of_periods_reg[i + 1].DN - timedelta(days=1))
                 )
 
         elif i == n - 1:
@@ -140,7 +143,7 @@ async def dr10_earlier(
 
         # Если дата назначения первой пенсии попала между периодами регистрации
         elif DKreg <= spv_init_date < list_of_periods_reg[i + 1].DN:
-            pmp_periods.append(PeriodType(DN=spv_init_date, DK=DNreg))
+            pmp_periods.append(PeriodType(DN=spv_init_date, DK=DNreg - timedelta(days=1)))
         i += 1
 
     return {"pmp_periods": pmp_periods, "gss_periods": gss_periods}
