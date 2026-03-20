@@ -24,7 +24,6 @@ def _get_egdv_amount(d: date, categoria: str) -> float:
 def _split_egdv_period(
     dn: date,
     dk: date,
-    amount: float,
     categoria: str,
 ) -> List[PeriodAmount]:
     if dn >= dk:
@@ -34,7 +33,7 @@ def _split_egdv_period(
 
     d_j = dn
     date_ind_next = _jan1(dn.year + 1)
-    summa = amount
+    summa = _get_egdv_amount(dn, categoria)
 
     while dk > date_ind_next:
         result.append(PeriodAmount(DN=d_j, DK=date_ind_next, amount=round(summa, 2)))
@@ -60,7 +59,6 @@ def calculate_egdv(
         result_egdv[payment.id] = _split_egdv_period(
             dn=payment.DN,
             dk=payment.DK,
-            amount=payment.amount,
             categoria=payment.categoria_person,
         )
 

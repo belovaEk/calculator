@@ -6,63 +6,62 @@ from src.utils.payments.types.paymentType import PaymentsByPeriods, PeriodAmount
 
 def calculate_pension_itog(pensii_itog_res: dict) -> PaymentsByPeriods:
     """
-    Преобразует pensii_itog_res в формат PaymentsByPeriods,
-    сохраняя флаги transferred для каждой пенсии и разбивая периоды по брейкпоинтам.
+    Агрегирует все пенсии из pensii_itog_res в единый хронологический ряд:
+    суммирует суммы всех пенсий для каждого подпериода.
+    Возвращает {0: PaymentsByPeriodsItem} — один объединённый результат.
     """
     if not pensii_itog_res:
         return {}
-    
-    result: PaymentsByPeriods = {}
-    
-    # Обрабатываем каждую пенсию отдельно
-    for pension_key, pension_data in pensii_itog_res.items():
-        # Получаем ID пенсии из ключа (например, "pension_0" -> 0)
-        pension_id = int(pension_key.split('_')[-1])
-        
-        # Получаем флаги transferred
-        transferred = pension_data.get('transferred', {})
-        
-        # Получаем все периоды для этой пенсии
-        all_periods = list(pension_data['periods'].values())
-        
-        if not all_periods:
-            continue
-        
-        # Находим все уникальные даты начала и конца периодов
-        breakpoints = sorted({
-            d
+
+    # Собираем все периоды из всех пенсий в единый список
+    all_periods = [
+        period
+        for pension_data in pensii_itog_res.values()
+        for period in pension_data['periods'].values()
+    ]
+
+    if not all_periods:
+        return {}
+
+    # Все уникальные даты для разбивки на подпериоды
+    breakpoints = sorted({
+        d
+        for p in all_periods
+        for d in (p['date_start'], p['date_end'])
+    })
+
+    # Для каждого подпериода суммируем суммы всех пенсий, которые его покрывают
+    periods_list = []
+    for i in range(len(breakpoints) - 1):
+        ds = breakpoints[i]
+        de = breakpoints[i + 1]
+
+        total = sum(
+            p['summa']
             for p in all_periods
-            for d in (p['date_start'], p['date_end'])
-        })
-        
-        # Разбиваем на интервалы и суммируем
-        periods_list = []
-        for i in range(len(breakpoints) - 1):
-            ds = breakpoints[i]
-            de = breakpoints[i + 1]
-            
-            # Суммируем все выплаты, попадающие в этот интервал
-            total = sum(
-                p['summa']
-                for p in all_periods
-                if p['date_start'] <= ds < p['date_end']
-            )
-            
-            if total > 0:
-                periods_list.append(
-                    PeriodAmount(DN=ds, DK=de, amount=total)
-                )
-        
-        # Создаем запись для этой пенсии
-        result[pension_id] = PaymentsByPeriodsItem(
+            if p['date_start'] <= ds < p['date_end']
+        )
+
+        if total > 0:
+            periods_list.append(PeriodAmount(DN=ds, DK=de, amount=total))
+
+    # Флаги transferred берём из первой пенсии с is_payment_transferred=True
+    transferred = {}
+    for pension_data in pensii_itog_res.values():
+        t = pension_data.get('transferred', {})
+        if t.get('is_payment_transferred', False):
+            transferred = t
+            break
+
+    return {
+        0: PaymentsByPeriodsItem(
             is_payment_transferred=transferred.get('is_payment_transferred', False),
             is_get_PSD_FSD_last_mounth_payment_trasferred=transferred.get('is_get_PSD_FSD_last_mounth_payment_trasferred', False),
             is_get_PSD_FSD_last_year_payment_trasferred=transferred.get('is_get_PSD_FSD_last_year_payment_trasferred', False),
             is_Not_get_PSD_FSD_now_payment_trasferred=transferred.get('is_Not_get_PSD_FSD_now_payment_trasferred', False),
-            periods=periods_list
+            periods=periods_list,
         )
-    
-    return result
+    }
 
 
 # def calculate_pension_itog(pensii_itog_res: dict) -> PaymentsByPeriods:

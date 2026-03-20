@@ -25,23 +25,24 @@ def _split_housin_period(
 
     result: List[PeriodAmount] = []
 
-    if dn == d:
-        current_start = dn
-        current_amount = HOUSIN_AMOUNTS[d]
-
-        for boundary in sorted_dates:
-            if boundary <= dn:
-                continue
-            if boundary >= dk:
-                break
-            result.append(PeriodAmount(DN=current_start, DK=boundary, amount=round(current_amount, 2)))
-            current_amount = HOUSIN_AMOUNTS[boundary]
-            current_start = boundary
-
-        result.append(PeriodAmount(DN=current_start, DK=dk, amount=round(current_amount, 2)))
-
-    else:
+    # Если DN не совпадает точно с ключом — весь период получает одну ставку (без дальнейшей разбивки)
+    if dn != d:
         result.append(PeriodAmount(DN=dn, DK=dk, amount=round(HOUSIN_AMOUNTS[d], 2)))
+        return result
+
+    # DN точно совпадает с ключом — разбиваем по всем последующим ключам внутри [DN, DK)
+    d_idx = sorted_dates.index(d)
+    current_start = dn
+    current_amount = HOUSIN_AMOUNTS[d]
+
+    for boundary in sorted_dates[d_idx + 1:]:
+        if boundary >= dk:
+            break
+        result.append(PeriodAmount(DN=current_start, DK=boundary, amount=round(current_amount, 2)))
+        current_amount = HOUSIN_AMOUNTS[boundary]
+        current_start = boundary
+
+    result.append(PeriodAmount(DN=current_start, DK=dk, amount=round(current_amount, 2)))
 
     return result
 
@@ -53,13 +54,15 @@ def calculate_housin(
     Возвращает данные формата:
     {
         0: [
-            PeriodAmount(DN=datetime.date(2024, 7, 1), DK=datetime.date(2025, 1, 1), amount=2431.07), 
+            PeriodAmount(DN=datetime.date(2024, 7, 1), DK=datetime.date(2025, 1, 1), amount=2431.07),
             PeriodAmount(DN=datetime.date(2025, 1, 1), DK=datetime.date(2025, 7, 1), amount=2573.99)
-        ], 
+        ],
         1: [
             PeriodAmount(DN=datetime.date(2025, 9, 1), DK=datetime.date(2026, 3, 1), amount=2831.25)
         ]
     }
+    Если DN совпадает с ключом HOUSIN_AMOUNTS — разбивает по последующим ключам до DK.
+    Если DN между ключами — весь период получает одну ставку (без переиндексации).
     '''
     
     result_housin: Dict[int, List[PeriodAmount]] = {}

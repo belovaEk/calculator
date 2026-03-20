@@ -29,16 +29,15 @@ def _build_pensii_itog_res(
     #         }
     #     }
     
-    # ПМП / ГСС периоды из sorted_pensions - ОБНОВЛЕННАЯ ВЕРСИЯ
+    # ПМП / ГСС периоды из sorted_pensions
     for pension_id, pension_data in sorted_pensions.items():
-        # Проверяем, есть ли ключ 'periods' и это словарь
         if isinstance(pension_data, dict) and 'periods' in pension_data:
             periods_dict = pension_data['periods']
-            pensii_itog_res[f"{pension_id}"] = {
+            pensii_itog_res[f"pension_{pension_id}"] = {
                 "periods": {
                     i: {
-                        "date_start": period['DN'], 
-                        "date_end": period['DK'], 
+                        "date_start": period['DN'],
+                        "date_end": period['DK'],
                         "summa": period['amount']
                     }
                     for i, period in periods_dict.items()
@@ -50,16 +49,14 @@ def _build_pensii_itog_res(
                     "is_Not_get_PSD_FSD_now_payment_trasferred": pension_data.get('is_Not_get_PSD_FSD_now_payment_trasferred')
                 }
             }
-
         else:
-            # Если структура другая - пропускаем или обрабатываем по-старому
             print(f"Неожиданная структура для pension_id {pension_id}: {type(pension_data)}")
             continue
 
-    if edk != None:
     # ЕДК (edk)
+    if edk is not None:
         for payment_id, periods in edk.items():
-            pensii_itog_res[f"{payment_id}"] = {
+            pensii_itog_res[f"edk_{payment_id}"] = {
                 "periods": {
                     i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
                     for i, p in enumerate(periods)
@@ -67,9 +64,9 @@ def _build_pensii_itog_res(
             }
 
     # ЕДВ / НСУ
-    if edv != None:
+    if edv is not None:
         for payment_id, periods in edv.items():
-            pensii_itog_res[f"{payment_id}"] = {
+            pensii_itog_res[f"edv_{payment_id}"] = {
                 "periods": {
                     i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
                     for i, p in enumerate(periods)
@@ -77,9 +74,9 @@ def _build_pensii_itog_res(
             }
 
     # ЕГДВ
-    if egdv != None:
+    if egdv is not None:
         for payment_id, periods in egdv.items():
-            pensii_itog_res[f"{payment_id}"] = {
+            pensii_itog_res[f"egdv_{payment_id}"] = {
                 "periods": {
                     i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
                     for i, p in enumerate(periods)
@@ -87,9 +84,9 @@ def _build_pensii_itog_res(
             }
 
     # ЖКУ (housing)
-    if housing != None:
+    if housing is not None:
         for payment_id, periods in housing.items():
-            pensii_itog_res[f"{payment_id}"] = {
+            pensii_itog_res[f"housing_{payment_id}"] = {
                 "periods": {
                     i: {"date_start": p.DN, "date_end": p.DK, "summa": p.amount}
                     for i, p in enumerate(periods)

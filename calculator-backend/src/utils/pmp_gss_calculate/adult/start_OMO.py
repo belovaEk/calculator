@@ -179,8 +179,8 @@ def social_or_gosudarstvennaya_indexation(pension: PaymentInterface):
 def get_period_pensii_other_categories(payment: PaymentInterface) -> dict:
     period_pensii = {}
 
-    # Ветка для vedomostvennaya / other
-    if payment.categoria in ("vedomstvennaya", "other"):
+    # Ветка для vedomostvennaya / other / departmental
+    if payment.categoria in ("vedomstvennaya", "other", "departmental"):
         DN = payment.DN if payment.DN is not None else payment.periods[0]
         DK = payment.DK if payment.DK is not None else payment.periods[1]
 
@@ -848,7 +848,7 @@ def pensii_devochki(query: JsonQuerySchema):
                         'is_get_PSD_FSD_last_mounth_payment_trasferred': i.is_get_PSD_FSD_last_mounth_payment_trasferred,
                         'is_get_PSD_FSD_last_year_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
                         'is_Not_get_PSD_FSD_now_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
-                        'periods': get_pensii_yes_recalculation(pensii_in_Moscow, query)
+                        'periods': get_pensii_yes_recalculation({0: i}, query)
                     }
                 else:
                     result[pensiya_key] = {
@@ -857,7 +857,7 @@ def pensii_devochki(query: JsonQuerySchema):
                         'is_get_PSD_FSD_last_mounth_payment_trasferred': i.is_get_PSD_FSD_last_mounth_payment_trasferred,
                         'is_get_PSD_FSD_last_year_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
                         'is_Not_get_PSD_FSD_now_payment_trasferred': i.is_get_PSD_FSD_last_year_payment_trasferred,
-                        'periods': get_pensii_no_recalculation(pensii_in_Moscow, query)
+                        'periods': get_pensii_no_recalculation({0: i}, query)
                     }
 
                 # Если фиксированная сумма, обрабатываем и добавляем её
@@ -875,8 +875,7 @@ def pensii_devochki(query: JsonQuerySchema):
                     }
 
             elif i.categoria == "social" or i.categoria == "gosudarstvennaya":
-                a1 = social_or_gosudarstvennaya_pereraschet(i)
-                a2 = social_or_gosudarstvennaya_indexation(a1)
+                a2 = social_or_gosudarstvennaya_indexation(i)
                 result[pensiya_key] = {
                     'type': i.categoria,  # Добавляем тип
                     'is_payment_transferred': i.is_payment_transferred,
