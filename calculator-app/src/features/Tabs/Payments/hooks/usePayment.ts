@@ -4,6 +4,7 @@ import { PaymentInterface, RecalculationData } from "../components/types/payment
 import { PAYMENT_TYPE } from "../constants/payments"
 import { useGlobalStore } from "../../../../store";
 import { PERSON_CATEGORIES } from "../constants/adult/peopleCategories";
+import { useState } from "react";
 
 interface usePaymentParams {
     id: number,
@@ -181,6 +182,18 @@ export const usePayment = ({ id, paymentData, onUpdate, onRemove }: usePaymentPa
     };
 
 
+    const today = new Date().toISOString().split('T')[0];
+
+    const checkDate = (date: string) => {
+        if (date > today) {
+            updatePayment('DK', today);
+            return false;
+        }
+        updatePayment('DK', date);
+        return true;
+    };
+
+
     return {
         store,
         PAYMENT_TYPE,
@@ -196,6 +209,7 @@ export const usePayment = ({ id, paymentData, onUpdate, onRemove }: usePaymentPa
         updateRecalculationFixAmount,
         removeRecalculationFixAmount,
         PERSON_CATEGORIES,
+        checkDate
     }
 }
 

@@ -106,9 +106,9 @@ export const useResults = () => {
                         pmpOrGss: item.pmp_or_gss,
                         startDate: formatDate(item.DN),
                         endDate: formatDate(item.DK),
-                        spAmount: item.sp_amount,
-                        rsdAmount: item.amount,
-                        pmpGssAmount: item.pmp_gss_amount
+                        spAmount: item.sp_amount.toFixed(2),
+                        rsdAmount: item.amount.toFixed(2),
+                        pmpGssAmount: item.pmp_gss_amount.toFixed(2)
 
                     });
                 });

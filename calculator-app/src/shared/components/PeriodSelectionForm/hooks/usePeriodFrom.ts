@@ -7,6 +7,8 @@ export const usePeriodFrom = () => {
 
     const [periodRegistration, setPeriodRegistration] = useState<DateRange>();
 
+    const today = new Date().toISOString().split('T')[0];
+
     const updatePeriod = <K extends keyof DateRange>(dateType: K, date: DateString) => {
 
         setPeriodRegistration(prev => {
@@ -24,10 +26,10 @@ export const usePeriodFrom = () => {
         })
     }
 
-
     return {
         updatePeriod,
-        periodRegistration
+        periodRegistration,
+
     }
 
 }

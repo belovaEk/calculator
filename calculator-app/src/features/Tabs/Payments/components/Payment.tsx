@@ -3,6 +3,7 @@ import { usePayment } from "../hooks/usePayment";
 import { PaymentProps } from "./types/paymentType";
 
 import { RecalculationData } from "./types/paymentType";
+import { useState } from "react";
 
 
 export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentProps) => {
@@ -21,7 +22,8 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
         addRecalculationFixAmount,
         updateRecalculationFixAmount,
         removeRecalculationFixAmount,
-        PERSON_CATEGORIES
+        PERSON_CATEGORIES,
+        checkDate
     } = usePayment({ id, paymentData, onUpdate, onRemove });
 
 
@@ -60,7 +62,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                     type="date"
                                     className="payment-end"
                                     value={paymentData.DK}
-                                    onChange={(e) => updatePayment('DK', e.target.value)}
+                                    onChange={(e) => checkDate(e.target.value)}
                                     required
                                 />
                             </div>
@@ -401,7 +403,7 @@ const RecalculationForm = ({
                 <div className="form-group">
                     <label>Дата перерасчета *</label>
                     <input
-                        key={`key-date-${paymentId*Math.random()}}`}
+                        key={`key-date-${paymentId * Math.random()}}`}
                         type="date"
                         className="recalculation-date"
                         required
@@ -412,7 +414,7 @@ const RecalculationForm = ({
                 <div className="form-group">
                     <label>Сумма *</label>
                     <input
-                        key={`key-summa-${paymentId*Math.random()}}`}
+                        key={`key-summa-${paymentId * Math.random()}}`}
                         type="number"
                         className="recalculation-amount"
                         min="0"

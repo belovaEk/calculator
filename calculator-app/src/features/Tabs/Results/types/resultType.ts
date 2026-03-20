@@ -6,9 +6,9 @@ export type RowType = {
     pmpOrGss: string;
     startDate: DateString;
     endDate: DateString;
-    spAmount?: Rubles;
-    pmpGssAmount?: Rubles
-    rsdAmount?: Rubles
+    spAmount?: string;
+    pmpGssAmount?: string
+    rsdAmount?: string
 };
 
 
