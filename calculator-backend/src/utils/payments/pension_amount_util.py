@@ -190,7 +190,16 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
                 else:
                     isRSD = False # РСД не положено
                     sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=0))
+        else:
+            date_for_period = DNpen
     else:
+        
+        if DNpen == date_index:
+            date_index = date(DNpen.year+1, DNpen.month, DNpen.day)
+            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=summa))
+            summa = summa*SOCIAL_PENSION_INDEX[date_index]
+            date_for_period = date_index
+
         sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=summa))
         summa = summa*SOCIAL_PENSION_INDEX[date_index]
         date_for_period = date_index
