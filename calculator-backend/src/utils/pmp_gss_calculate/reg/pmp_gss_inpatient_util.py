@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from typing import List
 from src.schemas.json_query_schema import PeriodType
 
@@ -76,7 +76,7 @@ async def pmp_gss_inpatient(
 
     for inpatient in sorted_inpatient:
         new_gss = []
-        inpatient_start = inpatient.DN
+        inpatient_start = (inpatient.DN.replace(day=1) + timedelta(days=32)).replace(day=1)
         inpatient_end = inpatient.DK
 
         for gss in result_gss:
@@ -94,10 +94,12 @@ async def pmp_gss_inpatient(
                 continue
 
             # Случай 4: Стационар полностью внутри ГСС
-            if inpatient_start > gss_start and inpatient_end < gss_end:
-                new_gss.append(PeriodType(DN=gss_start, DK=inpatient_start))
+            if inpatient_start >= gss_start and inpatient_end <= gss_end:
+                if inpatient_start > gss_start:
+                    new_gss.append(PeriodType(DN=gss_start, DK=inpatient_start))
+                if inpatient_end < gss_end:
+                    new_gss.append(PeriodType(DN=inpatient_end, DK=gss_end))
                 result_pmp.append(PeriodType(DN=inpatient_start, DK=inpatient_end))
-                new_gss.append(PeriodType(DN=inpatient_end, DK=gss_end))
                 continue
 
             # Случай 1: Стационар начался внутри ГСС и закончился после ГСС
