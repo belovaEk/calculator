@@ -42,6 +42,7 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
     """    
 
     pensions = [p for p in data.payments if p.type == 'pension']
+    pensions = [p for p in pensions if p.is_Moscow == True]
 
     aggregated_flags = {
         'is_payment_transferred': False,
