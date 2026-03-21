@@ -47,8 +47,8 @@ class PaymentInterface(BaseModel):
     is_Not_get_PSD_FSD_now_payment_trasferred: Optional[bool] = False
 
     is_fix_amount: Optional[bool] = False
-    amount_fix: Optional[float] = None,
-    is_recalculation_fix_amount: Optional[bool] = False,
+    amount_fix: Optional[float] = None
+    is_recalculation_fix_amount: Optional[bool] = False
     recalculation_fix_amount: Optional[List[RecalculationData]] = None
     categoria_person: Optional[PersonCategoryRaw] = None
 

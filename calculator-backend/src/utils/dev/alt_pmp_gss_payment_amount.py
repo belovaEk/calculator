@@ -31,7 +31,6 @@ async def alt_pmp_gss_payment_amount(
 
     result_pmp: Dict[int, List[PeriodAmountWithSP]] = {}
     result_gss: Dict[int, List[PeriodAmountWithSP]] = {}
-
     for l in range(len(pmp_periods)):
         result_pmp.setdefault(l, [])
 
@@ -71,7 +70,6 @@ async def alt_pmp_gss_payment_amount(
                         data_poiska_pensii = pmp_periods[l][j].DN #data_poiska_pensii = 01.08.2025 
                 else:
                     data_poiska_pensii = date(pmp_periods[l][j].DN.year - 1, 12, 1)
-                    print("data_poiska_pensii" + data_poiska_pensii)
                     # data_poiska_pensii = pmp_periods[l][j].DN - relativedelta(months=1) #data_poiska_pensii = 12.07.2025 - 1 month = 12.06.2025
                     for k in range(len(suspension_periods)): #0
                         if pmp_periods[l][j].DN == suspension_periods[k].DK and k >= 1:
@@ -93,12 +91,12 @@ async def alt_pmp_gss_payment_amount(
                         # дата поиска = (год(дата начала приостановки (k)) - 1 год) 1 декабря
                         data_poiska_pensii = date(data.periods_suspension[k].DN.year - 1, 12, 1)
                         break
-                    #добавляем проверку на совпадение с периодами попадания в стационар
-                    for m in range(len(periods_inpatient)):
-                        if pmp_periods[l][j].DN == (periods_inpatient[m].DN+ relativedelta(months=1)).replace(day=1):
-                             # дата поиска = (год(дата попадания в стационар (m))) - 1 год) 1 декабря
-                            data_poiska_pensii = date(data.periods_inpatient[m].DN.year - 1, 12, 1)
-                            break
+                #добавляем проверку на совпадение с периодами попадания в стационар
+                for m in range(len(periods_inpatient)):
+                    if pmp_periods[l][j].DN == (periods_inpatient[m].DN+ relativedelta(months=1)).replace(day=1):
+                            # дата поиска = (год(дата попадания в стационар (m))) - 1 год) 1 декабря
+                        data_poiska_pensii = date(data.periods_inpatient[m].DN.year - 1, 12, 1)
+                        break
 
             # Поиск подходящего sp_standart периода
             for period in sp_standart[l].periods:
