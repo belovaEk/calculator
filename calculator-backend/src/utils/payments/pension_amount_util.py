@@ -38,32 +38,55 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
                     {DN, DK, amount}
                 ]
             };
-            1: {
-                is_payment_transferred: false
-                is_get_PSD_FSD_last_mounth_payment_trasferred: bool
-                is_get_PSD_FSD_last_year_payment_trasferred: bool
-                is_Not_get_PSD_FSD_now_payment_trasferred: bool
-                type: PensionCategoryRaw;
-                periods: [
-                    {DN, DK, amount},
-                    {DN, DK, amount}
-                ]
-        }
         }
     """    
 
     pensions = [p for p in data.payments if p.type == 'pension']
+
+    aggregated_flags = {
+        'is_payment_transferred': False,
+        'is_get_PSD_FSD_last_mounth_payment_trasferred': False,
+        'is_get_PSD_FSD_last_year_payment_trasferred': False,
+        'is_Not_get_PSD_FSD_now_payment_trasferred': False
+    }
     sp_standart_by_year: PaymentsByPeriods = {}
 
+    all_periods = []
+
     for pension in pensions:
+        temp_result = None
 
         if pension.categoria == "insurance_SPK":
-            sp_standart_by_year = await pension_insurance_SPK_calculate(pension=pension, sp_standart_by_year=sp_standart_by_year)
+             temp_result = await pension_insurance_SPK_calculate(pension=pension, sp_standart_by_year=sp_standart_by_year)
         elif pension.categoria == "social_SPK" or pension.categoria == "social_disability":
-            sp_standart_by_year = await pension_social_calculate(pension=pension, sp_standart_by_year=sp_standart_by_year)
+            temp_result = await pension_social_calculate(pension=pension, sp_standart_by_year=sp_standart_by_year)
         elif pension.categoria == "departmental":
-            sp_standart_by_year = await pension_departmental_calculate(pension=pension, sp_standart_by_year=sp_standart_by_year)
-    print(sp_standart_by_year)
+            temp_result = await pension_departmental_calculate(pension=pension, sp_standart_by_year=sp_standart_by_year)
+ 
+
+
+
+        if temp_result and 0 in temp_result:
+            # Объединяем флаги (если хоть один True, то будет True)
+            item = temp_result[0]
+            aggregated_flags['is_payment_transferred'] = aggregated_flags['is_payment_transferred'] or item.is_payment_transferred
+            aggregated_flags['is_get_PSD_FSD_last_mounth_payment_trasferred'] = aggregated_flags['is_get_PSD_FSD_last_mounth_payment_trasferred'] or item.is_get_PSD_FSD_last_mounth_payment_trasferred
+            aggregated_flags['is_get_PSD_FSD_last_year_payment_trasferred'] = aggregated_flags['is_get_PSD_FSD_last_year_payment_trasferred'] or item.is_get_PSD_FSD_last_year_payment_trasferred
+            aggregated_flags['is_Not_get_PSD_FSD_now_payment_trasferred'] = aggregated_flags['is_Not_get_PSD_FSD_now_payment_trasferred'] or item.is_Not_get_PSD_FSD_now_payment_trasferred
+    
+        all_periods.extend(item.periods)
+
+    all_periods.sort(key=lambda x: x.DN)
+
+    sp_standart_by_year[0] = PaymentsByPeriodsItem(
+        is_payment_transferred=aggregated_flags['is_payment_transferred'],
+        is_get_PSD_FSD_last_mounth_payment_trasferred=aggregated_flags['is_get_PSD_FSD_last_mounth_payment_trasferred'],
+        is_get_PSD_FSD_last_year_payment_trasferred=aggregated_flags['is_get_PSD_FSD_last_year_payment_trasferred'],
+        is_Not_get_PSD_FSD_now_payment_trasferred=aggregated_flags['is_Not_get_PSD_FSD_now_payment_trasferred'],
+        type="social_disability", 
+        periods=all_periods
+    )
+    
     return sp_standart_by_year
     
 
@@ -86,7 +109,7 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
     fix_amount = score_fix['fix_amount']
 
 
-    sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
+    sp_standart_by_year[0] = PaymentsByPeriodsItem(
         is_payment_transferred=pension.is_payment_transferred,
         is_get_PSD_FSD_last_mounth_payment_trasferred=pension.is_get_PSD_FSD_last_mounth_payment_trasferred,
         is_get_PSD_FSD_last_year_payment_trasferred=pension.is_get_PSD_FSD_last_year_payment_trasferred,
@@ -107,7 +130,7 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
 
     if DNpen.month == 12 and DNpen.day != 31:
         # Если пенсия началась не с конца декабря, добавляем период до конца года
-        sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=DNpen, DK=date(year, 12, 31), amount=summa))
+        sp_standart_by_year[0].periods.append(PeriodAmount(DN=DNpen, DK=date(year, 12, 31), amount=summa))
         print(sp_standart_by_year)
         summa = IPK * INSURANCE_PENSION_SCORE[date(DNpen.year+1, 1, 1)] + INSURANCE_PENSION_FIX_AMOUNT[date(DNpen.year+1, 1, 1)]/2
         # Следующий период начинается с 1 января следующего года
@@ -118,7 +141,7 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
             if pension.is_get_PSD_FSD_last_mounth_payment_trasferred and pension.is_get_PSD_FSD_last_year_payment_trasferred:
                 if pension.is_Not_get_PSD_FSD_now_payment_trasferred:
                     sp_prev = IPK*INSURANCE_PENSION_SCORE[date(DNpen.year-1, 1, 1)] + INSURANCE_PENSION_FIX_AMOUNT[date(DNpen.year-1, 1, 1)]/2
-                    sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date(DNpen.year-1, 12, 31), DK=DNpen, amount=sp_prev))
+                    sp_standart_by_year[0].periods.append(PeriodAmount(DN=date(DNpen.year-1, 12, 31), DK=DNpen, amount=sp_prev))
                 else:
                     isRSD = False
 
@@ -133,9 +156,9 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
     # Обрабатываем последующие периоды
     while date_index < DKpen:
         if isRSD:
-            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amount=summa))
+            sp_standart_by_year[0].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amount=summa))
         else:
-            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amount=0))
+            sp_standart_by_year[0].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amount=0))
         
         # Следующий период начинается с 1 января следующего года
         date_for_period = date(date_index.year +1, 1, 1)
@@ -144,9 +167,9 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
     
     # Добавляем последний период
     if isRSD:
-            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen, amount=summa))
+            sp_standart_by_year[0].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen, amount=summa))
     else:
-        sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen, amount=0))
+        sp_standart_by_year[0].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen, amount=0))
 
     return sp_standart_by_year
 
@@ -167,7 +190,7 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
     year = DNpen.year
     summa = pension.amount
 
-    sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
+    sp_standart_by_year[0] = PaymentsByPeriodsItem(
         is_payment_transferred=pension.is_payment_transferred,
         is_get_PSD_FSD_last_mounth_payment_trasferred=pension.is_get_PSD_FSD_last_mounth_payment_trasferred,
         is_get_PSD_FSD_last_year_payment_trasferred=pension.is_get_PSD_FSD_last_year_payment_trasferred,
@@ -185,22 +208,22 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
         if pension.is_payment_transferred:
             if pension.is_get_PSD_FSD_last_mounth_payment_trasferred and pension.is_get_PSD_FSD_last_year_payment_trasferred:
                 if pension.is_Not_get_PSD_FSD_now_payment_trasferred:
-                    sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date(year-1, 12, 1), DK=DNpen, amount= summa / SOCIAL_PENSION_INDEX[date_index])) 
+                    sp_standart_by_year[0].periods.append(PeriodAmount(DN=date(year-1, 12, 1), DK=DNpen, amount= summa / SOCIAL_PENSION_INDEX[date_index])) 
                     date_for_period = DNpen               
                 else:
                     isRSD = False # РСД не положено
-                    sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=0))
+                    sp_standart_by_year[0].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=0))
         else:
             date_for_period = DNpen
     else:
         
         if DNpen == date_index:
             date_index = date(DNpen.year+1, DNpen.month, DNpen.day)
-            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=summa))
+            sp_standart_by_year[0].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=summa))
             summa = summa*SOCIAL_PENSION_INDEX[date_index]
             date_for_period = date_index
 
-        sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=summa))
+        sp_standart_by_year[0].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=summa))
         summa = summa*SOCIAL_PENSION_INDEX[date_index]
         date_for_period = date_index
     
@@ -214,10 +237,10 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
     while date_index < DKpen:
 
         if isRSD:
-            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amount=summa))
+            sp_standart_by_year[0].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amount=summa))
 
         else:
-            sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amount=0))
+            sp_standart_by_year[0].periods.append(PeriodAmount(DN=date_for_period, DK=date_index, amount=0))
         
         date_for_period = date_index
         summa = summa*SOCIAL_PENSION_INDEX[date_index]  
@@ -229,9 +252,9 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
         else: date_index = date(date_index.year+1, date_index.month, date_index.day) 
 
     if isRSD:
-        sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen, amount=summa))
+        sp_standart_by_year[0].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen, amount=summa))
     else:
-        sp_standart_by_year[pension.id].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen, amount=0))
+        sp_standart_by_year[0].periods.append(PeriodAmount(DN=date_for_period, DK=DKpen, amount=0))
     
     return sp_standart_by_year
 
@@ -249,7 +272,7 @@ async def pension_departmental_calculate(pension: PaymentInterface, sp_standart_
     DNpen = pension.DN
     DKpen = pension.DK
 
-    sp_standart_by_year[pension.id] = PaymentsByPeriodsItem(
+    sp_standart_by_year[0] = PaymentsByPeriodsItem(
         is_payment_transferred=False,
         is_get_PSD_FSD_last_mounth_payment_trasferred=False,
         is_get_PSD_FSD_last_year_payment_trasferred=False,
@@ -268,20 +291,20 @@ async def pension_departmental_calculate(pension: PaymentInterface, sp_standart_
             if DNpen < date_rec <= DKpen:
                 if i == 0:
                     # Первый пересчет: период от начала до первой даты пересчета
-                    sp_standart_by_year[pension.id].periods.append(
+                    sp_standart_by_year[0].periods.append(
                         PeriodAmount(DN=DNpen, DK=date_rec, amount=pension.amount)
                     )
                 else:
                     # Период от предыдущей даты пересчета до текущей
                     date_rec_prev = recalculations[i-1].date
                     amount_rec_prev = recalculations[i-1].amount
-                    sp_standart_by_year[pension.id].periods.append(
+                    sp_standart_by_year[0].periods.append(
                         PeriodAmount(DN=date_rec_prev, DK=date_rec, amount=amount_rec_prev)
                     )
                 
                 # Если это последний пересчет, добавляем период до конца
                 if i == n - 1:
-                    sp_standart_by_year[pension.id].periods.append(
+                    sp_standart_by_year[0].periods.append(
                         PeriodAmount(DN=date_rec, DK=DKpen, amount=recalculations[i].amount)
                     )
     
