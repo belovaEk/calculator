@@ -63,7 +63,7 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
         elif pension.categoria == "departmental":
             temp_result = await pension_departmental_calculate(pension=pension, sp_standart_by_year=sp_standart_by_year)
  
-
+        last_type = pension.categoria
 
 
         if temp_result and 0 in temp_result:
@@ -83,7 +83,7 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
         is_get_PSD_FSD_last_mounth_payment_trasferred=aggregated_flags['is_get_PSD_FSD_last_mounth_payment_trasferred'],
         is_get_PSD_FSD_last_year_payment_trasferred=aggregated_flags['is_get_PSD_FSD_last_year_payment_trasferred'],
         is_Not_get_PSD_FSD_now_payment_trasferred=aggregated_flags['is_Not_get_PSD_FSD_now_payment_trasferred'],
-        type="social_disability", 
+        type=last_type, 
         periods=all_periods
     )
     
