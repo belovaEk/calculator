@@ -102,7 +102,7 @@ async def pmp_gss_payment_amount_adult(
                 amount = round(max(0.0, unclamped), 2)
 
                 # pmp_gss_amount: для первого подпериода нового года (j>0) применяем оригинальную логику
-                if sub_idx == 0 and j != 0 and unclamped > prev_pmp_amount:
+                if sub_idx == 0 and j != 0 and unclamped < prev_pmp_amount:
                     pmp_gss_amount = round(prev_pmp_amount, 2)
                 else:
                     pmp_gss_amount = round(pmp_amount, 2)
@@ -133,7 +133,7 @@ async def pmp_gss_payment_amount_adult(
             unclamped = gss_periods[l][j].amount - sp_amount
             amount = round(max(0.0, unclamped), 2)
 
-            if j != 0 and unclamped > gss_periods[l][j - 1].amount:
+            if j != 0 and unclamped < gss_periods[l][j - 1].amount:
                 result_gss[l].append(
                     PeriodAmountWithSP(
                         DN=gss_periods[l][j].DN,

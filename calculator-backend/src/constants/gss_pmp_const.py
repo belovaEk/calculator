@@ -2,6 +2,7 @@ from datetime import date
 
 GSS_STANDART = {
     date(2019, 1, 1): 19500,
+    date(2020, 1, 1): 19500,
     date(2021, 1, 1): 20222,
     date(2022, 1, 1): 21193,
     date(2023, 1, 1): 23313,
