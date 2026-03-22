@@ -21,6 +21,18 @@ def get_score_fix_amount_insurance(DNpen: date):
             'fix_amount': target_fix_amount
         }
 
+def round_99_cents(amount: float) -> float:
+    """
+    Если сумма имеет 99 копеек, округляет до целого рубля
+    """
+    # Проверяем через строковое представление
+    formatted = f"{amount:.2f}"
+    
+    if formatted.endswith('.99'):
+        # Округляем вверх до целого
+        return float(int(amount) + 1)
+    
+    return amount
 
 async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
     """ Функция по расчета стандартных выплат пенсии по годам
@@ -134,6 +146,7 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
         sp_standart_by_year[0].periods.append(PeriodAmount(DN=DNpen, DK=date(year, 12, 31), amount=summa))
         print(sp_standart_by_year)
         summa = IPK * INSURANCE_PENSION_SCORE[date(DNpen.year+1, 1, 1)] + INSURANCE_PENSION_FIX_AMOUNT[date(DNpen.year+1, 1, 1)]/2
+        summa=round_99_cents(summa)
         # Следующий период начинается с 1 января следующего года
         date_for_period = date(year + 1, 1, 1)
         date_index = date(DNpen.year+1, 12, 31) #
@@ -142,6 +155,7 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
             if pension.is_get_PSD_FSD_last_mounth_payment_trasferred and pension.is_get_PSD_FSD_last_year_payment_trasferred:
                 if pension.is_Not_get_PSD_FSD_now_payment_trasferred:
                     sp_prev = IPK*INSURANCE_PENSION_SCORE[date(DNpen.year-1, 1, 1)] + INSURANCE_PENSION_FIX_AMOUNT[date(DNpen.year-1, 1, 1)]/2
+                    summa=round_99_cents(summa)
                     sp_standart_by_year[0].periods.append(PeriodAmount(DN=date(DNpen.year-1, 12, 31), DK=DNpen, amount=sp_prev))
                 else:
                     isRSD = False
@@ -164,6 +178,8 @@ async def pension_insurance_SPK_calculate(pension: PaymentInterface, sp_standart
         # Следующий период начинается с 1 января следующего года
         date_for_period = date(date_index.year +1, 1, 1)
         summa = IPK*INSURANCE_PENSION_SCORE[date(date_index.year+1, 1, 1)]+INSURANCE_PENSION_FIX_AMOUNT[date(date_index.year+1, 1, 1)] / 2
+        summa=round_99_cents(summa)
+  
         date_index = date(date_for_period.year, 12, 31)
     
     # Добавляем последний период
@@ -209,14 +225,11 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
 
     if DNpen > date_index:
         if pension.is_payment_transferred:
-            print(44)
             if pension.is_get_PSD_FSD_last_mounth_payment_trasferred and pension.is_get_PSD_FSD_last_year_payment_trasferred:
                 if pension.is_Not_get_PSD_FSD_now_payment_trasferred:
                     sp_standart_by_year[0].periods.append(PeriodAmount(DN=date(year-1, 12, 1), DK=DNpen, amount= summa / SOCIAL_PENSION_INDEX[date_index])) 
                     date_for_period = DNpen               
                 else:
-                    print(45)
-
                     isRSD = False # РСД не положено
                     sp_standart_by_year[0].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=0))
         else:
