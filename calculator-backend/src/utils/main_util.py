@@ -43,7 +43,7 @@ async def main_util(data: JsonQuerySchema) -> dict:
     try: 
         spv_init_date = first_moscow_payment.DN  # Дата первой пенсии в Москве
     except: 
-        return {"message: ни одна пенсия не назначена в Москве"}
+        return {"message": "ни одна пенсия не назначена в Москве"}
     
     # Проверка, что с даты первичного назначения СПВ прошло больше 1 месяца
     spv_delta = relativedelta(today, spv_init_date)
