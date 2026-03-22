@@ -48,6 +48,7 @@ SOCIAL_PENSION_INDEX: Dict[date, float] = {
     date(2023, 4, 1): 1.033,
     date(2024, 4, 1): 1.075,
     date(2025, 4, 1): 1.1475,
+    date(2026, 4, 1): 0,
 }
 
 INSURANCE_PENSION_INDEX: Dict[date, float] = {
