@@ -31,7 +31,7 @@ export const useResults = () => {
             "periods_reg_representative_moscow": store.is_adult ? null : (store.is_there_a_registration_in_moscow_of_the_legal_representative ? store.periods_reg_representative_moscow : null) ,
             "periods_reg_breadwinner_moscow": store.is_adult ? null : (store.is_there_a_registration_in_moscow_of_the_breadwinner ? store.periods_reg_breadwinner_moscow : null),
 
-            "date_of_death_of_the_breadwinner": store.is_adult ? (store.is_breadwinner ? store.date_of_death_of_the_breadwinner : null) : null,
+            "date_of_death_of_the_breadwinner": store.is_adult ? null : (store.is_breadwinner ? store.date_of_death_of_the_breadwinner : null),
             "there_is_a_breadwinner": store.is_adult ? null : store.is_breadwinner,
             "payments": store.payments ?? [],
             "periods_suspension": store.periods_suspension ?? null,

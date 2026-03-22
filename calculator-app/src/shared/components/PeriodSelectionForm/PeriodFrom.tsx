@@ -56,7 +56,7 @@ export const PeriodForm = ({
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor={`DK-${id}`}>Дата окончания *</label>
+                    <label htmlFor={`DK-${id}`}>{typePeriod == 'пребывание в стационаре' ? 'Дата окончания (следующий день за датой выезда из стационара) *' : 'Дата окончания *'}</label>
                     <input
                         id={`DK-${id}`}
                         type="date"
