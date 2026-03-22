@@ -123,7 +123,6 @@ export const useResults = () => {
 
     const calculate = useCallback(async () => {
         const jsonData = getJsonData();
-        console.log(jsonData)
         const startTime = Date.now();
 
         setIsLoading(true);
