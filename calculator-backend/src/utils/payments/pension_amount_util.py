@@ -191,6 +191,8 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
     year = DNpen.year
     summa = pension.amount
 
+    date_for_period = DNpen
+
     sp_standart_by_year[0] = PaymentsByPeriodsItem(
         is_payment_transferred=pension.is_payment_transferred,
         is_get_PSD_FSD_last_mounth_payment_trasferred=pension.is_get_PSD_FSD_last_mounth_payment_trasferred,
@@ -207,11 +209,14 @@ async def pension_social_calculate(pension: PaymentInterface, sp_standart_by_yea
 
     if DNpen > date_index:
         if pension.is_payment_transferred:
+            print(44)
             if pension.is_get_PSD_FSD_last_mounth_payment_trasferred and pension.is_get_PSD_FSD_last_year_payment_trasferred:
                 if pension.is_Not_get_PSD_FSD_now_payment_trasferred:
                     sp_standart_by_year[0].periods.append(PeriodAmount(DN=date(year-1, 12, 1), DK=DNpen, amount= summa / SOCIAL_PENSION_INDEX[date_index])) 
                     date_for_period = DNpen               
                 else:
+                    print(45)
+
                     isRSD = False # РСД не положено
                     sp_standart_by_year[0].periods.append(PeriodAmount(DN=DNpen, DK=date_index, amount=0))
         else:
