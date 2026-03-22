@@ -98,7 +98,7 @@ async def alt_pmp_payment_amount(
                         DK=pmp_periods[l][j].DK,
                         amount=amount,
                         sp_amount=sp_amount,
-                        pmp_gss_amount=round(pmp_periods[l][j - 1].pmp_gss_amount, 2),
+                        pmp_gss_amount=round(pmp_periods[l][j - 1].amount, 2),
                     )
                 )
             else:
