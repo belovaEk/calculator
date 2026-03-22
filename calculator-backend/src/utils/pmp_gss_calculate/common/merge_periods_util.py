@@ -27,6 +27,4 @@ async def merge_periods(periods: List[PeriodType]) -> List[PeriodType]:
         new_periods.append(current)
         i = j
 
-    print(new_periods)
-
     return new_periods

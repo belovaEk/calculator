@@ -154,6 +154,5 @@ if __name__ == "__main__":
         housing=housin_result,
     )
 
-    print(pensii_itog_res)
 
     
