@@ -41,7 +41,7 @@ async def alt_pmp_gss_payment_amount(
             # для остальных периодов (j>0) — дата начала периода минус 1 месяц (если не найдено возобновление).
             if j == 0:
                 #Необходимо сравнить дату начала ПМП и дату начала ГСС, так как забыла, что может быть вариант, когда ГСС будет раньше, чем ПМП
-                if pmp_periods[l][j].DN<gss_periods[l][0].DN: #False
+                if len(gss_periods[l]) >= 1 and pmp_periods[l][j].DN<gss_periods[l][0].DN: #False
                     data_poiska_pensii = pmp_periods[l][j].DN
                     if sp_standart[l].is_payment_transferred:
                         if (
@@ -94,7 +94,7 @@ async def alt_pmp_gss_payment_amount(
                 #добавляем проверку на совпадение с периодами попадания в стационар
                 for m in range(len(periods_inpatient)):
                     if pmp_periods[l][j].DN == (periods_inpatient[m].DN+ relativedelta(months=1)).replace(day=1):
-                            # дата поиска = (год(дата попадания в стационар (m))) - 1 год) 1 декабря
+                        # дата поиска = (год(дата попадания в стационар (m))) - 1 год) 1 декабря
                         data_poiska_pensii = date(data.periods_inpatient[m].DN.year - 1, 12, 1)
                         break
 
