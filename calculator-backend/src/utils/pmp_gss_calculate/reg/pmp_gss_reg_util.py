@@ -127,7 +127,7 @@ async def dr10_earlier(
             if i == 0:
                 pmp_periods.append(PeriodType(DN=spv_init_date, DK=DNreg - timedelta(days=1)))
 
-            elif i == n - 1:
+            if i == n - 1:
                 gss_periods.append(PeriodType(DN=DNreg, DK=DKreg))
                 if DKreg != currentDate:
                     pmp_periods.append(PeriodType(DN=DKreg + timedelta(days=1), DK=currentDate))
