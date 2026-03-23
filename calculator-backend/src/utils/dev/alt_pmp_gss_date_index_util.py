@@ -84,7 +84,7 @@ async def period_index_calculate (periods: GssPmpPensionType, period_standards: 
             
             current_date = period.DN
             
-            # Проходим по релевантным индексациям
+
             for i in range(start_idx, len(relevant_standards)):
                 _, index_date, amount = relevant_standards[i]
                 

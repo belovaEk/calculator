@@ -108,17 +108,7 @@ async def alt_pmp_gss_payment_amount(
             
             amount = round(pmp_periods[l][j].amount - sp_amount, 2)
 
-            if j != 0 and amount < pmp_periods[l][j - 1].amount:
-                result_pmp[l].append(
-                    PeriodAmountWithSP(
-                        DN=pmp_periods[l][j].DN,
-                        DK=pmp_periods[l][j].DK,
-                        amount=amount,
-                        sp_amount=sp_amount,
-                        pmp_gss_amount=round(pmp_periods[l][j - 1].amount, 2),
-                    )
-                )
-            else:
+            if j == 0:
                 result_pmp[l].append(
                     PeriodAmountWithSP(
                         DN=pmp_periods[l][j].DN,
@@ -128,40 +118,82 @@ async def alt_pmp_gss_payment_amount(
                         pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
                     )
                 )
+            else:
+                # Получаем РСД предыдущего периода
+                prev_rsd = result_pmp[l][j - 1].amount
+                
+                # Если текущий РСД меньше предыдущего, используем предыдущий РСД
+                if amount < prev_rsd:
+                    result_pmp[l].append(
+                        PeriodAmountWithSP(
+                            DN=pmp_periods[l][j].DN,
+                            DK=pmp_periods[l][j].DK,
+                            amount=prev_rsd,  # ← используем предыдущий РСД
+                            sp_amount=sp_amount,
+                            pmp_gss_amount=round(pmp_periods[l][j].amount, 2),  # ← текущая сумма ПМП
+                        )
+                    )
+                else:
+                    result_pmp[l].append(
+                        PeriodAmountWithSP(
+                            DN=pmp_periods[l][j].DN,
+                            DK=pmp_periods[l][j].DK,
+                            amount=amount,
+                            sp_amount=sp_amount,
+                            pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
+                        )
+                    )
 
         # Для ГСС
         result_gss.setdefault(l, [])
         for j in range(len(gss_periods[l])):
-            sp_amount = 0  # Инициализация по умолчанию
+    
             data_poiska_pensii = gss_periods[l][j].DN
-            # Поиск подходящего sp_standart периода
+
+    
             for period in sp_standart[l].periods:
                 if period.DN <= data_poiska_pensii < period.DK:
                     sp_amount = round(period.amount, 2)
                     break
+    
+            current_rsd = round(gss_periods[l][j].amount - sp_amount, 2)
 
-            amount = round(gss_periods[l][j].amount - sp_amount, 2) #24500 - 5053.87 = 19446.13, 25850-5534=20316
-
-            if j != 0 and amount < gss_periods[l][j - 1].amount: 
+            if j == 0:
+                # Первый период
                 result_gss[l].append(
                     PeriodAmountWithSP(
                         DN=gss_periods[l][j].DN,
                         DK=gss_periods[l][j].DK,
-                        amount=amount,
-                        sp_amount=sp_amount,
-                        pmp_gss_amount=round(gss_periods[l][j - 1].amount, 2),
-                    )
-                )
-
-            else:
-                result_gss[l].append(
-                    PeriodAmountWithSP(
-                        DN=gss_periods[l][j].DN,
-                        DK=gss_periods[l][j].DK,
-                        amount=amount,
+                        amount=current_rsd,
                         sp_amount=sp_amount,
                         pmp_gss_amount=round(gss_periods[l][j].amount, 2),
                     )
                 )
+            else:
+                # Получаем РСД и сумму ГСС предыдущего периода
+                prev_rsd = result_gss[l][j - 1].amount
+                                
+                # Если текущий РСД меньше предыдущего, используем предыдущий РСД
+                if current_rsd < prev_rsd:
+                    result_gss[l].append(
+                        PeriodAmountWithSP(
+                            DN=gss_periods[l][j].DN,
+                            DK=gss_periods[l][j].DK,
+                            amount=prev_rsd,  # ← используем предыдущий РСД
+                            sp_amount=sp_amount,
+                            pmp_gss_amount=round(gss_periods[l][j].amount, 2),  # ← текущая сумма ГСС
+                        )
+                    )
+                else:
+                    # Иначе используем текущий РСД
+                    result_gss[l].append(
+                        PeriodAmountWithSP(
+                            DN=gss_periods[l][j].DN,
+                            DK=gss_periods[l][j].DK,
+                            amount=current_rsd,
+                            sp_amount=sp_amount,
+                            pmp_gss_amount=round(gss_periods[l][j].amount, 2),
+                        )
+                    )
 
     return {"pmp_periods": result_pmp, "gss_periods": result_gss}
