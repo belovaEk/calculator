@@ -53,6 +53,7 @@ async def prepare_pmp_gss_reg_result_adult(
         list_of_periods_reg=list_of_periods_reg,
         pmp_periods=pmp_periods,
         gss_periods=gss_periods,
+        data=data
     )
 
     return {
@@ -183,7 +184,8 @@ async def prepare_pmp_gss_adult_result(
         gss_periods=pmp_gss_index_result["gss_periods"],
         omo_pmp=omo_pmp,
         omo_gss=omo_gss,
-        data=data
+        data=data,
+        reg=True,
     )
 
     pmp_gss_sorted_result = await pmp_gss_sorted(
@@ -266,21 +268,15 @@ async def prepare_pmp_adult_result(
         housing=housin_result,
     )
 
-    payments_for_gss = _build_pensii_itog_res(
-        sorted_pensions=pensions_result
-    )
-
-
     omo_pmp = calculate_pension_itog(payments_for_pmp)
-    # omo_gss = calculate_pension_itog(payments_for_gss)
-    omo_gss = {}
 
     alt_pmp_gss_payment_amount_result = await pmp_gss_payment_amount_adult(
         pmp_periods=pmp_gss_index_result["pmp_periods"],
         gss_periods={},
         omo_pmp=omo_pmp,
-        omo_gss=omo_gss,
-        data=data
+        omo_gss={},
+        data=data,
+        reg=False,
     )
 
     pmp_gss_sorted_result = await pmp_gss_sorted(
@@ -290,8 +286,6 @@ async def prepare_pmp_adult_result(
 
     
     return {
-        'devochki': pensions_result,
         "pmp_periods": pmp_gss_index_result["pmp_periods"],
-        "gss_periods": pmp_gss_index_result["gss_periods"],
         "sorted_pensions": pmp_gss_sorted_result,
     }

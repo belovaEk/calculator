@@ -11,7 +11,8 @@ from src.utils.registration.registration_util import (
 )
 from src.utils.payment_util import get_first_moscow_pension
 from src.utils.pmp_gss_calculate.prepare_pmp_gss_result_adult import (
-    prepare_pmp_gss_adult_result,
+    prepare_pmp_gss_adult_result, 
+    prepare_pmp_adult_result,
 )
 
 
@@ -39,7 +40,9 @@ async def main_util_adult(data: JsonQuerySchema) -> dict:
 
     # Ветка "да": проверяем предыдущий период регистрации в Москве
     if not data.is_there_a_registration_in_moscow or not data.periods_reg_moscow:
-        return {"message": "Вывод: положено РСД до ПМП... в разработке"}
+        return await prepare_pmp_adult_result(
+            data=data
+        )
 
     # Берём последний период регистрации в Москве
     last_period: PeriodType = data.periods_reg_moscow[-1]
@@ -54,7 +57,9 @@ async def main_util_adult(data: JsonQuerySchema) -> dict:
 
     # Если 10 лет нет — по условию возвращаем вывод, что РСД до ГСС не положено
     if not registration_result["has_10_years"]:
-        return {"message": "Вывод: положено РСД до ПМП... в разработке"}
+        return await prepare_pmp_adult_result(
+            data=data
+        )
 
     # Если 10 лет есть — считаем периоды ПМП и ГСС через prepare_pmp_gss_reg_result_adult
     dr10 = registration_result["date_of_10_years"]
