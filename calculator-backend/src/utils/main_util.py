@@ -36,8 +36,11 @@ async def main_util(data: JsonQuerySchema) -> dict:
     data = sort_periods_in_data(data=data)
 
     # Проверка возраста
-    # Алгоритм работает только с несовершеннолетними (дети)
-    if await is_adult(today=today, date_of_birth=data.date_of_birth):
+    result, error = await is_adult(today=today, date_of_birth=data.date_of_birth, is_adult=data.is_adult)
+
+    if error:
+        return {"message": error}
+    elif result:
         return await main_util_adult(data=data)
 
     try: 

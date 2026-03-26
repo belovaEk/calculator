@@ -51,15 +51,20 @@ def sort_periods_in_data(data: JsonQuerySchema) -> JsonQuerySchema:
     return data
 
 
-async def is_adult(today, date_of_birth) -> bool:
+async def is_adult(today, date_of_birth, is_adult: bool) -> tuple[bool, str | None]:
     """
     Проверяет, является ли человек совершеннолетним (достиг 18 лет)
     
     Returns:
-        bool: True если возраст 18 лет или больше, иначе False
+        tuple[bool, str | None]: (соответствие ожидаемому статусу, сообщение об ошибке)
     """
     delta = relativedelta(today, date_of_birth)
-    if delta.years >= 18:
-        return True
-    return False
+    is_adult_result = delta.years >= 18
+    
+    if is_adult_result == is_adult:
+        return True, None
+    
+    return False, "Фактический возраст расходится с выбранной категорией гражданина (взрослый, ребенок)"
+
+
 
