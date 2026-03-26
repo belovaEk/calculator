@@ -73,28 +73,24 @@ export const useResults = () => {
             
         // Обрабатываем ГСС
         if (data.gss_periods) {
-            Object.entries(data.gss_periods).forEach(([id, periods]) => {
-                periods.forEach((period: DateRange) => {
-                    rowsPmpGss.push({
-                        pmpOrGss: 'ГСС',
-                        startDate: formatDate(period.DN),
-                        endDate: formatDate(period.DK)
-                    });
-                });
+            data.gss_periods.forEach((period: DateRange) => {
+            rowsPmpGss.push({
+                pmpOrGss: 'ГСС',
+                startDate: formatDate(period.DN),
+                endDate: formatDate(period.DK)
             });
+        });
         }
 
         // Обрабатываем ПМП
         if (data.pmp_periods) {
-            Object.entries(data.pmp_periods).forEach(([id, periods]) => {
-                periods.forEach((period: DateRange) => {
-                    rowsPmpGss.push({
-                        pmpOrGss: 'ПМП',
-                        startDate: formatDate(period.DN),
-                        endDate: formatDate(period.DK)
-                    });
-                });
+            data.pmp_periods.forEach((period: DateRange) => {
+            rowsPmpGss.push({
+                pmpOrGss: 'ПМП',
+                startDate: formatDate(period.DN),
+                endDate: formatDate(period.DK)
             });
+        });
         }
 
         // Обрабатываем ГСС и ПМП РСД
