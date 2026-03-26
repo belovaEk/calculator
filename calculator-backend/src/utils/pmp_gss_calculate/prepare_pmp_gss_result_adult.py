@@ -30,6 +30,10 @@ from src.utils.dev.alt_pmp_gss_date_index_util import pmp_gss_index
 from src.utils.pmp_gss_calculate.adult.pmp_gss_payment_amount_adult import pmp_gss_payment_amount_adult
 
 
+from src.utils.pmp_gss_calculate.no_reg.pmp_suspension_util import pmp_suspension
+from src.utils.pmp_gss_calculate.no_reg.pmp_init_util import pmp_init
+
+
 async def prepare_pmp_gss_reg_result_adult(
     data: JsonQuerySchema,
     dr10: date,
@@ -137,9 +141,6 @@ async def prepare_pmp_gss_adult_result(
         )
 
 
-        
-    
-
     pmp_gss_index_result = await pmp_gss_index(
         gss_periods= {0: base_result["gss_periods"]},
         pmp_periods= {0: base_result["pmp_periods"]},
@@ -188,6 +189,103 @@ async def prepare_pmp_gss_adult_result(
     pmp_gss_sorted_result = await pmp_gss_sorted(
         pmp_periods=alt_pmp_gss_payment_amount_result["pmp_periods"],
         gss_periods=alt_pmp_gss_payment_amount_result["gss_periods"],
+    )
+
+    
+    return {
+        'devochki': pensions_result,
+        "pmp_periods": pmp_gss_index_result["pmp_periods"],
+        "gss_periods": pmp_gss_index_result["gss_periods"],
+        "sorted_pensions": pmp_gss_sorted_result,
+    }
+
+
+async def prepare_pmp_adult_result(
+    data: JsonQuerySchema,
+) -> dict:
+    """
+
+    """
+    pmp_periods: List[PeriodType] = []
+
+    base_result = await pmp_init(
+        data=data,
+        pmp_periods=pmp_periods,
+    )
+
+    filtered_employment_periods: List[PeriodWithIdType] = []
+
+    if data.periods_employment and len(data.periods_employment) > 0:
+
+        filtered_employment_periods = await cut_off_periods_before_change_date(
+            periods=data.periods_employment,
+            change_last_date=data.change_last_date,
+        )
+
+    if data.periods_suspension and len(data.periods_suspension) > 0:
+
+        filtered_suspension_periods = await cut_off_periods_before_change_date(
+            periods=data.periods_suspension,
+            change_last_date=data.change_last_date,
+        )
+
+        suspensions_w_emploument_periods = (
+            await employment_to_suspensions_periods(
+                employment_periods=filtered_employment_periods,
+                suspension_periods=filtered_suspension_periods,
+            )
+        )
+
+    else:
+        suspensions_w_emploument_periods = filtered_employment_periods
+
+        base_result = await pmp_suspension(
+        periods_suspension=suspensions_w_emploument_periods,
+        pmp_periods=base_result["pmp_periods"]
+    )
+
+
+    pmp_gss_index_result = await pmp_gss_index(
+        gss_periods= {},
+        pmp_periods= {0: base_result["pmp_periods"]},
+        reg=False
+    )
+
+    # Расчёт дополнительных федеральных/региональных выплат
+    edk_result = calculate_edk(data)
+    edv_result = calculate_edv_nsu(data)
+    egdv_result = calculate_egdv(data)
+    housin_result = calculate_housin(data)
+    pensions_result = pensii_devochki(query=data)
+
+    payments_for_pmp = _build_pensii_itog_res(
+        sorted_pensions=pensions_result,
+        edk=edk_result,
+        edv=edv_result,
+        egdv=egdv_result,
+        housing=housin_result,
+    )
+
+    payments_for_gss = _build_pensii_itog_res(
+        sorted_pensions=pensions_result
+    )
+
+
+    omo_pmp = calculate_pension_itog(payments_for_pmp)
+    # omo_gss = calculate_pension_itog(payments_for_gss)
+    omo_gss = {}
+
+    alt_pmp_gss_payment_amount_result = await pmp_gss_payment_amount_adult(
+        pmp_periods=pmp_gss_index_result["pmp_periods"],
+        gss_periods={},
+        omo_pmp=omo_pmp,
+        omo_gss=omo_gss,
+        data=data
+    )
+
+    pmp_gss_sorted_result = await pmp_gss_sorted(
+        pmp_periods=alt_pmp_gss_payment_amount_result["pmp_periods"],
+        gss_periods={},
     )
 
     
