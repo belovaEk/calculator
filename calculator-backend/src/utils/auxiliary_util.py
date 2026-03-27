@@ -61,8 +61,11 @@ async def is_adult(today, date_of_birth, is_adult: bool) -> tuple[bool, str | No
     delta = relativedelta(today, date_of_birth)
     is_adult_result = delta.years >= 18
     
-    if is_adult_result == is_adult:
+    if is_adult_result == True and is_adult == True:
         return True, None
+
+    elif is_adult_result == False and is_adult == False:
+        return False, None
     
     return False, "Фактический возраст расходится с выбранной категорией гражданина (взрослый, ребенок)"
 
