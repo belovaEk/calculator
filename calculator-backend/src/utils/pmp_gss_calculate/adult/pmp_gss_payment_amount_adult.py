@@ -22,7 +22,8 @@ async def pmp_gss_payment_amount_adult(
     gss_periods: Dict[int, List[PeriodAmount]],
     omo_pmp: dict,
     omo_gss: dict,
-    data: JsonQuerySchema
+    data: JsonQuerySchema,
+    reg: bool,
 ) -> Dict[str, Dict[int, List[PeriodAmountWithSP]]]:
 
     # Отладка: проверяем, есть ли housin в data.payments
@@ -154,40 +155,43 @@ async def pmp_gss_payment_amount_adult(
                 )
 
         # Для ГСС
-        result_gss.setdefault(l, [])
-        omo_gss_l = omo_gss.get(l)
+        if reg: 
+            result_gss.setdefault(l, [])
+            omo_gss_l = omo_gss.get(l)
 
-        for j in range(len(gss_periods[l])):
-            sp_amount = 0
-            data_poiska_pensii = gss_periods[l][j].DN
-            if omo_gss_l:
-                for period in omo_gss_l.periods:
-                    if period.DN <= data_poiska_pensii < period.DK:
-                        sp_amount = round(period.amount, 2)
-                        break
+            for j in range(len(gss_periods[l])):
+                sp_amount = 0
+                data_poiska_pensii = gss_periods[l][j].DN
+                if omo_gss_l:
+                    for period in omo_gss_l.periods:
+                        if period.DN <= data_poiska_pensii < period.DK:
+                            sp_amount = round(period.amount, 2)
+                            break
 
-            unclamped = gss_periods[l][j].amount - sp_amount
-            amount = round(max(0.0, unclamped), 2)
+                unclamped = gss_periods[l][j].amount - sp_amount
+                amount = round(max(0.0, unclamped), 2)
 
-            if j != 0 and unclamped < gss_periods[l][j - 1].amount:
-                result_gss[l].append(
-                    PeriodAmountWithSP(
-                        DN=gss_periods[l][j].DN,
-                        DK=gss_periods[l][j].DK,
-                        amount=amount,
-                        sp_amount=sp_amount,
-                        pmp_gss_amount=round(gss_periods[l][j - 1].amount, 2),
+                if j != 0 and unclamped < gss_periods[l][j - 1].amount:
+                    result_gss[l].append(
+                        PeriodAmountWithSP(
+                            DN=gss_periods[l][j].DN,
+                            DK=gss_periods[l][j].DK,
+                            amount=amount,
+                            sp_amount=sp_amount,
+                            pmp_gss_amount=round(gss_periods[l][j - 1].amount, 2),
+                        )
                     )
-                )
-            else:
-                result_gss[l].append(
-                    PeriodAmountWithSP(
-                        DN=gss_periods[l][j].DN,
-                        DK=gss_periods[l][j].DK,
-                        amount=amount,
-                        sp_amount=sp_amount,
-                        pmp_gss_amount=round(gss_periods[l][j].amount, 2),
+                else:
+                    result_gss[l].append(
+                        PeriodAmountWithSP(
+                            DN=gss_periods[l][j].DN,
+                            DK=gss_periods[l][j].DK,
+                            amount=amount,
+                            sp_amount=sp_amount,
+                            pmp_gss_amount=round(gss_periods[l][j].amount, 2),
+                        )
                     )
-                )
+        else:
+            return {"pmp_periods": result_pmp}
 
     return {"pmp_periods": result_pmp, "gss_periods": result_gss}

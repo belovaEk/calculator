@@ -28,7 +28,7 @@ export const useResults = () => {
             "is_there_a_registration_in_moscow_of_the_legal_representative": store.is_adult ? null : store.is_there_a_registration_in_moscow_of_the_legal_representative ?? false,
             "periods_reg_moscow": store.periods_reg_moscow ?? [],
 
-            "periods_reg_representative_moscow": store.is_adult ? null : (store.is_there_a_registration_in_moscow_of_the_legal_representative ? store.periods_reg_representative_moscow : null) ,
+            "periods_reg_representative_moscow": store.is_adult ? null : (store.is_there_a_registration_in_moscow_of_the_legal_representative ? store.periods_reg_representative_moscow : null),
             "periods_reg_breadwinner_moscow": store.is_adult ? null : (store.is_there_a_registration_in_moscow_of_the_breadwinner ? store.periods_reg_breadwinner_moscow : null),
 
             "date_of_death_of_the_breadwinner": store.is_adult ? null : (store.is_breadwinner ? store.date_of_death_of_the_breadwinner : null),
@@ -67,32 +67,36 @@ export const useResults = () => {
             return `${day}.${month}.${year}`;
         };
 
-        if (data.message){
+        if (data.message) {
             setMessage(data.message)
         }
-            
+
+        const toArray = (data: any): any[] => {
+            if (Array.isArray(data)) return data;
+            if (data && typeof data === 'object') return Object.values(data);
+            return [];
+        };
+
         // Обрабатываем ГСС
         if (data.gss_periods) {
-            Object.entries(data.gss_periods).forEach(([id, periods]) => {
-                periods.forEach((period: DateRange) => {
-                    rowsPmpGss.push({
-                        pmpOrGss: 'ГСС',
-                        startDate: formatDate(period.DN),
-                        endDate: formatDate(period.DK)
-                    });
+            const gssArray = toArray(data.gss_periods);
+            gssArray.forEach((period: DateRange) => {
+                rowsPmpGss.push({
+                    pmpOrGss: 'ГСС',
+                    startDate: formatDate(period.DN),
+                    endDate: formatDate(period.DK)
                 });
             });
         }
 
         // Обрабатываем ПМП
         if (data.pmp_periods) {
-            Object.entries(data.pmp_periods).forEach(([id, periods]) => {
-                periods.forEach((period: DateRange) => {
-                    rowsPmpGss.push({
-                        pmpOrGss: 'ПМП',
-                        startDate: formatDate(period.DN),
-                        endDate: formatDate(period.DK)
-                    });
+            const pmpArray = toArray(data.pmp_periods);
+            pmpArray.forEach((period: DateRange) => {
+                rowsPmpGss.push({
+                    pmpOrGss: 'ПМП',
+                    startDate: formatDate(period.DN),
+                    endDate: formatDate(period.DK)
                 });
             });
         }

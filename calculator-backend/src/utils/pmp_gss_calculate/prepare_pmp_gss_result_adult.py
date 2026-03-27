@@ -32,6 +32,177 @@ from src.utils.pmp_gss_calculate.adult.start_OMO import pensii_devochki
 from src.utils.dev.alt_pmp_gss_date_index_util import pmp_gss_index
 from src.utils.pmp_gss_calculate.adult.pmp_gss_payment_amount_adult import pmp_gss_payment_amount_adult
 
+
+from src.utils.pmp_gss_calculate.no_reg.pmp_suspension_util import pmp_suspension
+from src.utils.pmp_gss_calculate.no_reg.pmp_init_util import pmp_init
+
+def ensure_periods_list(data):
+    """Преобразует данные в список объектов PeriodType"""
+    if not data:
+        return []
+    
+    result = []
+    for item in data:
+        if isinstance(item, PeriodType):
+            result.append(item)
+        elif isinstance(item, dict):
+            try:
+                result.append(PeriodType(**item))
+            except:
+                print(f"Failed to convert dict to PeriodType: {item}")
+        elif isinstance(item, (list, tuple)) and len(item) >= 2:
+            try:
+                result.append(PeriodType(DN=item[0], DK=item[1]))
+            except:
+                print(f"Failed to convert list to PeriodType: {item}")
+        elif hasattr(item, 'DN') and hasattr(item, 'DK'):
+            result.append(item)
+        else:
+            print(f"Skipping invalid period data: {item} (type: {type(item)})")
+    
+    return result
+
+def ensure_list(data):
+    """Преобразует словарь или другой тип в список"""
+    if isinstance(data, list):
+        return data
+    elif isinstance(data, dict):
+        # Объединяем все значения словаря в один список
+        result = []
+        for value in data.values():
+            if isinstance(value, list):
+                result.extend(value)
+            else:
+                result.append(value)
+        return result
+    else:
+        return [data] if data else []
+
+def dict_to_list(data):
+        """Преобразует словарь вида {0: [...], 1: [...]} в плоский список"""
+        if not data:
+            return []
+        
+        if isinstance(data, dict):
+            result = []
+            for key, value in data.items():
+                if isinstance(value, list):
+                    result.extend(value)
+                elif value is not None:
+                    result.append(value)
+            return result
+        elif isinstance(data, list):
+            return data
+        else:
+            return [data] if data else []
+
+
+def clean_periods_list(data, name=""):
+    """Очищает список от чисел и None, оставляя только объекты PeriodType"""
+    # Сначала преобразуем словари в списки
+    data = dict_to_list(data)
+        
+    if not data:
+        return []
+        
+    cleaned = []
+    for idx, item in enumerate(data):
+        # Пропускаем числа и None
+        if isinstance(item, (int, float)):
+            print(f"Removing number {item} from {name} at index {idx}")
+            continue
+        if item is None:
+            print(f"Removing None from {name} at index {idx}")
+            continue
+            
+        # Если это уже объект PeriodType
+        if isinstance(item, PeriodType):
+            cleaned.append(item)
+        # Если это объект с атрибутами DN и DK
+        elif hasattr(item, 'DN') and hasattr(item, 'DK'):
+            cleaned.append(item)
+        # Если это словарь
+        elif isinstance(item, dict):
+            try:
+                # Проверяем наличие ключей DN и DK
+                if 'DN' in item and 'DK' in item:
+                    cleaned.append(PeriodType(DN=item['DN'], DK=item['DK']))
+                else:
+                    cleaned.append(PeriodType(**item))
+            except Exception as e:
+                print(f"Failed to convert dict in {name}: {e}")
+        # Если это список [DN, DK]
+        elif isinstance(item, (list, tuple)) and len(item) >= 2:
+            try:
+                cleaned.append(PeriodType(DN=item[0], DK=item[1]))
+            except Exception as e:
+                print(f"Failed to convert list in {name}: {e}")
+        else:
+            print(f"Unknown type in {name}: {type(item)} - {item}")
+        
+    return cleaned
+
+
+def convert_period_amount_to_payment_interface(
+    period_amounts: dict, 
+    payment_type: str, 
+    categoria: str = "other"
+) -> List[PaymentInterface]:
+    """
+    Преобразует словарь PeriodAmount в список PaymentInterface
+    """
+    result = []
+    
+    if not period_amounts:
+        return result
+    
+    # Правильное отображение типов
+    type_mapping = {
+        "housin": "housing",  # housin -> housing
+        "pension": "pension",
+        "edv": "edv",
+        "egdv": "egdv",
+        "edk": "edk"
+    }
+    
+    # Используем правильное значение типа
+    mapped_type = type_mapping.get(payment_type, payment_type)
+    
+    if isinstance(period_amounts, dict):
+        for key, periods in period_amounts.items():
+            for period in periods:
+                if isinstance(period, PeriodAmount):
+                    payment = PaymentInterface(
+                        id=0,
+                        type=mapped_type,  # используем mapped_type вместо payment_type
+                        categoria=categoria,
+                        DN=period.DN,
+                        DK=period.DK,
+                        amount=period.amount,
+                        is_Moscow=True,
+                        is_payment_transferred=False
+                    )
+                    result.append(payment)
+    elif isinstance(period_amounts, list):
+        for period in period_amounts:
+            if isinstance(period, PeriodAmount):
+                payment = PaymentInterface(
+                    id=0,
+                    type=mapped_type,
+                    categoria=categoria,
+                    DN=period.DN,
+                    DK=period.DK,
+                    amount=period.amount,
+                    is_Moscow=True,
+                    is_payment_transferred=False
+                )
+                result.append(payment)
+    
+    return result
+
+from src.utils.pmp_gss_calculate.no_reg.pmp_suspension_util import pmp_suspension
+from src.utils.pmp_gss_calculate.no_reg.pmp_init_util import pmp_init
+
 def ensure_periods_list(data):
     """Преобразует данные в список объектов PeriodType"""
     if not data:
@@ -432,8 +603,9 @@ async def prepare_pmp_gss_adult_result(
         gss_periods=pmp_gss_index_result["gss_periods"],
         omo_pmp=omo_pmp,
         omo_gss=omo_gss,
-        data=data
-    )  
+        data=data,
+        reg=True,
+    )
 
     pmp_gss_sorted_result = await pmp_gss_sorted(
         pmp_periods=alt_pmp_gss_payment_amount_result["pmp_periods"],
@@ -446,5 +618,94 @@ async def prepare_pmp_gss_adult_result(
         'devochki': pensions_result,
         "pmp_periods": pmp_gss_index_result["pmp_periods"],
         "gss_periods": pmp_gss_index_result["gss_periods"],
+        "sorted_pensions": pmp_gss_sorted_result,
+    }
+
+
+async def prepare_pmp_adult_result(
+    data: JsonQuerySchema,
+) -> dict:
+    """
+
+    """
+    pmp_periods: List[PeriodType] = []
+
+    base_result = await pmp_init(
+        data=data,
+        pmp_periods=pmp_periods,
+    )
+
+    filtered_employment_periods: List[PeriodWithIdType] = []
+
+    if data.periods_employment and len(data.periods_employment) > 0:
+
+        filtered_employment_periods = await cut_off_periods_before_change_date(
+            periods=data.periods_employment,
+            change_last_date=data.change_last_date,
+        )
+
+    if data.periods_suspension and len(data.periods_suspension) > 0:
+
+        filtered_suspension_periods = await cut_off_periods_before_change_date(
+            periods=data.periods_suspension,
+            change_last_date=data.change_last_date,
+        )
+
+        suspensions_w_emploument_periods = (
+            await employment_to_suspensions_periods(
+                employment_periods=filtered_employment_periods,
+                suspension_periods=filtered_suspension_periods,
+            )
+        )
+
+    else:
+        suspensions_w_emploument_periods = filtered_employment_periods
+
+        base_result = await pmp_suspension(
+        periods_suspension=suspensions_w_emploument_periods,
+        pmp_periods=base_result["pmp_periods"]
+    )
+
+
+    pmp_gss_index_result = await pmp_gss_index(
+        gss_periods= {},
+        pmp_periods= {0: base_result["pmp_periods"]},
+        reg=False
+    )
+
+    # Расчёт дополнительных федеральных/региональных выплат
+    edk_result = calculate_edk(data)
+    edv_result = calculate_edv_nsu(data)
+    egdv_result = calculate_egdv(data)
+    housin_result = calculate_housin(data)
+    pensions_result = pensii_devochki(query=data)
+
+    payments_for_pmp = _build_pensii_itog_res(
+        sorted_pensions=pensions_result,
+        edk=edk_result,
+        edv=edv_result,
+        egdv=egdv_result,
+        housing=housin_result,
+    )
+
+    omo_pmp = calculate_pension_itog(payments_for_pmp)
+
+    alt_pmp_gss_payment_amount_result = await pmp_gss_payment_amount_adult(
+        pmp_periods=pmp_gss_index_result["pmp_periods"],
+        gss_periods={},
+        omo_pmp=omo_pmp,
+        omo_gss={},
+        data=data,
+        reg=False,
+    )
+
+    pmp_gss_sorted_result = await pmp_gss_sorted(
+        pmp_periods=alt_pmp_gss_payment_amount_result["pmp_periods"],
+        gss_periods={},
+    )
+
+    
+    return {
+        "pmp_periods": pmp_gss_index_result["pmp_periods"],
         "sorted_pensions": pmp_gss_sorted_result,
     }

@@ -116,6 +116,7 @@ async def period_index_calculate(
             
             current_date = DN
             
+
             for i in range(start_idx, len(relevant_standards)):
                 _, index_date, amount = relevant_standards[i]
                                 

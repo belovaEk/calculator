@@ -59,8 +59,8 @@ export interface RadGssPmpI {
 
 export interface PromiseI {
     message?: string,
-    pmp_periods?: GssPmpI,
-    gss_periods?: GssPmpI,
+    pmp_periods?: Array<DateRange>,
+    gss_periods?: Array<DateRange>,
     sorted_pensions?: {
         [key: string]: RsdItem[]
     },

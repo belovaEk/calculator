@@ -170,7 +170,6 @@ async def dr10_earlier(
         # Если дата назначения первой пенсии попала между периодами регистрации
         elif DKreg <= spv_init_date < list_of_periods_reg[i + 1].DN:
             pmp_periods.append(PeriodType(DN=spv_init_date, DK=DNreg - timedelta(days=1)))
-        
         i += 1
 
     return {"pmp_periods": pmp_periods, "gss_periods": gss_periods}

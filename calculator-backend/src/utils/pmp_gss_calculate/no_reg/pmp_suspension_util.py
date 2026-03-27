@@ -5,22 +5,20 @@ from src.utils.pmp_gss_calculate.common.recalculation_suspension_util import rec
 
 
 async def pmp_suspension(
-    periods_suspension: List[PeriodWithIdType], data: JsonQuerySchema, pmp_periods: List[PeriodType]
+    periods_suspension: List[PeriodWithIdType], pmp_periods: List[PeriodType]
 ):
     """Функция для пересчета ПМП с учетом периодов прерываний
 
     Args:
-        data (JsonQuerySchema):
+        periods_suspension: List[PeriodWithIdType]
         pmp_periods (List[PeriodType]): периоды ПМП
 
     Returns:
         dict: Словарь с ключами
         - pmp_periods: List[PeriodType] - ПМП с учетом прерываний
     """
-    periods_suspension = data.periods_suspension or None
 
     if periods_suspension:
-
         pmp_periods = await recalculation_suspension(pmp_periods, periods_suspension)
 
-    return {"pmp_periods": {0: pmp_periods}}
+    return {"pmp_periods": pmp_periods}
