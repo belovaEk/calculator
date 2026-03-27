@@ -1,7 +1,8 @@
-from datetime import date
+from datetime import datetime, timedelta, date
 from typing import List
 from src.utils.pmp_gss_calculate.type import GssPmpPensionType
 from src.schemas.json_query_schema import OrderType, PeriodWithIdType, PeriodType
+from dateutil.relativedelta import relativedelta
 
 
 async def cut_off_periods_before_change_date(
@@ -65,66 +66,160 @@ async def cut_of_order_date(orders_date: List[OrderType],  change_last_date: dat
 
     for order in orders_date:
         date = order.date 
-        if date > change_last_date:
+        if date >= change_last_date:
             new_order_date.append(OrderType(id=order.id, date=order.date))
 
     return new_order_date
 
+# Добавьте эту функцию в файл cut_off_periods_util.py перед функцией cut_of_gss_no_have_order
 
-
-async def cut_of_gss_no_have_order(gss_period: List[PeriodWithIdType], pmp_periods: List[PeriodWithIdType], orders_date: List[OrderType]):
-    """ Убирает все периоды ГСС, на которые не подавалось заявление от гражданина (переводит в ПМП)
-
-    Args:
-        gss_period (List[PeriodWithIdType]): периоды ГСС
-        pmp_periods (List[PeriodWithIdType]): Периоды ПМП
-        orders_date (List[OrderType]): Заявления на ГСС
-
-    Returns:
-        Возвращает словарь:
-        {
-        "pmp_periods" (List[PeriodType]),
-        "gss_periods" (List[PeriodType])
-        }
-          
-    """   
+async def merge_periods(periods):
+    """Объединяет пересекающиеся периоды"""
+    if not periods:
+        return []
     
+    # Сортируем периоды по дате начала
+    periods.sort(key=lambda x: x.DN)
+    
+    merged = []
+    current = periods[0]
+    
+    for period in periods[1:]:
+        # Если текущий период пересекается или соприкасается со следующим
+        if current.DK >= period.DN:
+            # Объединяем
+            current = PeriodType(
+                DN=current.DN,
+                DK=max(current.DK, period.DK)
+            )
+        else:
+            # Добавляем текущий в результат и начинаем новый
+            merged.append(current)
+            current = period
+    
+    # Добавляем последний период
+    merged.append(current)
+    
+    return merged
+
+async def cut_of_gss_no_have_order(
+    gss_period: List[PeriodWithIdType], 
+    pmp_periods: List[PeriodWithIdType], 
+    orders_date: List[OrderType]
+):
+    """ 
+    Убирает все периоды ГСС, на которые не подавалось заявление от гражданина (переводит в ПМП)
+    - ПМП период заканчивается последним днем месяца, предшествующего дате заявления
+    - ГСС начинается с 1 числа следующего месяца после даты заявления
+    """
+    
+    # Сортируем
     gss_period.sort(key=lambda x: x.DN)
     pmp_periods.sort(key=lambda x: x.DN)
-    new_gss_periods: GssPmpPensionType = {}
-    new_pmp_periods: GssPmpPensionType = {}
-
-    new_gss_periods= []
-    new_pmp_periods = pmp_periods 
-
-    for i in range(len(orders_date)):
-        current_order = orders_date[i]
-        date_order = current_order.date
+    
+    new_gss_periods = []
+    new_pmp_periods = pmp_periods.copy()
+    
+    def get_last_day_of_previous_month(date):
+        """Возвращает последний день месяца, предшествующего дате"""
+        # Первый день следующего месяца минус 1 день
+        first_day_current_month = date.replace(day=1)+ relativedelta(months=1)
+        return first_day_current_month - timedelta(days=1)
+    
+    def get_first_day_next_month(date):
+        """Возвращает 1 число следующего месяца"""
+        return (date.replace(day=1) + relativedelta(months=1))
+    
+    for period in gss_period:
+        period_start = period.DN
+        period_end = period.DK
         
-        for j in range(len(gss_period)):
-            current_period = gss_period[j]
+        # Проверяем, есть ли заявление в этом периоде
+        orders_in_period = [
+            order.date for order in orders_date 
+            if period_start <= order.date < period_end
+        ]
+        orders_in_period.sort()
+        
+        if orders_in_period:
+            # Есть заявления - разбиваем период
+            current_start = period_start
             
-            if j == 0 and len(pmp_periods) > 0:
-                if not(pmp_periods.DK < current_period.DK):
-                    new_gss_periods.append(PeriodType(DN=current_period.DN, DK=current_period.DK))
-                    break
-
-            if current_period.DN <= date_order < current_period.DK:
-                new_gss_periods.append(PeriodType(DN=date_order, DK=current_period.DK))
-
-                if current_period.DN != date_order:
-                    new_pmp_periods.append(PeriodType(DN=current_period.DN, DK=date_order))
-
-            elif date_order < current_period.DN:
-                new_gss_periods.append(PeriodType(DN=current_period.DN, DK=current_period.DK))
+            for order_date in orders_in_period:
+                if current_start < order_date:
+                    # Часть ДО заявления - ПМП
+                    # ПМП заканчивается последним днем месяца, предшествующего дате заявления
+                    pmp_end = get_last_day_of_previous_month(order_date)
+                    
+                    # Проверяем, что дата окончания ПМП не раньше даты начала
+                    if pmp_end >= current_start:
+                        new_pmp_periods.append(PeriodType(
+                            DN=current_start, 
+                            DK=pmp_end
+                        ))
+                        current_start = pmp_end + timedelta(days=1)
+                
+                # Часть ПОСЛЕ заявления - ГСС, начиная с 1 числа следующего месяца
+                gss_start = get_first_day_next_month(order_date)
+                
+                # Если дата начала ГСС не выходит за пределы периода
+                if gss_start <= period_end:
+                    current_start = gss_start
+                else:
+                    # Если ГСС начинается после окончания периода
+                    current_start = order_date
             
+            # Добавляем оставшуюся часть периода (если есть)
+            if current_start < period_end:
+                # Проверяем, является ли оставшаяся часть ГСС
+                # Если current_start - это дата начала ГСС или позже
+                if current_start > period_start:
+                    new_gss_periods.append(PeriodType(
+                        DN=current_start, 
+                        DK=period_end
+                    ))
+                else:
+                    # Иначе это ПМП
+                    new_pmp_periods.append(PeriodType(
+                        DN=current_start, 
+                        DK=period_end
+                    ))
+        else:
+            # Нет заявления в периоде
+            # Проверяем, есть ли ПМП период, который пересекается с этим периодом
+            has_pmp_overlap = any(
+                pmp.DK > period_start for pmp in pmp_periods
+            )
+            
+            # Проверяем, есть ли заявление после этого периода
+            has_order_after = any(
+                order.date >= period_end for order in orders_date
+            ) if orders_date else False
+            
+            # Если есть ПМП до/во время периода ИЛИ нет заявлений после - переводим в ПМП
+            if has_pmp_overlap or not has_order_after:
+                new_pmp_periods.append(PeriodType(DN=period_start, DK=period_end))
             else:
-                new_pmp_periods.append(PeriodType(DN=current_period.DN, DK=current_period.DK))
-
+                # Иначе оставляем в ГСС
+                new_gss_periods.append(PeriodType(DN=period_start, DK=period_end))
+    
+    # Объединяем пересекающиеся периоды
+    new_pmp_periods = await merge_periods(new_pmp_periods)
+    new_gss_periods = await merge_periods(new_gss_periods)
+    
     return {
         "pmp_periods": new_pmp_periods,
         "gss_periods": new_gss_periods
-    }       
-                        
+    }    
             
 
+async def adjust_employment_periods(employment_periods: List[PeriodType]) -> List[PeriodType]:
+    """Преобразует даты трудоустройства в 1 число следующего месяца"""
+    adjusted = []
+    for emp in employment_periods:
+        adjusted.append(PeriodType(
+            id=emp.id if hasattr(emp, 'id') else None,
+            DN=(emp.DN.replace(day=1) + relativedelta(months=1)),
+            DK=(emp.DK.replace(day=1) + relativedelta(months=1))
+        ))
+    return adjusted

@@ -1,3 +1,8 @@
+from datetime import date
+from typing import List, Dict, Set, Tuple, Optional
+from collections import defaultdict
+from dateutil.relativedelta import relativedelta
+
 from src.utils.pmp_gss_calculate.type import GssPmpIndexType
 from src.utils.payments.pension_amount_util import calculate_sp_standart
 from src.schemas.json_query_schema import JsonQuerySchema
@@ -6,8 +11,10 @@ from src.utils.payments.types.paymentType import (
     PeriodAmount,
     PeriodAmountWithSP,
 )
-from typing import List, Dict
-from dateutil.relativedelta import relativedelta
+from src.utils.pmp_gss_calculate.adult.payment_breakpoints_util import (
+    get_payment_breakpoints_from_schema,
+    split_period_by_breakpoints
+)
 
 
 async def pmp_gss_payment_amount_adult(
@@ -18,14 +25,37 @@ async def pmp_gss_payment_amount_adult(
     data: JsonQuerySchema
 ) -> Dict[str, Dict[int, List[PeriodAmountWithSP]]]:
 
+    # Отладка: проверяем, есть ли housin в data.payments
+    print(f"\n=== PMP_GSS_PAYMENT_AMOUNT_ADULT ===")
+    print(f"data.payments count: {len(data.payments) if data.payments else 0}")
+    if data.payments:
+        housin_count = sum(1 for p in data.payments if p.type == "housin")
+        print(f"Housin in data.payments: {housin_count}")
+        for p in data.payments:
+            if p.type == "housin":
+                print(f"  Housin: {p.DN.strftime('%d.%m.%Y')} - {p.DK.strftime('%d.%m.%Y')}, amount: {p.amount}")
+
     if data.periods_suspension:
         suspension_periods = data.periods_suspension
     else:
         suspension_periods = []
+    
+    if not (data.periods_inpatient):
+        periods_inpatient = []
+    else:
+        periods_inpatient = data.periods_inpatient
+
+    if not (data.periods_employment):
+        periods_employment = []
+    else:
+        periods_employment = data.periods_employment
 
     result_pmp: Dict[int, List[PeriodAmountWithSP]] = {}
     result_gss: Dict[int, List[PeriodAmountWithSP]] = {}
 
+    # Получаем список всех выплат из данных
+    all_payments = data.payments if data.payments else []
+    
     for l in range(len(pmp_periods)):
         result_pmp.setdefault(l, [])
 
@@ -36,59 +66,65 @@ async def pmp_gss_payment_amount_adult(
             DK = pmp_periods[l][j].DK
             pmp_amount = pmp_periods[l][j].amount
 
+            print(f"\n=== PERIOD {l},{j} ===")
+            print(f"Period: {DN.strftime('%d.%m.%Y')} - {DK.strftime('%d.%m.%Y')}")
+
+            # Получаем брейкпоинты на основе всех выплат
+            breakpoints = get_payment_breakpoints_from_schema(
+                data=data,
+                start_date=DN,
+                end_date=DK
+            )
+
+            print(f"Breakpoints: {[bp.strftime('%d.%m.%Y') for bp in breakpoints]}")
+            
+            # Разбиваем период на подпериоды по брейкпоинтам
+            subperiods = split_period_by_breakpoints(DN, DK, breakpoints)
+            
             # Определяем дату поиска для первого подпериода
             if j == 0:
                 data_poiska_pensii = DN
-                if omo_pmp_l and omo_pmp_l.is_payment_transferred:
-                    if (
-                        omo_pmp_l.is_get_PSD_FSD_last_mounth_payment_trasferred
-                        and omo_pmp_l.is_get_PSD_FSD_last_year_payment_trasferred
-                    ):
-                        if omo_pmp_l.is_Not_get_PSD_FSD_now_payment_trasferred:
-                            data_poiska_pensii = DN - relativedelta(months=1)
-                        else:
-                            # Ветка "РСД до ПМП = 0"
-                            result_pmp[l].append(
-                                PeriodAmountWithSP(
-                                    DN=DN,
-                                    DK=DK,
-                                    amount=0.0,
-                                    sp_amount=0.0,
-                                    pmp_gss_amount=round(pmp_amount, 2),
+                if len(gss_periods[l]) >= 1 and pmp_periods[l][j].DN < gss_periods[l][0].DN:
+                    if omo_pmp_l and omo_pmp_l.is_payment_transferred:
+                        if (
+                            omo_pmp_l.is_get_PSD_FSD_last_mounth_payment_trasferred
+                            and omo_pmp_l.is_get_PSD_FSD_last_year_payment_trasferred
+                        ):
+                            if omo_pmp_l.is_Not_get_PSD_FSD_now_payment_trasferred:
+                                data_poiska_pensii = DN - relativedelta(months=1)
+                            else:
+                                # Ветка "РСД до ПМП = 0"
+                                result_pmp[l].append(
+                                    PeriodAmountWithSP(
+                                        DN=DN,
+                                        DK=DK,
+                                        amount=0.0,
+                                        sp_amount=0.0,
+                                        pmp_gss_amount=round(pmp_amount, 2),
+                                    )
                                 )
-                            )
-                            continue
+                                continue
             else:
                 # Если пенсионный период начинается ровно в DN (смена констант на границе года),
                 # используем DN напрямую — константы актуальны с этой даты, а не с прошлого месяца
-                if omo_pmp_l and any(period.DN == DN for period in omo_pmp_l.periods):
-                    data_poiska_pensii = DN
-                else:
-                    data_poiska_pensii = DN - relativedelta(months=1)
+                data_poiska_pensii = DN - relativedelta(months=1)
                 for k in range(len(suspension_periods)):
                     if DN == suspension_periods[k].DK and k >= 1:
-                        data_poiska_pensii = suspension_periods[k - 1].DK - relativedelta(months=1)
+                        data_poiska_pensii = date(data.periods_suspension[k].DN.year - 1, 12, 1)
+                        break
+                for k in range(len(periods_inpatient)):
+                    if DN == (periods_inpatient[k].DN+ relativedelta(months=1)).replace(day=1):
+                        data_poiska_pensii = date(data.periods_inpatient[k].DN.year - 1, 12, 1)
+                        break
+                for k in range(len(periods_employment)):
+                    if DN == (periods_employment[k].DK+ relativedelta(months=1)).replace(day=1):
+                        data_poiska_pensii = date(data.periods_employment[k].DN.year - 1, 12, 1)
                         break
 
-            # Брейкпоинты из пенсионных периодов, которые попадают строго внутрь (DN, DK)
-            pension_breakpoints = []
-            if omo_pmp_l:
-                pension_breakpoints = sorted({
-                    d
-                    for period in omo_pmp_l.periods
-                    for d in (period.DN, period.DK)
-                    if DN < d < DK
-                })
-
-            # Разбиваем ПМП-период на подпериоды по брейкпоинтам пенсий
-            sub_starts = [DN] + pension_breakpoints
-            sub_ends = pension_breakpoints + [DK]
-
-            prev_pmp_amount = pmp_periods[l][j - 1].amount if j > 0 else None
-
-            for sub_idx, (sub_DN, sub_DK) in enumerate(zip(sub_starts, sub_ends)):
+            # Обрабатываем каждый подпериод
+            for sub_idx, (sub_DN, sub_DK) in enumerate(subperiods):
                 # Первый подпериод: исходная дата поиска (с учётом j/suspension логики)
-                # Последующие подпериоды (разрывы по пенсиям): дата начала подпериода напрямую
+                # Последующие подпериоды: дата начала подпериода напрямую
                 lookup_date = data_poiska_pensii if sub_idx == 0 else sub_DN
 
                 sp_amount = 0
@@ -102,8 +138,8 @@ async def pmp_gss_payment_amount_adult(
                 amount = round(max(0.0, unclamped), 2)
 
                 # pmp_gss_amount: для первого подпериода нового года (j>0) применяем оригинальную логику
-                if sub_idx == 0 and j != 0 and unclamped < prev_pmp_amount:
-                    pmp_gss_amount = round(prev_pmp_amount, 2)
+                if sub_idx == 0 and j != 0 and unclamped < pmp_periods[l][j - 1].amount:
+                    pmp_gss_amount = round(pmp_periods[l][j - 1].amount, 2)
                 else:
                     pmp_gss_amount = round(pmp_amount, 2)
 
