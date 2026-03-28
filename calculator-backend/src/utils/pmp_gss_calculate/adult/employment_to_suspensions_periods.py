@@ -15,19 +15,15 @@ async def employment_to_suspensions_periods(employment_periods: List[PeriodType]
     for i in range(len(suspension_periods)):
         for j in range(len(employment_periods)):
             if employment_periods[j].DN <= suspension_periods[i].DN < employment_periods[j].DK <= suspension_periods[i].DK:
-                #Удаляем период Дата приостановки i; Дата возобновления i из периодов приостановок
-                suspension_periods.pop(i)
                 #На место периода i  в периоды приостановок записываем период Дата трудоустройства j; Дата возобновления i
-                suspension_periods.insert(i, PeriodType(id=suspension_periods[i].id, DN=employment_periods[j].DN, DK=suspension_periods[i].DK))
+                suspension_periods[i] = PeriodType(id=suspension_periods[i].id, DN=employment_periods[j].DN, DK=suspension_periods[i].DK)
                 continue
             elif suspension_periods[i].DN < employment_periods[j].DN < suspension_periods[i].DK < employment_periods[j].DK:
-                suspension_periods.pop(i)
                 #На место периода i в периоды приостановок записываем период Дата приостановки i; Дата увольнения j
-                suspension_periods.insert(i, PeriodType(id=suspension_periods[i].id, DN=suspension_periods[i].DN, DK=employment_periods[j].DK))
+                suspension_periods[i] = PeriodType(id=suspension_periods[i].id, DN=suspension_periods[i].DN, DK=employment_periods[j].DK)
                 continue
             elif employment_periods[j].DN < suspension_periods[i].DN < suspension_periods[i].DK < employment_periods[j].DK:
-                suspension_periods.pop(i)
                 #Добавляем в периоды приостановок период Дата трудоустройства j; Дата увольнения j
-                suspension_periods.insert(i, PeriodType(id=suspension_periods[i].id, DN=employment_periods[j].DN, DK=employment_periods[j].DK))
+                suspension_periods[i] = PeriodType(id=suspension_periods[i].id, DN=employment_periods[j].DN, DK=employment_periods[j].DK)
                 continue
     return suspension_periods
