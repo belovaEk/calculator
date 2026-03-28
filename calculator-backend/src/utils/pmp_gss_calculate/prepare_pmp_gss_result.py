@@ -151,6 +151,6 @@ async def prepare_pmp_gss_NoReg_result(
     )
 
     return {
-        "pmp_periods": pmp_suspension_result["pmp_periods"],
+        "pmp_periods": {0:pmp_suspension_result["pmp_periods"]},
         "sorted_pensions": pmp_sorted_result,
     }
