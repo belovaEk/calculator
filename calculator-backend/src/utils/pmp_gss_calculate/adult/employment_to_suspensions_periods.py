@@ -3,27 +3,59 @@ from src.schemas.json_query_schema import (
     PeriodWithIdType,
 )
 from typing import List
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 
-async def employment_to_suspensions_periods(employment_periods: List[PeriodType], suspension_periods: List[PeriodType]) -> List[PeriodType]:
+async def employment_to_suspensions_periods(
+    employment_periods: List[PeriodType], 
+    suspension_periods: List[PeriodType]
+) -> List[PeriodType]:
     """
     Преобразует периоды трудоустройства в периоды приостановок выплат
     Цель - сверить и дозаписать пропущенные периоды трудоустройства в периоды приостановок
     """
-    #{suspence_res:[{id=0, DN=01.06.2022, DK=01.07.2022}, {id=1, DN=01.06.2023, DK=04.12.2023}}]
-
-    for i in range(len(suspension_periods)):
-        for j in range(len(employment_periods)):
-            if employment_periods[j].DN <= suspension_periods[i].DN < employment_periods[j].DK <= suspension_periods[i].DK:
-                #На место периода i  в периоды приостановок записываем период Дата трудоустройства j; Дата возобновления i
-                suspension_periods[i] = PeriodType(id=suspension_periods[i].id, DN=employment_periods[j].DN, DK=suspension_periods[i].DK)
-                continue
-            elif suspension_periods[i].DN < employment_periods[j].DN < suspension_periods[i].DK < employment_periods[j].DK:
-                #На место периода i в периоды приостановок записываем период Дата приостановки i; Дата увольнения j
-                suspension_periods[i] = PeriodType(id=suspension_periods[i].id, DN=suspension_periods[i].DN, DK=employment_periods[j].DK)
-                continue
-            elif employment_periods[j].DN < suspension_periods[i].DN < suspension_periods[i].DK < employment_periods[j].DK:
-                #Добавляем в периоды приостановок период Дата трудоустройства j; Дата увольнения j
-                suspension_periods[i] = PeriodType(id=suspension_periods[i].id, DN=employment_periods[j].DN, DK=employment_periods[j].DK)
-                continue
-    return suspension_periods
+    
+    # Создаём копию suspension_periods для модификации
+    result = suspension_periods.copy()
+    
+    i = 0
+    while i < len(result):
+        modified = False
+        for emp in employment_periods:
+            # Проверяем пересечение периодов
+            if result[i].DN < emp.DK and emp.DN < result[i].DK:
+                # Здесь ваша логика обработки пересечений
+                if emp.DN <= result[i].DN and result[i].DK <= emp.DK:
+                    # Период приостановки внутри трудоустройства
+                    # Можно заменить на уточнённые даты
+                    result[i] = PeriodType(
+                        id=result[i].id,
+                        DN=max(result[i].DN, emp.DN),
+                        DK=min(result[i].DK, emp.DK)
+                    )
+                    modified = True
+                    break
+                elif result[i].DN < emp.DN <= result[i].DK:
+                    result[i] = PeriodType(
+                        id=result[i].id,
+                        DN=result[i].DN,
+                        DK=emp.DK
+                    )
+                    modified = True
+                    break
+                elif emp.DN <= result[i].DN < emp.DK:
+                    result[i] = PeriodType(
+                        id=result[i].id,
+                        DN=emp.DN,
+                        DK=result[i].DK
+                    )
+                    modified = True
+                    break
+        
+        if modified:
+            i += 1
+        else:
+            i += 1
+    
+    return result

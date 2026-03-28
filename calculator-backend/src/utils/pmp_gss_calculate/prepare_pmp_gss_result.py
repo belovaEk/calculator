@@ -81,6 +81,7 @@ async def prepare_pmp_gss_reg_result(
         pmp_periods=pmp_gss_inpatient_result["pmp_periods"],
         gss_periods=pmp_gss_inpatient_result["gss_periods"],
         reg=True,
+        data=data,
     )
     print(f'периоды после индексации: {pmp_gss_index_result}')
 
@@ -94,6 +95,7 @@ async def prepare_pmp_gss_reg_result(
     pmp_gss_sorted_result = await pmp_gss_sorted(
         pmp_periods=alt_pmp_gss_payment_amount_result["pmp_periods"],
         gss_periods=alt_pmp_gss_payment_amount_result["gss_periods"],
+        data=data,
     )
 
 

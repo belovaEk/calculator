@@ -51,23 +51,12 @@ async def spv_init_date_earlier(
 
     # Собираем все даты окончания из периодов пенсий
     all_end_dates = []
-    
-    # Добавляем даты из ПМП
-    for period in pmp_periods:
-        all_end_dates.append(period.DK)
-    
-    # Добавляем даты из ГСС
-    for period in gss_periods:
-        all_end_dates.append(period.DK)
-    
-    # Добавляем даты из периодов регистрации
-    for period in list_of_periods_reg:
-        all_end_dates.append(period.DK)
-    
-    # Добавляем даты из выплат, если они есть
+
+# Добавляем даты из пенсий, если они есть
     if data.payments:
         for payment in data.payments:
-            all_end_dates.append(payment.DK)
+            if payment.type == "pension":  # Только пенсии
+                all_end_dates.append(payment.DK)
     
     # Определяем currentDate как максимальную дату окончания
     if all_end_dates:
@@ -125,25 +114,14 @@ async def dr10_earlier(
     i = 0
     n = len(list_of_periods_reg)
     
-    # Собираем все даты окончания из периодов пенсий
+     # Собираем все даты окончания из периодов пенсий
     all_end_dates = []
-    
-    # Добавляем даты из ПМП
-    for period in pmp_periods:
-        all_end_dates.append(period.DK)
-    
-    # Добавляем даты из ГСС
-    for period in gss_periods:
-        all_end_dates.append(period.DK)
-    
-    # Добавляем даты из периодов регистрации (на случай, если они нужны)
-    for period in list_of_periods_reg:
-        all_end_dates.append(period.DK)
-    
-    # Добавляем даты из выплат, если они есть в data
+
+# Добавляем даты из пенсий, если они есть
     if data.payments:
         for payment in data.payments:
-            all_end_dates.append(payment.DK)
+            if payment.type == "pension":  # Только пенсии
+                all_end_dates.append(payment.DK)
     
     # Определяем currentDate как максимальную дату окончания
     if all_end_dates:
@@ -192,7 +170,6 @@ async def dr10_earlier(
         # Если дата назначения первой пенсии попала между периодами регистрации
         elif DKreg <= spv_init_date < list_of_periods_reg[i + 1].DN:
             pmp_periods.append(PeriodType(DN=spv_init_date, DK=DNreg - timedelta(days=1)))
-        
         i += 1
 
     return {"pmp_periods": pmp_periods, "gss_periods": gss_periods}
