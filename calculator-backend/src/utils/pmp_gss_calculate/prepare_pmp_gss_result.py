@@ -133,9 +133,10 @@ async def prepare_pmp_gss_NoReg_result(
     # )
 
     pmp_gss_index_result = await pmp_gss_index(
-        pmp_periods={0: pmp_suspension_result["pmp_periods"]},
+        pmp_periods=pmp_suspension_result["pmp_periods"],
         gss_periods={},
         reg=False,
+        data=data
     )
 
     # return {

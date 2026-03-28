@@ -85,7 +85,7 @@ async def pmp_gss_payment_amount_adult(
             # Определяем дату поиска для первого подпериода
             if j == 0:
                 data_poiska_pensii = DN
-                if len(gss_periods[l]) >= 1 and pmp_periods[l][j].DN < gss_periods[l][0].DN:
+                if reg and len(gss_periods[l]) >= 1 and pmp_periods[l][j].DN < gss_periods[l][0].DN:
                     if omo_pmp_l and omo_pmp_l.is_payment_transferred:
                         if (
                             omo_pmp_l.is_get_PSD_FSD_last_mounth_payment_trasferred

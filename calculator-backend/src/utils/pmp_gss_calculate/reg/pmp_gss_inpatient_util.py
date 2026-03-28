@@ -61,8 +61,8 @@ async def pmp_gss_inpatient(
 
     Returns:
         dict: Словарь с обновленными периодами:
-            - pmp_periods: GssPmpPensionType - обновленные периоды ПМП
-            - gss_periods: GssPmpPensionType - обновленные периоды ГСС
+            - pmp_periods: List[PeriodType] - обновленные периоды ПМП
+            - gss_periods: List[PeriodType] - обновленные периоды ГСС
     """
 
     # Создаем копии списков

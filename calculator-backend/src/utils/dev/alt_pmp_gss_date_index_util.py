@@ -1,4 +1,4 @@
-from src.utils.pmp_gss_calculate.type import GssPmpPensionType
+from src.utils.pmp_gss_calculate.type import GssPmpPensionType, PeriodType
 
 from src.utils.pmp_gss_calculate.common.recalculation_date_index_util import recalculation_date_index
 
@@ -9,7 +9,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from src.schemas.json_query_schema import JsonQuerySchema
 
-async def pmp_gss_index (pmp_periods: GssPmpPensionType, gss_periods: GssPmpPensionType, reg: bool, data: JsonQuerySchema):
+async def pmp_gss_index (pmp_periods: List[PeriodType], gss_periods: List[PeriodType], reg: bool, data: JsonQuerySchema):
 
     """ Функция пересчета ПМП и ГСС на периоды индексации и нахождение принадлежащим к этим периодам стандратам выплат
 
@@ -41,7 +41,7 @@ async def pmp_gss_index (pmp_periods: GssPmpPensionType, gss_periods: GssPmpPens
 
 
 async def period_index_calculate(
-    periods: GssPmpPensionType, 
+    periods: List[PeriodType], 
     period_standards: Dict[date, float],
     data: JsonQuerySchema
 ) -> Dict[int, List[PeriodAmount]]:
@@ -49,7 +49,7 @@ async def period_index_calculate(
     Функция пересчета ПМП или ГСС на периоды индексации и нахождение принадлежащим к этим периодам стандартам выплат
     
     Args:
-        periods (GssPmpPensionType): периоды ГСС или ПМП обработанные после регистраций, приостановок и стационаризаций
+        periods (List[PeriodType]): периоды ГСС или ПМП обработанные после регистраций, приостановок и стационаризаций
         period_standards (Dict[date, float]): ПМП стандарт или ГСС стандарт (константы)
         last_pension_end_date (Optional[date]): Дата окончания последней пенсии. Если указана, периоды обрезаются до этой даты
         
@@ -57,10 +57,10 @@ async def period_index_calculate(
         Dict[int, List[PeriodAmount]]: периоды пмп или гсс
     """    
     result_periods: Dict[int, List[PeriodAmount]] = {}
+    periods = {0: periods}
     
     # Сортируем стандарты по дате
     sorted_standards = sorted(period_standards.items())
-
     last_pension_end_date = None
     if data.payments:
         pension_end_dates = [

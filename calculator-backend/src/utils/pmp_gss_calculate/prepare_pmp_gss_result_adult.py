@@ -507,8 +507,8 @@ async def prepare_pmp_gss_adult_result(
 
     # Убираем дублирование и используем правильные данные
     pmp_gss_index_result = await pmp_gss_index( 
-        gss_periods={0: ensure_list(base_result["gss_periods"])},
-        pmp_periods={0: ensure_list(base_result["pmp_periods"])},
+        gss_periods=ensure_list(base_result["gss_periods"]),
+        pmp_periods=ensure_list(base_result["pmp_periods"]),
         reg=True,
         data=data)
 
@@ -669,8 +669,9 @@ async def prepare_pmp_adult_result(
 
     pmp_gss_index_result = await pmp_gss_index(
         gss_periods= {},
-        pmp_periods= {0: base_result["pmp_periods"]},
-        reg=False
+        pmp_periods=base_result["pmp_periods"],
+        reg=False,
+        data=data
     )
 
     # Расчёт дополнительных федеральных/региональных выплат
@@ -702,6 +703,7 @@ async def prepare_pmp_adult_result(
     pmp_gss_sorted_result = await pmp_gss_sorted(
         pmp_periods=alt_pmp_gss_payment_amount_result["pmp_periods"],
         gss_periods={},
+        data=data
     )
 
     
