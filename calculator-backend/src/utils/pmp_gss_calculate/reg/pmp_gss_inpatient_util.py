@@ -175,4 +175,4 @@ async def pmp_gss_inpatient(
     result_pmp.sort(key=lambda x: x.DN)
     result_gss.sort(key=lambda x: x.DN)
 
-    return {"pmp_periods": {0: result_pmp}, "gss_periods": {0: result_gss}}
+    return {"pmp_periods": result_pmp, "gss_periods": result_gss}
