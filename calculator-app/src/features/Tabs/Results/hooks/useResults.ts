@@ -71,32 +71,49 @@ export const useResults = () => {
             setMessage(data.message)
         }
 
-        const toArray = (data: any): any[] => {
-            if (Array.isArray(data)) return data;
-            if (data && typeof data === 'object') return Object.values(data);
-            return [];
+        const convertToObject = (data: any): object => {
+            if (!data) return {};
+
+            if (Array.isArray(data)) {
+                // Создаем объект с ключом "0", содержащим весь массив
+                return { "0": data };
+            }
+
+            // Если это уже объект, возвращаем как есть
+            if (typeof data === 'object') {
+                return data;
+            }
+
+            return {};
         };
 
         // Обрабатываем ГСС
         if (data.gss_periods) {
-            const gssArray = toArray(data.gss_periods);
-            gssArray.forEach((period: DateRange) => {
-                rowsPmpGss.push({
-                    pmpOrGss: 'ГСС',
-                    startDate: formatDate(period.DN),
-                    endDate: formatDate(period.DK)
+            const gss_periods = convertToObject(data.gss_periods);
+            Object.entries(gss_periods).forEach(([id, periods]) => {
+                periods.forEach((period: DateRange) => {
+                    rowsPmpGss.push({
+                        pmpOrGss: 'ГСС',
+                        startDate: formatDate(period.DN),
+                        endDate: formatDate(period.DK)
+                    });
                 });
             });
         }
 
+
+
         // Обрабатываем ПМП
         if (data.pmp_periods) {
-            const pmpArray = toArray(data.pmp_periods);
-            pmpArray.forEach((period: DateRange) => {
-                rowsPmpGss.push({
-                    pmpOrGss: 'ПМП',
-                    startDate: formatDate(period.DN),
-                    endDate: formatDate(period.DK)
+            console.log(data.pmp_periods)
+            const pmp_periods = convertToObject(data.pmp_periods);
+            Object.entries(pmp_periods).forEach(([id, periods]) => {
+                periods.forEach((period: DateRange) => {
+                    rowsPmpGss.push({
+                        pmpOrGss: 'ПМП',
+                        startDate: formatDate(period.DN),
+                        endDate: formatDate(period.DK)
+                    });
                 });
             });
         }
