@@ -19,7 +19,11 @@ class OrderType(BaseModel):
 PaymentTypeRaw = Literal["pension", "edv", "egdv", "housing", "edk"]
 PensionCategoryRaw = Literal["insurance_SPK", "social_SPK", "social_disability", "departmental"]
 
-PensionCategoryAdultRaw = Literal["insurance", "social", "departmental", "gosudarstvennaya", "other", "monthPay", ""]
+PensionCategoryAdultRaw = Literal['insurance_SPK', 'insurance_disability', 'insurance_age', 'social_SPK', 'social_disability', 'social_age', 'departmental_SPK', 
+                                  'departmental_age', 'departmental_disability', 'gosudarstvennaya_SPK', 'gosudarstvennaya_age',
+                                  'gosudarstvennaya_disability', 'accumulative', 'part_insurance', 'ldnr', 'zo', 'ho', 'disability',
+                                  'spk', 'length_of_service', 'temporary_monthl', 'monthl', ""]
+
 PersonCategoryRaw = Literal['reabilitirovan', 'truzhennik', 'war_child','labor_veteran','labor_veteran_55_60']
 
 

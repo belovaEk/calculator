@@ -141,9 +141,9 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
 
 
                             {/* Пенсия была переведена из другого региона? */}
-                            {(paymentData.categoria === 'insurance'
-                                || paymentData.categoria === 'social'
-                                || paymentData.categoria === 'gosudarstvennaya'
+                            {((paymentData.categoria === 'insurance_disability' || paymentData.categoria === 'insurance_age')
+                                || (paymentData.categoria === 'social_age')
+                                || (paymentData.categoria === 'gosudarstvennaya_SPK' || paymentData.categoria === 'gosudarstvennaya_age' || paymentData.categoria === 'gosudarstvennaya_disability') 
                                 || paymentData.categoria === 'insurance_SPK'
                                 || paymentData.categoria === 'social_SPK'
                                 || paymentData.categoria === 'social_disability') &&
@@ -227,7 +227,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                     {/* Размер выплаты или страховой части */}
                     <div className="grid">
                         <div className="form-group">
-                            <label>{paymentData.categoria !== 'insurance' ? 'Размер назначенной выплаты*' : 'Размер страховой части'}</label>
+                            <label>{(store.is_adult && (paymentData.categoria === 'insurance_SPK' || paymentData.categoria === 'insurance_disability' || paymentData.categoria === 'insurance_age')) ? 'Размер страховой части' : 'Размер назначенной выплаты*'}</label>
                             <input
                                 type="number"
                                 className="payment-amount"
@@ -243,10 +243,12 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                     {(paymentData.categoria === PENSION_CATEGORIES_CHILDREN.departmental.raw
                         || paymentData.categoria === PENSION_CATEGORIES_CHILDREN.social_SPK.raw
                         || paymentData.categoria === PENSION_CATEGORIES_CHILDREN.social_disability.raw
-                        || paymentData.categoria === 'insurance'
-                        || paymentData.categoria === 'social'
-                        || paymentData.categoria === 'departmental'
-                        || paymentData.categoria === 'other') && (
+                        || (paymentData.categoria === 'insurance_SPK' || paymentData.categoria === 'insurance_disability' || paymentData.categoria === 'insurance_age')
+                        || (paymentData.categoria === 'social_age') 
+                        || (paymentData.categoria === 'departmental_SPK' || paymentData.categoria === 'departmental_age' || paymentData.categoria === 'departmental_disability' )
+                        || (paymentData.categoria === 'accumulative' || paymentData.categoria === 'part_insurance' || 'ldnr' || paymentData.categoria === 'zo' 
+                            || paymentData.categoria ===  'ho'  || paymentData.categoria ===  'disability' || paymentData.categoria ===  'spk'
+                            || paymentData.categoria ===  'length_of_service') ) && (
 
                             <div>
                                 <div className="checkbox-group">
@@ -256,7 +258,7 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                         checked={paymentData.is_recalculation}
                                         onChange={(e) => updatePayment('is_recalculation', e.target.checked)}
                                     />
-                                    <label htmlFor="recalculationCheck">{paymentData.categoria === 'insurance' ? 'Есть перерасчет страховой части' : 'Есть перерасчет'}</label>
+                                    <label htmlFor="recalculationCheck">{(store.is_adult && (paymentData.categoria === 'insurance_SPK'  || paymentData.categoria === 'insurance_disability' || paymentData.categoria === 'insurance_age')) ? 'Есть перерасчет страховой части' : 'Есть перерасчет'}</label>
                                 </div>
 
                                 {paymentData.is_recalculation && (
@@ -292,17 +294,19 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
 
                     {/* Если пенсия страховая, то есть ли фиксированная часть */}
                     <div>
-                        {paymentData.categoria == "insurance" && (
-                            <div className="checkbox-group">
-                                <input
-                                    type="checkbox"
-                                    id="fixAmountCheck"
-                                    checked={paymentData.is_fix_amoumt}
-                                    onChange={(e) => updatePayment('is_fix_amoumt', e.target.checked)}
-                                />
-                                <label className="dop_check" htmlFor="fixAmountCheck">Есть фиксированная выплата</label>
-                            </div>
-                        )}
+                        {(store.is_adult && (paymentData.categoria === 'insurance_SPK' ||
+                            paymentData.categoria === 'insurance_disability' ||
+                            paymentData.categoria === 'insurance_age')) && (
+                                <div className="checkbox-group">
+                                    <input
+                                        type="checkbox"
+                                        id="fixAmountCheck"
+                                        checked={paymentData.is_fix_amoumt}
+                                        onChange={(e) => updatePayment('is_fix_amoumt', e.target.checked)}
+                                    />
+                                    <label className="dop_check" htmlFor="fixAmountCheck">Есть фиксированная выплата</label>
+                                </div>
+                            )}
 
                         {paymentData.is_fix_amoumt && (
                             <>

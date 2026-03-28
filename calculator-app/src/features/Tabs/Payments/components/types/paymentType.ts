@@ -6,7 +6,11 @@ export type PaymentTypeDisplay = 'Пенсия' | 'ЕДВ' | 'ЕГДВ' | 'ЖК�
 
 export type PensionCategoryRaw = 'insurance_SPK' | 'social_SPK' | 'social_disability' | 'departmental';
 
-export type PensionCategoryAdultRaw = 'insurance' | 'social' | 'departmental' | 'gosudarstvennaya' | 'other' | 'monthPay';
+// export type PensionCategoryAdultRaw = 'insurance' | 'social' | 'departmental' | 'gosudarstvennaya' | 'other' | 'monthPay';
+export type PensionCategoryAdultRaw = 'insurance_SPK' | 'insurance_disability' | 'insurance_age' | 'social_SPK' | 'social_disability' | 'social_age' | 'departmental_SPK'
+    | 'departmental_age' | 'departmental_disability' | 'gosudarstvennaya_SPK' | 'gosudarstvennaya_age' | 'gosudarstvennaya_disability' | 'accumulative' |
+    'part_insurance' | 'ldnr' | 'zo' | 'ho' | 'disability' | 'spk' | 'length_of_service' | 'temporary_monthl' | 'monthl'
+
 export type PersonCategoryRaw = 'reabilitirovan' | 'truzhennik' | 'war_child' | 'labor_veteran' | 'labor_veteran_55_60'
 
 export interface RecalculationData {
@@ -40,7 +44,7 @@ export interface PaymentInterface {
     categoria_person?: PersonCategoryRaw
 }
 
-export interface PaymentProps  {
+export interface PaymentProps {
     id: number,
     index: number,
     paymentData: PaymentInterface,

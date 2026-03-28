@@ -1,96 +1,96 @@
 export const PENSION_CATEGORIES_ADULT = {
 
     insurance_SPK: {
-        raw: 'insurance',
+        raw: 'insurance_SPK',
         display: 'Страховая по СПК',
     },
     insurance_disability: {
-        raw: 'insurance',
+        raw: 'insurance_disability',
         display: 'Страховая по инвалидности',
     },
     insurance_age: {
-        raw: 'insurance',
+        raw: 'insurance_age',
         display: 'Страховая по старости',
     },
 
     social_SPK: {
-        raw: 'social',
+        raw: 'social_SPK',
         display: 'Социальная по СПК',
     },
     social_disability: {
-        raw: 'social',
+        raw: 'social_disability',
         display: 'Социальная по инвалидности'
     },
     social_age: {
-        raw: 'social',
+        raw: 'social_age',
         display: 'Социальная по старости'
     },
 
     departmental_SPK: {
-        raw: 'departmental',
+        raw: 'departmental_SPK',
         display: 'Ведомственная по СПК'
     },
     departmental_age: {
-        raw: 'departmental',
+        raw: 'departmental_age',
         display: 'Ведомственная по старости'
     },
     departmental_disability: {
-        raw: 'departmental',
+        raw: 'departmental_disability',
         display: 'Ведомственная по инвалидности'
     },
 
     gosudarstvennaya_SPK: {
-        raw: 'gosudarstvennaya',
+        raw: 'gosudarstvennaya_SPK',
         display: 'Государственная по СПК'
     },
     gosudarstvennaya_age: {
-        raw: 'gosudarstvennaya',
+        raw: 'gosudarstvennaya_age',
         display: 'Государственная по старости'
     },
     gosudarstvennaya_disability: {
-        raw: 'gosudarstvennaya',
+        raw: 'gosudarstvennaya_disability',
         display: 'Государственная по инвалидности'
     },
 
     accumulative: {
-        raw: 'other',
+        raw: 'accumulative',
         display: 'Накопительная'
     },
     part_insurance: {
-        raw: 'other',
+        raw: 'part_insurance',
         display: 'Доля страховой части'
     },
     ldnr: {
-        raw: 'other',
+        raw: 'ldnr',
         display: 'Пенсии ЛДНР'
     },
     zo: {
-        raw: 'other',
+        raw: 'zo',
         display: 'ЗО'
     },
     ho: {
-        raw: 'other',
+        raw: 'ho',
         display: 'ХО по возрасту'
     },
     disability: {
-        raw: 'other',
+        raw: 'disability',
         display: 'По инвалидности'
     },
     spk: {
-        raw: 'other',
+        raw: 'spk',
         display: 'По СПК'
     },
     length_of_service: {
-        raw: 'other',
+        raw: 'length_of_service',
         display: 'За выслугу лет'
     },
 
     temporary_monthl: {
-        raw: 'monthPay',
+        raw: 'temporary_monthl',
         display: 'Временная ежемесчная пенсионная выплата'
     },
     monthl: {
-        raw: 'monthPay',
+        raw: 'monthl',
         display: 'Ежемесчная пенсионная выплата'
     },
 }
