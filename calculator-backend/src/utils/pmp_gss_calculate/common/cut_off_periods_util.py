@@ -91,10 +91,9 @@ async def cut_of_gss_no_have_order(gss_period: List[PeriodWithIdType], pmp_perio
     
     gss_period.sort(key=lambda x: x.DN)
     pmp_periods.sort(key=lambda x: x.DN)
-    new_gss_periods: GssPmpPensionType = {}
-    new_pmp_periods: GssPmpPensionType = {}
+    new_gss_periods: List[PeriodType] = []
+    new_pmp_periods: List[PeriodType] = []
 
-    new_gss_periods= []
     new_pmp_periods = pmp_periods 
 
     for i in range(len(orders_date)):
@@ -105,7 +104,7 @@ async def cut_of_gss_no_have_order(gss_period: List[PeriodWithIdType], pmp_perio
             current_period = gss_period[j]
             
             if j == 0 and len(pmp_periods) > 0:
-                if not(pmp_periods.DK < current_period.DK):
+                if not(pmp_periods[0].DK < current_period.DK):
                     new_gss_periods.append(PeriodType(DN=current_period.DN, DK=current_period.DK))
                     break
 
