@@ -60,22 +60,6 @@ export const Basic = () => {
                                     required />
                             </div>
 
-                            {/* <div className="form-group" id="applicationDateGroup">
-                                <label htmlFor="applicationDate">Дата заявления *</label>
-                                <input type="date" id="applicationDate" required />
-                            </div> */}
-
-                            {/* <div className="form-group" id="autoAssignmentDateGroup" style={{ display: 'none' }}>
-                                <label htmlFor="autoAssignmentDate">Дата автоматического назначения *</label>
-                                <input type="date" id="autoAssignmentDate" />
-                            </div> */}
-
-                            {/* <div className="form-group">
-                                <label htmlFor="gssApplicationDate">Дата заявления на ГСС (если отличается)</label>
-                                <input type="date" id="gssApplicationDate" />
-                                <div className="days-info">Оставьте пустым, если заявление на ГСС не подавалось</div>
-                            </div> */}
-
                         </div>
 
                         <div className="checkbox-group">

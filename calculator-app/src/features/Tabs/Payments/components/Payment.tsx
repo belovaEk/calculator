@@ -72,12 +72,13 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                         <div className="date-options">
                             <div className="date-option-group">
                                 <input
+                                    id={`checkCurrentDate-${paymentData.id}`}
                                     type="checkbox"
                                     className="current-date"
                                     value={paymentData.DK}
                                     onChange={handleCurrentDate}
                                 />
-                                <label className="date-option-label">По настоящее время</label>
+                                <label className="date-option-label" htmlFor={`checkCurrentDate-${paymentData.id}`}>По настоящее время</label>
                             </div>
                         </div>
 
@@ -106,11 +107,11 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                             <div className="checkbox-group">
                                 <input
                                     type="checkbox"
-                                    id="MoscowCheck"
+                                    id={`MoscowCheck-${paymentData.id}`}
                                     checked={paymentData.is_Moscow}
                                     onChange={(e) => updatePayment('is_Moscow', e.target.checked)}
                                 />
-                                <label htmlFor="MoscowCheck">Назначена в Москве</label>
+                                <label htmlFor={`MoscowCheck-${paymentData.id}`}>Назначена в Москве</label>
                             </div>
 
                             {/* Выбор типа пенсии для детей */}
@@ -152,11 +153,11 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                         <div className="checkbox-group">
                                             <input
                                                 type="checkbox"
-                                                id="transferredCheck"
+                                                id={`transferredCheck-${paymentData.id}`}
                                                 checked={paymentData.is_payment_transferred}
                                                 onChange={(e) => updatePayment('is_payment_transferred', e.target.checked)}
                                             />
-                                            <label className="dop_check" htmlFor="transferredCheck">Пенсия была переведена из другого региона</label>
+                                            <label className="dop_check" htmlFor={`transferredCheck-${paymentData.id}`}>Пенсия была переведена из другого региона</label>
                                         </div>
 
                                         {paymentData.is_payment_transferred && (
@@ -164,29 +165,29 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                                 <div className="checkbox-group">
                                                     <input
                                                         type="checkbox"
-                                                        id="transferredCheckGetPSDFSDLM"
+                                                        id={`transferredCheckGetPSDFSDLM-${paymentData.id}`}
                                                         checked={paymentData.is_get_PSD_FSD_last_mounth_payment_trasferred}
                                                         onChange={(e) => updatePayment('is_get_PSD_FSD_last_mounth_payment_trasferred', e.target.checked)}
                                                     />
-                                                    <label htmlFor="transferredCheckGetPSDFSDLM">Получал РСД или ФСД в предыдщуем месяце</label>
+                                                    <label htmlFor={`transferredCheckGetPSDFSDLM-${paymentData.id}`}>Получал РСД или ФСД в предыдщуем месяце</label>
                                                 </div>
                                                 <div className="checkbox-group">
                                                     <input
                                                         type="checkbox"
-                                                        id="transferredCheckGetPSDFSDLY"
+                                                        id={`transferredCheckGetPSDFSDLY-${paymentData.id}`}
                                                         checked={paymentData.is_get_PSD_FSD_last_year_payment_trasferred}
                                                         onChange={(e) => updatePayment('is_get_PSD_FSD_last_year_payment_trasferred', e.target.checked)}
                                                     />
-                                                    <label htmlFor="transferredCheckGetPSDFSDLY">Получал РСД или ФСД в прошлом году</label>
+                                                    <label htmlFor={`transferredCheckGetPSDFSDLY-${paymentData.id}`}>Получал РСД или ФСД в прошлом году</label>
                                                 </div>
                                                 <div className="checkbox-group">
                                                     <input
                                                         type="checkbox"
-                                                        id="transferredCheckGetPSDFSDNow"
+                                                        id={`transferredCheckGetPSDFSDNow-${paymentData.id}`}
                                                         checked={paymentData.is_Not_get_PSD_FSD_now_payment_trasferred}
                                                         onChange={(e) => updatePayment('is_Not_get_PSD_FSD_now_payment_trasferred', e.target.checked)}
                                                     />
-                                                    <label htmlFor="transferredCheckGetPSDFSDNow">В текущее время не получает РСД или ФСД в другом регионе</label>
+                                                    <label htmlFor={`transferredCheckGetPSDFSDNow-${paymentData.id}`}>В текущее время не получает РСД или ФСД в другом регионе</label>
                                                 </div>
                                             </div>
                                         )}
@@ -254,11 +255,11 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                 <div className="checkbox-group">
                                     <input
                                         type="checkbox"
-                                        id="recalculationCheck"
+                                        id={`recalculationCheck-${paymentData.id}`}
                                         checked={paymentData.is_recalculation}
                                         onChange={(e) => updatePayment('is_recalculation', e.target.checked)}
                                     />
-                                    <label htmlFor="recalculationCheck">{(store.is_adult && (paymentData.categoria === 'insurance_SPK'  || paymentData.categoria === 'insurance_disability' || paymentData.categoria === 'insurance_age')) ? 'Есть перерасчет страховой части' : 'Есть перерасчет'}</label>
+                                    <label htmlFor={`recalculationCheck-${paymentData.id}`}>{(store.is_adult && (paymentData.categoria === 'insurance_SPK'  || paymentData.categoria === 'insurance_disability' || paymentData.categoria === 'insurance_age')) ? 'Есть перерасчет страховой части' : 'Есть перерасчет'}</label>
                                 </div>
 
                                 {paymentData.is_recalculation && (
@@ -300,11 +301,11 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                 <div className="checkbox-group">
                                     <input
                                         type="checkbox"
-                                        id="fixAmountCheck"
+                                        id={`fixAmountCheck-${paymentData.id}`}
                                         checked={paymentData.is_fix_amoumt}
                                         onChange={(e) => updatePayment('is_fix_amoumt', e.target.checked)}
                                     />
-                                    <label className="dop_check" htmlFor="fixAmountCheck">Есть фиксированная выплата</label>
+                                    <label className="dop_check" htmlFor={`fixAmountCheck-${paymentData.id}`}>Есть фиксированная выплата</label>
                                 </div>
                             )}
 
@@ -326,11 +327,11 @@ export const Payment = ({ id, index, paymentData, onUpdate, onRemove }: PaymentP
                                 <div className="checkbox-group">
                                     <input
                                         type="checkbox"
-                                        id="recalculationFixAmountCheck"
+                                        id={`recalculationFixAmountCheck-${paymentData.id}`}
                                         checked={paymentData.is_recalculation_fix_amount}
                                         onChange={(e) => updatePayment('is_recalculation_fix_amount', e.target.checked)}
                                     />
-                                    <label htmlFor="recalculationFixAmountCheck">Есть перерасчет фиксированной части</label>
+                                    <label htmlFor={`recalculationFixAmountCheck-${paymentData.id}`}>Есть перерасчет фиксированной части</label>
                                 </div>
 
                                 {paymentData.is_recalculation_fix_amount && (

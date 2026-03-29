@@ -36,6 +36,8 @@ export const PeriodForm = ({
             <div className="payment-header">
                 <div className="payment-title">Период ({typePeriod}) <span className="period-number">{index}</span></div>
                 <button
+                    key={`remove_btn-${index}`}
+                    id={`remove_btn-${index}`}
                     className="remove-period"
                     type="button"
                     onClick={handleRemove}
