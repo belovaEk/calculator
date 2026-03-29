@@ -66,6 +66,8 @@ async def calculate_sp_standart(data: JsonQuerySchema) -> PaymentsByPeriods:
 
     all_periods = []
 
+    last_type = 'insurance_SPK'
+
     for pension in pensions:
         temp_result = None
 
