@@ -9,10 +9,11 @@ from src.utils.payments.types.paymentType import (
 from typing import List, Dict
 from dateutil.relativedelta import relativedelta
 from datetime import date
-from src.utils.pmp_gss_calculate.adult.payment_breakpoints_util import (
-    get_payment_breakpoints_from_schema,
-    split_period_by_breakpoints
+from src.utils.pmp_gss_calculate.common.payment_breakpoints_util_child import (
+    get_payment_breakpoints_from_schema_child,
+    split_period_by_breakpoints_child,
 )
+from src.utils.logger import logger, log_function_call, log_execution_time
 
 
 async def alt_pmp_gss_payment_amount(
@@ -37,6 +38,18 @@ async def alt_pmp_gss_payment_amount(
     result_pmp: Dict[int, List[PeriodAmountWithSP]] = {}
     result_gss: Dict[int, List[PeriodAmountWithSP]] = {}
 
+    # Пройтись по всем периодам ПМП/ГСС, и проверить, принадлежит n-ая эта точка этому периоду
+    # Разбиваем период по точке, с учетом отсутсвтия накладок дня конца на день начала.
+    # Для 
+    # [01-01-2022; 01-01-2026; amount = 100] 
+    # breakpoints = [01-01-2024]
+    # [01-01-2022; 31-12-2023; amount = ?] и 
+    # [01-01-2024; 01-01-2026; amount = ?]
+
+    # ОСТАВИТЬ ЭТО 
+    for i in range(len(breakpoints)):
+        # Если breakpoints в периоде pmp
+
     for l in range(len(pmp_periods)):
         result_pmp.setdefault(l, [])
 
@@ -47,14 +60,14 @@ async def alt_pmp_gss_payment_amount(
             pmp_amount = pmp_periods[l][j].amount
 
             # Получаем брейкпоинты на основе всех выплат
-            breakpoints = get_payment_breakpoints_from_schema(
+            breakpoints = get_payment_breakpoints_from_schema_child(
                 data=data,
                 start_date=pmp_periods[l][j].DN,
                 end_date=pmp_periods[l][j].DK
             )
 
             # Разбиваем период на подпериоды по брейкпоинтам
-            subperiods = split_period_by_breakpoints(pmp_periods[l][j].DN, pmp_periods[l][j].DK, breakpoints)
+            subperiods = split_period_by_breakpoints_child(pmp_periods[l][j].DN, pmp_periods[l][j].DK, breakpoints)
             
             if j == 0:
                 if reg and len(gss_periods[l]) >= 1 and pmp_periods[l][j].DN < gss_periods[l][0].DN:
@@ -108,6 +121,33 @@ async def alt_pmp_gss_payment_amount(
                         # дата поиска = (год(дата попадания в стационар (m))) - 1 год) 1 декабря
                         data_poiska_pensii = date(data.periods_inpatient[m].DN.year - 1, 12, 1)
                         break
+                # ОСТАВИТЬ ЭТО 
+                # Это все только при j != 0
+                for k in range(len(breakpoints)):
+                    if pmp_periods[l][j].DN == breakpoints[k]:
+                        data_poiska_pensii = date(breakpoints[k])
+                        for period in sp_standart[l].periods:
+                            if period.DN <= data_poiska_pensii < period.DK:
+                                sp_amount = round(period.amount, 2)
+                                break
+                            amount = round(pmp_periods[l][j].amount - sp_amount, 2)
+                            # Записать текущий пмп, пенсию по типу:
+                            # result_pmp[l].append(
+                            # PeriodAmountWithSP(
+                            #     DN=sub_DN,
+                            #     DK=sub_DK,
+                            #     amount=amount,
+                            #     sp_amount=sp_amount,
+                            #     pmp_gss_amount=pmp_gss_amount,
+                            # )
+                            #)
+                            break
+                        break
+
+                data_poiska_pensii = (data_poiska_pensii.replace(day=1) + relativedelta(months=1))
+                
+                    
+
 
             for sub_idx, (sub_DN, sub_DK) in enumerate(subperiods):
                 lookup_date = data_poiska_pensii if sub_idx == 0 else sub_DN
@@ -201,7 +241,7 @@ async def alt_pmp_gss_payment_amount(
                         PeriodAmountWithSP(
                             DN=gss_periods[l][j].DN,
                             DK=gss_periods[l][j].DK,
-                            amount=amount,
+                            amount=current_rsd,
                             sp_amount=sp_amount,
                             pmp_gss_amount=round(gss_periods[l][j - 1].amount, 2),
                         )
@@ -211,7 +251,7 @@ async def alt_pmp_gss_payment_amount(
                         PeriodAmountWithSP(
                             DN=gss_periods[l][j].DN,
                             DK=gss_periods[l][j].DK,
-                            amount=amount,
+                            amount=current_rsd,
                             sp_amount=sp_amount,
                             pmp_gss_amount=round(gss_periods[l][j].amount, 2),
                         )

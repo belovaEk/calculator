@@ -89,19 +89,23 @@ async def prepare_pmp_gss_reg_result(
 
     # Создаем список всех выплат для breakpoint'ов
     all_payments_for_breakpoints = []
-
+    # Вместо convert_period_amount_to_payment_interface 
+    # Достать из JSON нужные пенсии (только Московская)
+    # забрать данные о периоде пенсии и ее категории
+    # Для первой записываем дату начала в breakpoints
+    # Если категория[i] != категория[i-1]
     # Преобразуем пенсии
     if sp_standart:
         # pensions_result может быть словарем или списком
         pension_payments = convert_period_amount_to_payment_interface(
             sp_standart, 
             payment_type="pension",
-            categoria="insurance"  # или подходящая категория
+            categoria="insurance_SPK"  # или подходящая категория
         )
         all_payments_for_breakpoints.extend(pension_payments)
 
     # Сохраняем в data.payments
-    data.payments = all_payments_for_breakpoints
+    # data.payments = all_payments_for_breakpoints
 
     alt_pmp_gss_payment_amount_result = await alt_pmp_gss_payment_amount(
         pmp_periods=pmp_gss_index_result["pmp_periods"],

@@ -592,6 +592,8 @@ async def prepare_pmp_gss_adult_result(
         
 
     # Сохраняем в data.payments
+    # Сохранить в другое место, поменять обращение
+    # в функции pmp_gss_payment_amount_adult
     data.payments = all_payments_for_breakpoints
 
 
