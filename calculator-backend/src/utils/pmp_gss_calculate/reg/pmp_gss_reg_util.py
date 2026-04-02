@@ -130,7 +130,6 @@ async def dr10_earlier(
         # Если нет ни одного периода, используем сегодняшнюю дату
         currentDate = date.today()
     
-    print(f"currentDate (максимальная дата окончания): {currentDate}")
 
     while i <= n - 1:
         DKreg = list_of_periods_reg[i].DK

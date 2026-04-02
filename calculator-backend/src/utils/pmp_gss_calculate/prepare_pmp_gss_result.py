@@ -32,6 +32,8 @@ from src.utils.pmp_gss_calculate.prepare_pmp_gss_result_adult import convert_per
 from src.utils.logger import logger, log_function_call, log_execution_time
 
 
+
+
 async def prepare_pmp_gss_reg_result(
     data: JsonQuerySchema,
     sum_reg_10_date: date,
@@ -52,7 +54,6 @@ async def prepare_pmp_gss_reg_result(
         gss_periods=gss_periods,
         data=data
     )
-    print(f'периоды после регистрации: {pmp_gss_registration_result}')
 
     periods_suspension = data.periods_suspension or None
 
@@ -67,7 +68,6 @@ async def prepare_pmp_gss_reg_result(
         gss_periods=pmp_gss_suspension_result["gss_periods"],
         periods_inpatient=data.periods_inpatient,
     )
-    print(f'периоды ГСС после стационаризации: {pmp_gss_inpatient_result}')
 
     # pmp_gss_pension_result = await pmp_gss_pension(
     #     data=data,
@@ -82,38 +82,13 @@ async def prepare_pmp_gss_reg_result(
         reg=True,
         data=data,
     )
-    print(f'периоды после индексации: {pmp_gss_index_result}')
 
-
-    sp_standart: PaymentsByPeriods = await calculate_sp_standart(data)
-
-    # Создаем список всех выплат для breakpoint'ов
-    all_payments_for_breakpoints = []
-    # Вместо convert_period_amount_to_payment_interface 
-    # Достать из JSON нужные пенсии (только Московская)
-    # забрать данные о периоде пенсии и ее категории
-    # Для первой записываем дату начала в breakpoints
-    # Если категория[i] != категория[i-1]
-    # Преобразуем пенсии
-    if sp_standart:
-        # pensions_result может быть словарем или списком
-        pension_payments = convert_period_amount_to_payment_interface(
-            sp_standart, 
-            payment_type="pension",
-            categoria="insurance_SPK"  # или подходящая категория
-        )
-        all_payments_for_breakpoints.extend(pension_payments)
-
-    # Сохраняем в data.payments
-    # data.payments = all_payments_for_breakpoints
-
+    # Вызываем функцию подсчета РСД
     alt_pmp_gss_payment_amount_result = await alt_pmp_gss_payment_amount(
         pmp_periods=pmp_gss_index_result["pmp_periods"],
         gss_periods=pmp_gss_index_result["gss_periods"],
-        data=data,
-        reg=True,
+        data=data
     )
-    print(f'периоды после расчета суммы: {alt_pmp_gss_payment_amount_result}')
 
     pmp_gss_sorted_result = await pmp_gss_sorted(
         pmp_periods=alt_pmp_gss_payment_amount_result["pmp_periods"],
