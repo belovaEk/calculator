@@ -61,7 +61,7 @@ def split_pmp_periods_by_breakpoints(pmp_or_gss_periods: dict, breakpoints: list
         # Находим все breakpoints, которые попадают внутрь текущего периода (исключая границы)
         breakpoints_in_period = [
             bp for bp in sorted_breakpoints 
-            if current_start < bp <= current_end
+            if current_start < bp < current_end
         ]
         
         if not breakpoints_in_period:

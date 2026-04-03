@@ -12,6 +12,57 @@ from typing import List, Dict
 from dateutil.relativedelta import relativedelta
 from datetime import date
 
+
+def calculate_rsd_for_period(
+    period: PeriodAmount,
+    sp_standart_periods: List,
+    data_poiska_pensii: date
+) -> tuple:
+    """
+    Расчет РСД для периода на основе даты поиска пенсии
+    
+    Returns:
+        tuple: (sp_amount, rsd_amount)
+    """
+    sp_amount = 0.0
+    
+    for sp_period in sp_standart_periods:
+        if sp_period.DN <= data_poiska_pensii < sp_period.DK:
+            sp_amount = round(sp_period.amount, 2)
+            break
+    
+    # Если SP не найден, пробуем следующий месяц
+    if sp_amount == 0:
+        next_month = (data_poiska_pensii.replace(day=1) + relativedelta(months=1))
+        for sp_period in sp_standart_periods:
+            if sp_period.DN <= next_month < sp_period.DK:
+                sp_amount = round(sp_period.amount, 2)
+                break
+    
+    rsd_amount = round(period.amount - sp_amount, 2)
+    return sp_amount, rsd_amount
+
+
+def apply_previous_rsd_if_less(
+    current_rsd: float,
+    previous_rsd: float,
+    period: PeriodAmount,
+    sp_amount: float
+) -> PeriodAmountWithSP:
+    """
+    Применяет правило: если текущий РСД меньше предыдущего, используем предыдущий
+    """
+    final_rsd = previous_rsd if current_rsd < previous_rsd else current_rsd
+    
+    return PeriodAmountWithSP(
+        DN=period.DN,
+        DK=period.DK,
+        amount=final_rsd,
+        sp_amount=sp_amount,
+        pmp_gss_amount=round(period.amount, 2),
+    )
+
+
 async def alt_pmp_gss_payment_amount(
     pmp_periods: Dict[int, List[PeriodAmount]],
     gss_periods: Dict[int, List[PeriodAmount]],
@@ -40,218 +91,153 @@ async def alt_pmp_gss_payment_amount(
     pmp_periods = split_pmp_periods_by_breakpoints(pmp_or_gss_periods=pmp_periods, breakpoints=breakpoints)
     gss_periods = split_pmp_periods_by_breakpoints(pmp_or_gss_periods=gss_periods, breakpoints=breakpoints)
 
-
+    # Обработка ПМП
     for l in range(len(pmp_periods)):
         result_pmp.setdefault(l, [])
 
-        # Для ПМП
         for j in range(len(pmp_periods[l])):
-            sp_amount = 0  # Инициализация по умолчанию
-            # По блок-схеме для j==0 базовая дата поиска = дата начала периода,
-            # для остальных периодов (j>0) — дата начала периода минус 1 месяц (если не найдено возобновление).
+            current_period = pmp_periods[l][j]
+            data_poiska_pensii = None
+            
+            # Определяем дату поиска пенсии
             if j == 0:
-                if len(gss_periods[l]) >= 1 and pmp_periods[l][j].DN < gss_periods[l][0].DN:
+                # Первый период
+                if len(gss_periods[l]) >= 1 and current_period.DN < gss_periods[l][0].DN:
                     if sp_standart[l].is_payment_transferred:
                         if (sp_standart[l].is_get_PSD_FSD_last_mounth_payment_trasferred
                             and sp_standart[l].is_get_PSD_FSD_last_year_payment_trasferred):
                             
                             if sp_standart[l].is_Not_get_PSD_FSD_now_payment_trasferred:
-                                #
-                                data_poiska_pensii = date(pmp_periods[l][j].DN.year - 1, 12, 1)
-
+                                data_poiska_pensii = date(current_period.DN.year - 1, 12, 1)
                             else:
-                                # Ветка "РСД до ПМП = 0": создаём запись с amount = 0 и переходим к следующему периоду
+                                # РСД = 0
                                 result_pmp[l].append(
                                     PeriodAmountWithSP(
-                                        DN=pmp_periods[l][j].DN,
-                                        DK=pmp_periods[l][j].DK,
+                                        DN=current_period.DN,
+                                        DK=current_period.DK,
                                         amount=0.0,
                                         sp_amount=0.0,
-                                        pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
+                                        pmp_gss_amount=round(current_period.amount, 2),
                                     )
                                 )
                                 continue
                         else:
-                            data_poiska_pensii = pmp_periods[l][j].DN
-                    else: # необходимо добавить иначе у вас получается когда отрабатывает условие False, то data_poiska_pensii не записывается
-                        data_poiska_pensii = pmp_periods[l][j].DN #data_poiska_pensii = 01.08.2025 
+                            data_poiska_pensii = current_period.DN
+                    else:
+                        data_poiska_pensii = current_period.DN
                 else:
-                    data_poiska_pensii = pmp_periods[l][j].DN - relativedelta(months=1) #data_poiska_pensii = 12.07.2025 - 1 month = 12.06.2025
-                    for k in range(len(suspension_periods)): #0
-                        if pmp_periods[l][j].DN == suspension_periods[k].DK and k >= 1:
-                            # дата поиска = дата приостановки (k-1) - 1 месяц
+                    data_poiska_pensii = current_period.DN - relativedelta(months=1)
+                    
+                    # Проверка периодов приостановки
+                    for k in range(len(suspension_periods)):
+                        if current_period.DN == suspension_periods[k].DK and k >= 1:
                             data_poiska_pensii = date(data.periods_suspension[k].DN.year - 1, 12, 1)
                             break
-                    for m in range(len(periods_inpatient)): #1
-                        if pmp_periods[l][j].DN == (periods_inpatient[m].DN+ relativedelta(months=1)).replace(day=1): #01.08.2025 == 01.08.2025
-                             # дата поиска = (год(дата попадания в стационар (m))) - 1 год) 1 декабря
-                            data_poiska_pensii = date(data.periods_inpatient[m].DN.year - 1, 12, 1) #01.12.2024
+                    
+                    # Проверка периодов стационара
+                    for m in range(len(periods_inpatient)):
+                        check_date = (periods_inpatient[m].DN + relativedelta(months=1)).replace(day=1)
+                        if current_period.DN == check_date:
+                            data_poiska_pensii = date(data.periods_inpatient[m].DN.year - 1, 12, 1)
                             break
-
-            # j != 0
             else:
-                data_poiska_pensii = pmp_periods[l][j].DN - relativedelta(months=1)
+                # Не первый период
+                data_poiska_pensii = current_period.DN - relativedelta(months=1)
+                
+                # Проверка периодов приостановки
                 for k in range(len(suspension_periods)):
-                    if pmp_periods[l][j].DN == suspension_periods[k].DK and k >= 1:
-                        # дата поиска = (год(дата начала приостановки (k)) - 1 год) 1 декабря
+                    if current_period.DN == suspension_periods[k].DK and k >= 1:
                         data_poiska_pensii = date(data.periods_suspension[k].DN.year - 1, 12, 1)
                         break
-                    #добавляем проверку на совпадение с периодами попадания в стационар
+                
+                # Проверка периодов стационара
                 for m in range(len(periods_inpatient)):
-                    if pmp_periods[l][j].DN == (periods_inpatient[m].DN+ relativedelta(months=1)).replace(day=1):
-                        # дата поиска = (год(дата попадания в стационар (m))) - 1 год) 1 декабря
+                    check_date = (periods_inpatient[m].DN + relativedelta(months=1)).replace(day=1)
+                    if current_period.DN == check_date:
                         data_poiska_pensii = date(data.periods_inpatient[m].DN.year - 1, 12, 1)
                         break
-
+                
+                # Проверка breakpoints
                 for k in range(len(breakpoints)):
-                    if pmp_periods[l][j].DN == breakpoints[k]:
+                    if current_period.DN == breakpoints[k]:
                         data_poiska_pensii = breakpoints[k]
-                        for period in sp_standart[l].periods:
-                            if period.DN <= data_poiska_pensii < period.DK:
-                                sp_amount = round(period.amount, 2)
-                                break
-                            amount = round(pmp_periods[l][j].amount - sp_amount, 2)
-                            result_pmp[l].append(
-                                PeriodAmountWithSP(
-                                    DN=pmp_periods[l][j].DN,
-                                    DK=pmp_periods[l][j].DK,
-                                    amount=amount,
-                                    sp_amount=sp_amount,
-                                    pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
-                                )
-                            )
-                            break
-
-                data_poiska_pensii = (data_poiska_pensii.replace(day=1) + relativedelta(months=1))
-                
-            # Поиск подходящего sp_standart периода
-            for period in sp_standart[l].periods:
-                if period.DN <= data_poiska_pensii < period.DK:
-                    sp_amount = round(period.amount, 2)
-                    break
-                
-            if sp_amount==0:
-                data_poiska_pensii = (data_poiska_pensii.replace(day=1) + relativedelta(months=1))
-                for period in sp_standart[l].periods:
-                    if period.DN <= data_poiska_pensii < period.DK:
-                        sp_amount = round(period.amount, 2)
                         break
+                
+                # Увеличиваем на месяц для поиска SP
+                data_poiska_pensii = (data_poiska_pensii.replace(day=1) + relativedelta(months=1))
             
-            amount = round(pmp_periods[l][j].amount - sp_amount, 2)
-
+            # Расчет SP и РСД
+            sp_amount, rsd_amount = calculate_rsd_for_period(
+                current_period,
+                sp_standart[l].periods,
+                data_poiska_pensii
+            )
+            
+            # Добавление результата с учетом предыдущего периода
             if j == 0:
                 result_pmp[l].append(
                     PeriodAmountWithSP(
-                        DN=pmp_periods[l][j].DN,
-                        DK=pmp_periods[l][j].DK,
-                        amount=amount,
+                        DN=current_period.DN,
+                        DK=current_period.DK,
+                        amount=rsd_amount,
                         sp_amount=sp_amount,
-                        pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
+                        pmp_gss_amount=round(current_period.amount, 2),
                     )
                 )
             else:
-                # Получаем РСД предыдущего периода
                 prev_rsd = result_pmp[l][j - 1].amount
-                
-                # Если текущий РСД меньше предыдущего, используем предыдущий РСД
-                if amount < prev_rsd:
-                    result_pmp[l].append(
-                        PeriodAmountWithSP(
-                            DN=pmp_periods[l][j].DN,
-                            DK=pmp_periods[l][j].DK,
-                            amount=prev_rsd,  # ← используем предыдущий РСД
-                            sp_amount=sp_amount,
-                            pmp_gss_amount=round(pmp_periods[l][j].amount, 2),  # ← текущая сумма ПМП
-                        )
+                result_pmp[l].append(
+                    apply_previous_rsd_if_less(
+                        rsd_amount,
+                        prev_rsd,
+                        current_period,
+                        sp_amount
                     )
-                else:
-                    result_pmp[l].append(
-                        PeriodAmountWithSP(
-                            DN=pmp_periods[l][j].DN,
-                            DK=pmp_periods[l][j].DK,
-                            amount=amount,
-                            sp_amount=sp_amount,
-                            pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
-                        )
-                    )
-
-        # Для ГСС
+                )
+    
+    # Обработка ГСС
+    for l in range(len(gss_periods)):
         result_gss.setdefault(l, [])
+        
         for j in range(len(gss_periods[l])):
-            sp_amount = 0
-            is_breakpoint_processed = False  # Флаг, что период уже обработан через breakpoint
+            current_period = gss_periods[l][j]
             
-            # Проверка на breakpoint
+            # Определяем дату поиска пенсии
+            data_poiska_pensii = current_period.DN
+            
+            # Проверка breakpoints
             for k in range(len(breakpoints)):
-                if gss_periods[l][j].DN == breakpoints[k]:
+                if current_period.DN == breakpoints[k]:
                     data_poiska_pensii = breakpoints[k]
-                    for period in sp_standart[l].periods:
-                        if period.DN <= data_poiska_pensii < period.DK:
-                            sp_amount = round(period.amount, 2)
-                            break
-                        else:
-                            # ВАЖНО: этот блок else относится к for period
-                            # Нужно пересмотреть логику
-                            pass
-                    
-                    # Если нашли sp_amount, рассчитываем и добавляем
-                    if sp_amount > 0 or True:  # Уточните условие
-                        amount = round(gss_periods[l][j].amount - sp_amount, 2)
-                        result_gss[l].append(
-                            PeriodAmountWithSP(
-                                DN=gss_periods[l][j].DN,
-                                DK=gss_periods[l][j].DK,
-                                amount=amount,
-                                sp_amount=sp_amount,
-                                pmp_gss_amount=round(gss_periods[l][j].amount, 2),
-                            )
-                        )
-                        is_breakpoint_processed = True
-                        break  # Выходим из цикла по breakpoints
+                    break
             
-            # Если период не был обработан через breakpoint, используем основную логику
-            if not is_breakpoint_processed:
-                data_poiska_pensii = gss_periods[l][j].DN
-                
-                for period in sp_standart[l].periods:
-                    if period.DN <= data_poiska_pensii < period.DK:
-                        sp_amount = round(period.amount, 2)
-                        break
-                
-                current_rsd = round(gss_periods[l][j].amount - sp_amount, 2)
-                
-                # Логика сравнения с предыдущим периодом
-                if j == 0:
-                    result_gss[l].append(
-                        PeriodAmountWithSP(
-                            DN=gss_periods[l][j].DN,
-                            DK=gss_periods[l][j].DK,
-                            amount=current_rsd,
-                            sp_amount=sp_amount,
-                            pmp_gss_amount=round(gss_periods[l][j].amount, 2),
-                        )
+            # Расчет SP и РСД
+            sp_amount, rsd_amount = calculate_rsd_for_period(
+                current_period,
+                sp_standart[l].periods,
+                data_poiska_pensii
+            )
+            
+            # Добавление результата с учетом предыдущего периода
+            if j == 0:
+                result_gss[l].append(
+                    PeriodAmountWithSP(
+                        DN=current_period.DN,
+                        DK=current_period.DK,
+                        amount=rsd_amount,
+                        sp_amount=sp_amount,
+                        pmp_gss_amount=round(current_period.amount, 2),
                     )
-                else:
-                    prev_rsd = result_gss[l][j - 1].amount
-                    if current_rsd < prev_rsd:
-                        result_gss[l].append(
-                            PeriodAmountWithSP(
-                                DN=gss_periods[l][j].DN,
-                                DK=gss_periods[l][j].DK,
-                                amount=prev_rsd,
-                                sp_amount=sp_amount,
-                                pmp_gss_amount=round(gss_periods[l][j].amount, 2),
-                            )
-                        )
-                    else:
-                        result_gss[l].append(
-                            PeriodAmountWithSP(
-                                DN=gss_periods[l][j].DN,
-                                DK=gss_periods[l][j].DK,
-                                amount=current_rsd,
-                                sp_amount=sp_amount,
-                                pmp_gss_amount=round(gss_periods[l][j].amount, 2),
-                            )
-                        )
-
+                )
+            else:
+                prev_rsd = result_gss[l][j - 1].amount
+                result_gss[l].append(
+                    apply_previous_rsd_if_less(
+                        rsd_amount,
+                        prev_rsd,
+                        current_period,
+                        sp_amount
+                    )
+                )
+    
     return {"pmp_periods": result_pmp, "gss_periods": result_gss}
