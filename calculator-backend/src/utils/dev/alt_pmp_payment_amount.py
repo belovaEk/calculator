@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import date
 
 
+from src.utils.pmp_gss_calculate.common.breakpoint_utils import split_pmp_periods_by_breakpoints, get_breakpoints_date
 
 async def alt_pmp_payment_amount(
     pmp_periods: Dict[int, List[PeriodAmount]],
@@ -30,6 +31,14 @@ async def alt_pmp_payment_amount(
     sp_standart: PaymentsByPeriods = await calculate_sp_standart(data)
 
     result_pmp: Dict[int, List[PeriodAmountWithSP]] = {}
+
+    # Формируем массив breakpoints в котором будут лежать даты смена категории пенсии:
+    breakpoints = await get_breakpoints_date(data=data)
+    print("=="* 80)
+    print(breakpoints)
+
+    # Получаем периоды ПМП разбитые по датам из breakpoints
+    pmp_periods = split_pmp_periods_by_breakpoints(pmp_or_gss_periods=pmp_periods, breakpoints=breakpoints)
 
     for l in range(len(pmp_periods)):
         result_pmp.setdefault(l, [])
@@ -82,6 +91,26 @@ async def alt_pmp_payment_amount(
                             # дата поиска = (год(дата попадания в стационар (m))) - 1 год) 1 декабря
                         data_poiska_pensii = date(data.periods_inpatient[m].DN.year - 1, 12, 1)
                         break
+
+                for k in range(len(breakpoints)):
+                    if pmp_periods[l][j].DN == breakpoints[k]:
+                        data_poiska_pensii = breakpoints[k]
+                        for period in sp_standart[l].periods:
+                            if period.DN <= data_poiska_pensii < period.DK:
+                                print(period.DN, data_poiska_pensii, period.DK)
+                                sp_amount = round(period.amount, 2)
+                                break
+                            amount = round(pmp_periods[l][j].amount - sp_amount, 2)
+                            result_pmp[l].append(
+                                PeriodAmountWithSP(
+                                    DN=pmp_periods[l][j].DN,
+                                    DK=pmp_periods[l][j].DK,
+                                    amount=amount,
+                                    sp_amount=sp_amount,
+                                    pmp_gss_amount=round(pmp_periods[l][j].amount, 2),
+                                )
+                            )
+                            break
 
             # Поиск подходящего sp_standart периода
             for period in sp_standart[l].periods:

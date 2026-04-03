@@ -121,7 +121,6 @@ async def alt_pmp_gss_payment_amount(
                                 )
                             )
                             break
-                        break
 
                 data_poiska_pensii = (data_poiska_pensii.replace(day=1) + relativedelta(months=1))
                 
@@ -179,18 +178,26 @@ async def alt_pmp_gss_payment_amount(
         # Для ГСС
         result_gss.setdefault(l, [])
         for j in range(len(gss_periods[l])):
-
+            sp_amount = 0
+            is_breakpoint_processed = False  # Флаг, что период уже обработан через breakpoint
+            
+            # Проверка на breakpoint
             for k in range(len(breakpoints)):
                 if gss_periods[l][j].DN == breakpoints[k]:
                     data_poiska_pensii = breakpoints[k]
                     for period in sp_standart[l].periods:
                         if period.DN <= data_poiska_pensii < period.DK:
                             sp_amount = round(period.amount, 2)
-                            print(period.DN, data_poiska_pensii, period.DK)
                             break
-                        
+                        else:
+                            # ВАЖНО: этот блок else относится к for period
+                            # Нужно пересмотреть логику
+                            pass
+                    
+                    # Если нашли sp_amount, рассчитываем и добавляем
+                    if sp_amount > 0 or True:  # Уточните условие
                         amount = round(gss_periods[l][j].amount - sp_amount, 2)
-                        result_pmp[l].append(
+                        result_gss[l].append(
                             PeriodAmountWithSP(
                                 DN=gss_periods[l][j].DN,
                                 DK=gss_periods[l][j].DK,
@@ -199,48 +206,22 @@ async def alt_pmp_gss_payment_amount(
                                 pmp_gss_amount=round(gss_periods[l][j].amount, 2),
                             )
                         )
+                        is_breakpoint_processed = True
+                        break  # Выходим из цикла по breakpoints
+            
+            # Если период не был обработан через breakpoint, используем основную логику
+            if not is_breakpoint_processed:
+                data_poiska_pensii = gss_periods[l][j].DN
+                
+                for period in sp_standart[l].periods:
+                    if period.DN <= data_poiska_pensii < period.DK:
+                        sp_amount = round(period.amount, 2)
                         break
-                    break
-    
-            data_poiska_pensii = gss_periods[l][j].DN
-
-    
-            for period in sp_standart[l].periods:
-                if period.DN <= data_poiska_pensii < period.DK:
-                    sp_amount = round(period.amount, 2)
-                    print(period.DN, data_poiska_pensii, period.DK)
-                    break
-    
-            current_rsd = round(gss_periods[l][j].amount - sp_amount, 2)
-
-            if j == 0:
-                # Первый период
-                result_gss[l].append(
-                    PeriodAmountWithSP(
-                        DN=gss_periods[l][j].DN,
-                        DK=gss_periods[l][j].DK,
-                        amount=current_rsd,
-                        sp_amount=sp_amount,
-                        pmp_gss_amount=round(gss_periods[l][j].amount, 2),
-                    )
-                )
-            else:
-                # Получаем РСД и сумму ГСС предыдущего периода
-                prev_rsd = result_gss[l][j - 1].amount
-                                
-                # Если текущий РСД меньше предыдущего, используем предыдущий РСД
-                if current_rsd < prev_rsd:
-                    result_gss[l].append(
-                        PeriodAmountWithSP(
-                            DN=gss_periods[l][j].DN,
-                            DK=gss_periods[l][j].DK,
-                            amount=prev_rsd,  # ← используем предыдущий РСД
-                            sp_amount=sp_amount,
-                            pmp_gss_amount=round(gss_periods[l][j].amount, 2),  # ← текущая сумма ГСС
-                        )
-                    )
-                else:
-                    # Иначе используем текущий РСД
+                
+                current_rsd = round(gss_periods[l][j].amount - sp_amount, 2)
+                
+                # Логика сравнения с предыдущим периодом
+                if j == 0:
                     result_gss[l].append(
                         PeriodAmountWithSP(
                             DN=gss_periods[l][j].DN,
@@ -250,5 +231,27 @@ async def alt_pmp_gss_payment_amount(
                             pmp_gss_amount=round(gss_periods[l][j].amount, 2),
                         )
                     )
+                else:
+                    prev_rsd = result_gss[l][j - 1].amount
+                    if current_rsd < prev_rsd:
+                        result_gss[l].append(
+                            PeriodAmountWithSP(
+                                DN=gss_periods[l][j].DN,
+                                DK=gss_periods[l][j].DK,
+                                amount=prev_rsd,
+                                sp_amount=sp_amount,
+                                pmp_gss_amount=round(gss_periods[l][j].amount, 2),
+                            )
+                        )
+                    else:
+                        result_gss[l].append(
+                            PeriodAmountWithSP(
+                                DN=gss_periods[l][j].DN,
+                                DK=gss_periods[l][j].DK,
+                                amount=current_rsd,
+                                sp_amount=sp_amount,
+                                pmp_gss_amount=round(gss_periods[l][j].amount, 2),
+                            )
+                        )
 
     return {"pmp_periods": result_pmp, "gss_periods": result_gss}
